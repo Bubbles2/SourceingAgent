@@ -1,0 +1,69 @@
+/* Auction calendar — see DESIGN.md §6.10, §11.6 */
+
+.cal-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3) var(--space-5); }
+.cal-toolbar__controls { display: flex; gap: var(--space-2); }
+.cal-toolbar__step { width: var(--tap); padding: 0; }
+.cal-toolbar__title { font-size: var(--text-card); line-height: 1.25; }
+
+/* Month grid: 1 px cream lines on white, weekends tinted ivory, today blue-tint */
+.cal {
+  width: 100%; table-layout: fixed; border-collapse: collapse;
+  background: var(--white); border: 1px solid var(--cream-line);
+}
+.cal th {
+  height: 40px; padding: 0 var(--space-2); border: 1px solid var(--cream-line);
+  background: var(--ivory-deep); text-align: left;
+  font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--navy);
+}
+.cal__cell {
+  height: 112px; padding: var(--space-2); border: 1px solid var(--cream-line);
+  vertical-align: top; background: var(--white);
+}
+.cal__cell--weekend { background: var(--ivory); }
+.cal__cell--today { background: var(--blue-tint); }
+
+.cal__num { display: block; font-size: 13px; font-weight: 600; line-height: 20px; color: var(--navy); }
+.cal__cell--outside .cal__num { font-weight: 500; color: var(--ink-muted); }
+.cal__cell--today .cal__num { color: var(--blue); }
+
+.cal__events { display: flex; flex-direction: column; gap: var(--space-1); margin: var(--space-1) 0 0; padding: 0; list-style: none; }
+.cal__event {
+  display: block; width: 100%; padding: 3px var(--space-2);
+  border: 0; border-radius: var(--r-pill); background: var(--navy); color: var(--ivory);
+  font: 500 12px/1.5 var(--font-sans); text-align: left; cursor: pointer;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  transition: background var(--ease);
+}
+.cal__event:hover { background: var(--blue); }
+.cal__event-time { font-weight: 600; }
+
+.cal-empty { color: var(--ink-muted); }
+
+/* Agenda: mobile replacement for the grid */
+.cal-agenda { display: none; flex-direction: column; gap: var(--space-5); margin: 0; padding: 0; list-style: none; }
+.cal-agenda__day { display: flex; flex-direction: column; gap: var(--space-2); }
+.cal-agenda__date {
+  font-family: var(--font-sans); font-size: var(--text-meta); font-weight: 600; line-height: normal;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--navy);
+}
+.cal-agenda__day[aria-current='date'] .cal-agenda__date { color: var(--blue); }
+.cal-agenda__events { display: flex; flex-direction: column; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
+.cal-agenda__event {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%;
+  min-height: var(--tap); padding: var(--space-3) var(--space-4);
+  background: var(--white); border: 1px solid var(--cream-line); border-radius: var(--r-md);
+  font: inherit; color: inherit; text-align: left; cursor: pointer;
+  transition: border-color var(--ease), box-shadow var(--ease);
+}
+.cal-agenda__event:hover { border-color: var(--blue); box-shadow: var(--shadow-card-hover); }
+.cal-agenda__meta { font-size: 13px; font-weight: 600; color: var(--gold-text); }
+.cal-agenda__title { font-family: var(--font-display); font-size: var(--text-sub); font-weight: 600; line-height: 1.3; color: var(--navy); }
+.cal-agenda__house { font-size: var(--text-meta); color: var(--ink-soft); }
+
+/* Loading placeholder for the agenda */
+.cal-agenda--skeleton > .skeleton + .skeleton { height: 76px; width: 100%; border-radius: var(--r-md); }
+
+@media (max-width: 639px) {
+  .cal { display: none; }
+  .cal-agenda { display: flex; }
+}

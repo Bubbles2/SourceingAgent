@@ -15,7 +15,7 @@ import { RequestedLotsPage } from '../pages/RequestedLotsPage'
 import { RouteErrorPage } from '../pages/RouteErrorPage'
 import { SignInPage } from '../pages/SignInPage'
 import { TermsPage } from '../pages/TermsPage'
-import { auctionDetailsLoader, auctionsLoader, cataloguesLoader, landingLoader } from './loaders'
+import { auctionDetailsLoader, auctionsLoader, calendarLoader, cataloguesLoader, landingLoader } from './loaders'
 import { paths } from './paths'
 
 const pageLoading = <PageLoading />
@@ -42,7 +42,12 @@ export const router = createBrowserRouter([
             element: <CataloguesPage />,
             hydrateFallbackElement: pageLoading,
           },
-          { path: paths.calendar, element: <CalendarPage /> },
+          {
+            path: paths.calendar,
+            loader: calendarLoader,
+            element: <CalendarPage />,
+            hydrateFallbackElement: pageLoading,
+          },
           { path: paths.requestedLots, element: <RequestedLotsPage /> },
           { path: paths.requestBid, element: <RequestBidPage /> },
           { path: paths.myRequests, element: <MyRequestsPage /> },

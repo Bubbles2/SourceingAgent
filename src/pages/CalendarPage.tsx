@@ -1,23 +1,25 @@
-import { featuredAuctionsId, paths } from '../app/paths'
+import { Suspense, useId } from 'react'
+import { useLoaderData } from 'react-router'
+import type { calendarLoader } from '../app/loaders'
 import { PageContainer } from '../components/layout/PageContainer'
-import { ButtonLink } from '../components/ui/Button'
-import { EmptyState } from '../components/ui/EmptyState'
+import { AuctionCalendar } from '../features/calendar/AuctionCalendar'
+import { CalendarSkeleton } from '../features/calendar/CalendarSkeleton'
+import { CalendarToolbar } from '../features/calendar/CalendarToolbar'
 
 export function CalendarPage(): React.JSX.Element {
+  const { month, auctions } = useLoaderData<typeof calendarLoader>()
+  const monthHeadingId = useId()
+
   return (
     <PageContainer
       eyebrow="Calendar"
       title="Auction calendar"
-      description="Upcoming sales month by month. Select an auction to see its description and catalogue."
+      description="Sales month by month, in Paris time. Select an auction to see its details, open its catalogue or request a bid."
     >
-      <EmptyState
-        title="Coming soon"
-        actions={
-          <ButtonLink to={{ pathname: paths.home, hash: featuredAuctionsId }}>See featured auctions</ButtonLink>
-        }
-      >
-        The monthly calendar is on its way. In the meantime, the home page shows the next featured sales.
-      </EmptyState>
+      <CalendarToolbar month={month} headingId={monthHeadingId} />
+      <Suspense key={month} fallback={<CalendarSkeleton month={month} labelledBy={monthHeadingId} />}>
+        <AuctionCalendar month={month} auctions={auctions} labelledBy={monthHeadingId} />
+      </Suspense>
     </PageContainer>
   )
 }

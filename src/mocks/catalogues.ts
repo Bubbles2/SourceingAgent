@@ -21,6 +21,15 @@ export const mockCatalogues: readonly Catalogue[] = [
     pdfUrl: 'https://example.com/catalogues/saint-honore-arts-decoratifs.pdf',
   },
   {
+    id: 'delorme-art-moderne',
+    auctionId: 'delorme-art-moderne-2026-11',
+    title: 'Art moderne & contemporain — vente du soir',
+    description: 'Illustrated catalogue with signatures, dimensions, exhibition history and literature.',
+    lots: { first: 1, last: 134 },
+    pageCount: 148,
+    pdfUrl: 'https://example.com/catalogues/delorme-art-moderne.pdf',
+  },
+  {
     id: 'chartrons-grands-vins',
     auctionId: 'chartrons-grands-vins-2026-12',
     title: "Cave d'un château du Médoc et à divers",
@@ -37,6 +46,15 @@ export const mockCatalogues: readonly Catalogue[] = [
     lots: { first: 1, last: 186 },
     pageCount: 132,
     pdfUrl: 'https://example.com/catalogues/delorme-bijoux-montres.pdf',
+  },
+  {
+    id: 'bastille-affiches',
+    auctionId: 'bastille-affiches-2026-12',
+    title: 'Affiches originales 1890–1965',
+    description: 'Poster dimensions, printers, backing and condition for every lot, illustrated in colour.',
+    lots: { first: 1, last: 210 },
+    pageCount: 112,
+    pdfUrl: 'https://example.com/catalogues/bastille-affiches.pdf',
   },
   {
     id: 'marchal-livres-volume-1',

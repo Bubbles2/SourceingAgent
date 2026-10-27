@@ -31,6 +31,19 @@ export const mockAuctions: readonly Auction[] = [
     featured: true,
   },
   {
+    id: 'delorme-art-moderne-2026-11',
+    title: 'Art moderne & contemporain',
+    category: 'Modern art',
+    house: 'Maison Delorme',
+    city: 'Paris 8e',
+    saleDate: '2026-11-26',
+    saleTime: '19:00',
+    lotCount: 134,
+    viewing: { start: '2026-11-24', end: '2026-11-26' },
+    description:
+      'Paintings, works on paper and sculpture from the École de Paris to the present day, offered in an evening sale.',
+  },
+  {
     id: 'chartrons-grands-vins-2026-12',
     title: 'Grands vins & spiritueux',
     category: 'Wine & spirits',
@@ -56,6 +69,19 @@ export const mockAuctions: readonly Auction[] = [
     viewing: { start: '2026-12-08', end: '2026-12-09' },
     description:
       "Signed jewellery from the 1920s to today and a selection of collectors' wristwatches, each with a gemmological or service report where available.",
+  },
+  {
+    id: 'bastille-affiches-2026-12',
+    title: 'Affiches & arts graphiques',
+    category: 'Posters & prints',
+    house: 'Bastille Enchères',
+    city: 'Paris 11e',
+    saleDate: '2026-12-10',
+    saleTime: '11:00',
+    lotCount: 210,
+    viewing: { start: '2026-12-08', end: '2026-12-09' },
+    description:
+      'Original travel, exhibition and advertising posters from the Belle Époque to the 1960s, most linen-backed.',
   },
   {
     id: 'marchal-livres-manuscrits-2026-12',

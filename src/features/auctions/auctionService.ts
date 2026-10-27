@@ -33,6 +33,15 @@ export function listFeaturedAuctions(): Promise<AuctionWithCatalogues[]> {
   return mockResponse(auctions)
 }
 
+/** Sales between two ISO dates (inclusive), in date and time order */
+export function listAuctionsBetween({ from, to }: { from: string; to: string }): Promise<AuctionWithCatalogues[]> {
+  const auctions = mockAuctions
+    .filter((auction) => auction.saleDate >= from && auction.saleDate <= to)
+    .sort(compareBySaleDate('upcoming'))
+    .map(withCatalogues)
+  return mockResponse(auctions)
+}
+
 export function getAuction(auctionId: string): Promise<AuctionWithCatalogues | null> {
   const auction = mockAuctions.find((candidate) => candidate.id === auctionId)
   return mockResponse(auction ? withCatalogues(auction) : null)
