@@ -1,4 +1,5 @@
 import { useId, useState, type FormEvent } from 'react'
+import { flushSync } from 'react-dom'
 import { MailCheck } from 'lucide-react'
 import { Link } from 'react-router'
 import { paths } from '../../app/paths'
@@ -19,7 +20,9 @@ export function ForgotPasswordForm(): React.JSX.Element {
   const [sentTo, setSentTo] = useState<string | null>(null)
 
   function handleUseAnotherEmail(): void {
-    setSentTo(null)
+    // Render the form now so focus can move from the removed button to the email field.
+    flushSync(() => setSentTo(null))
+    document.getElementById(fieldIds.email)?.focus()
   }
 
   if (sentTo) {

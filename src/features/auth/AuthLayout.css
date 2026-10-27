@@ -45,5 +45,6 @@
 
 @media (max-width: 639px) {
   .auth-card { padding: var(--space-5); }
+  .auth-card__actions > * { flex: 1 1 auto; }
   .auth-aside__mascot { display: none; }
 }
