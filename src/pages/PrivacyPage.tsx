@@ -1,10 +1,10 @@
 import { PageContainer } from '../components/layout/PageContainer'
-import { PlaceholderPanel } from '../components/ui/PlaceholderPanel'
+import { EmptyState } from '../components/ui/EmptyState'
 
 export function PrivacyPage(): React.JSX.Element {
   return (
     <PageContainer eyebrow="Legal" title="Privacy">
-      <PlaceholderPanel>The privacy policy will be published here before launch.</PlaceholderPanel>
+      <EmptyState title="Coming soon">The privacy policy will be published here before launch.</EmptyState>
     </PageContainer>
   )
 }

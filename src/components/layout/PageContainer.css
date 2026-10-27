@@ -3,7 +3,14 @@
 .page__inner { display: flex; flex-direction: column; gap: var(--space-10); }
 
 .page__header { display: flex; flex-direction: column; gap: 10px; max-width: 720px; }
+.page__breadcrumb { margin-top: calc(-1 * var(--space-3)); }
 .page__eyebrow { line-height: normal; }
 .page__title { font-size: var(--text-section); line-height: 1.15; }
 
 .page__body { display: flex; flex-direction: column; gap: var(--space-6); }
+
+/* "7 upcoming auctions" — an h2 so result cards (h3) keep a proper heading outline */
+.page__results-count {
+  margin-bottom: calc(-1 * var(--space-2));
+  font-family: var(--font-sans); font-size: var(--text-meta); font-weight: 500; line-height: 1.5; color: var(--ink-muted);
+}

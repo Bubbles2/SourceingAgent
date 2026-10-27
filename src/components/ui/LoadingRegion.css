@@ -1,0 +1,8 @@
+/* Static skeleton blocks — no shimmer, per DESIGN.md §9 */
+
+.skeleton { display: block; height: 14px; border-radius: var(--r-sm); background: var(--ivory-deep); }
+.skeleton--on-navy { background: rgba(251, 247, 238, 0.16); }
+.skeleton--title { height: 24px; width: 80%; }
+.skeleton--short { width: 45%; }
+.skeleton--medium { width: 70%; }
+.skeleton--button { height: var(--tap); width: 132px; }

@@ -1,4 +1,7 @@
-/* Auction card — see DESIGN.md §6.3, §11.4 */
+/* Auction card — see DESIGN.md §6.3, §11.4. The navy head lives in AuctionDateStrip.css. */
+
+/* Listing grid: 300 px minimum like .grid, but a leftover card keeps its column width instead of stretching */
+.auction-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: var(--space-6); }
 
 .auction-card {
   display: flex; flex-direction: column;
@@ -8,24 +11,26 @@
 }
 .auction-card:hover { box-shadow: var(--shadow-card-hover); }
 
-.auction-card__head {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: var(--space-4) var(--space-5);
-  background: var(--navy); color: var(--ivory);
-}
-.auction-card__date { display: flex; align-items: baseline; gap: var(--space-2); }
-.auction-card__day { font-family: var(--font-display); font-size: 30px; font-weight: 600; line-height: 1; }
-.auction-card__month { font-size: 13px; font-weight: 600; line-height: normal; letter-spacing: 0.08em; text-transform: uppercase; }
+/* Lot photo, when the house supplies one (DESIGN.md §7) */
+.auction-card__image { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-bottom: 1px solid var(--cream-line); }
 
 .auction-card__body { display: flex; flex-direction: column; gap: var(--space-3); padding: 22px var(--space-5) var(--space-5); flex: 1 1 auto; }
 .auction-card__title { font-family: var(--font-display); font-size: var(--text-card); font-weight: 600; line-height: 1.25; color: var(--navy); }
 .auction-card__house { display: flex; align-items: center; gap: var(--space-2); line-height: normal; color: var(--ink-soft); }
 .auction-card__house svg { flex: none; }
 .auction-card__meta { font-size: var(--text-meta); line-height: 1.5; color: var(--ink-muted); }
+.auction-card__description {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden;
+  color: var(--ink-soft);
+}
 
 .auction-card__foot {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
   padding: var(--space-4) var(--space-5); border-top: 1px solid var(--cream-line);
 }
 .auction-card__foot .btn { font-size: 14px; }
-.auction-card__foot .auction-card__request { padding: 0 var(--space-4); }
+.auction-card__foot .auction-card__action { padding: 0 var(--space-4); }
+
+/* Loading skeleton */
+.auction-card-skeleton__day { width: 96px; height: 30px; }
+.auction-card-skeleton__badge { width: 72px; height: 24px; border-radius: var(--r-pill); }

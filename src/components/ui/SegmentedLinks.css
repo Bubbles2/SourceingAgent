@@ -1,0 +1,15 @@
+/* Filter tabs — navy-on-ivory selected state (DESIGN.md §2 pairing) */
+
+.segmented {
+  display: inline-flex; flex-wrap: wrap; gap: var(--space-1); align-self: flex-start;
+  padding: var(--space-1);
+  background: var(--white); border: 1px solid var(--cream-line); border-radius: var(--r-md);
+}
+.segmented__option {
+  display: inline-flex; align-items: center; min-height: var(--tap); padding: 0 var(--space-5);
+  border-radius: var(--r-sm);
+  font-size: var(--text-body); font-weight: 600; color: var(--navy); text-decoration: none;
+  transition: background var(--ease), color var(--ease);
+}
+.segmented__option:hover { background: var(--blue-tint); color: var(--navy); }
+.segmented__option[aria-current='true'] { background: var(--navy); color: var(--ivory); }

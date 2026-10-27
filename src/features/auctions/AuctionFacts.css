@@ -1,0 +1,18 @@
+/* Sale facts panel on the auction details page */
+
+.auction-facts {
+  background: var(--white); border: 1px solid var(--cream-line); border-radius: var(--r-lg); overflow: hidden;
+}
+.auction-facts__body { display: flex; flex-direction: column; gap: var(--space-5); padding: var(--space-5) var(--space-6) var(--space-6); }
+
+.auction-facts__list { display: flex; flex-direction: column; margin: 0; }
+.auction-facts__list > div {
+  display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: var(--space-3);
+  padding-block: var(--space-3); border-bottom: 1px solid var(--cream-line);
+}
+.auction-facts__list > div:first-child { padding-top: 0; }
+.auction-facts__list dt { font-size: var(--text-meta); font-weight: 600; line-height: 1.6; color: var(--navy); }
+.auction-facts__list dd { margin: 0; color: var(--ink); }
+
+.auction-facts__cta { width: 100%; }
+.auction-facts__ended { font-weight: 600; color: var(--ink-soft); }

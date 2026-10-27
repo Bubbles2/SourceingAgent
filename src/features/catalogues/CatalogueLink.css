@@ -1,0 +1,4 @@
+.catalogue-link-pending {
+  display: inline-flex; align-items: center; gap: 6px; min-height: var(--tap);
+  font-size: var(--text-meta); font-weight: 500; color: var(--ink-muted);
+}

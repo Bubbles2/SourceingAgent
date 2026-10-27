@@ -1,14 +1,16 @@
+import { Suspense, use } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { featuredAuctionsId, feesNoticeId, paths } from '../../app/paths'
 import { ButtonLink } from '../../components/ui/Button'
-import { AuctionCard } from '../auctions/AuctionCard'
-import type { Auction } from '../auctions/types'
+import { AuctionGridSkeleton } from '../auctions/AuctionCardSkeleton'
+import type { AuctionWithCatalogues } from '../auctions/types'
 import { FeesNotice } from '../bid-requests/FeesNotice'
+import { FeaturedAuctionCard } from './FeaturedAuctionCard'
 import { SectionHeading } from './SectionHeading'
 import './FeaturedAuctions.css'
 
 type FeaturedAuctionsProps = {
-  auctions: readonly Auction[]
+  auctions: Promise<readonly AuctionWithCatalogues[]>
 }
 
 export function FeaturedAuctions({ auctions }: FeaturedAuctionsProps): React.JSX.Element {
@@ -23,14 +25,24 @@ export function FeaturedAuctions({ auctions }: FeaturedAuctionsProps): React.JSX
           </ButtonLink>
         </div>
 
-        <div className="grid">
-          {auctions.map((auction) => (
-            <AuctionCard key={auction.id} auction={auction} />
-          ))}
-        </div>
+        <Suspense fallback={<AuctionGridSkeleton count={3} label="Loading featured auctions" />}>
+          <FeaturedAuctionGrid auctions={auctions} />
+        </Suspense>
 
         <FeesNotice id={feesNoticeId} />
       </div>
     </section>
+  )
+}
+
+function FeaturedAuctionGrid({ auctions: auctionsPromise }: FeaturedAuctionsProps): React.JSX.Element {
+  const auctions = use(auctionsPromise)
+
+  return (
+    <div className="grid">
+      {auctions.map((auction) => (
+        <FeaturedAuctionCard key={auction.id} auction={auction} />
+      ))}
+    </div>
   )
 }

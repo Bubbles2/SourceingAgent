@@ -1,5 +1,5 @@
 import { PageContainer } from '../components/layout/PageContainer'
-import { PlaceholderPanel } from '../components/ui/PlaceholderPanel'
+import { EmptyState } from '../components/ui/EmptyState'
 
 export function RequestedLotsPage(): React.JSX.Element {
   return (
@@ -8,7 +8,7 @@ export function RequestedLotsPage(): React.JSX.Element {
       title="Requested lots"
       description="Lots that already have an accepted bid request, so no two customers compete for the same lot. Customer identities and maximum bids are never shown."
     >
-      <PlaceholderPanel>The list of requested lots is on its way.</PlaceholderPanel>
+      <EmptyState title="Coming soon">The list of requested lots is on its way.</EmptyState>
     </PageContainer>
   )
 }

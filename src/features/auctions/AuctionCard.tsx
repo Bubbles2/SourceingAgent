@@ -1,27 +1,26 @@
-import { FileIcon, MapPin } from 'lucide-react'
-import { Badge } from '../../components/ui/Badge'
-import { ButtonLink } from '../../components/ui/Button'
-import { paths } from '../../app/paths'
-import { formatAuctionMeta, formatSaleDay, formatSaleMonth } from './formatAuction'
+import type { ReactNode } from 'react'
+import { MapPin } from 'lucide-react'
+import { AuctionDateStrip } from './AuctionDateStrip'
+import { formatAuctionMeta } from './formatAuction'
 import type { Auction } from './types'
 import './AuctionCard.css'
 
 type AuctionCardProps = {
   auction: Auction
+  showDescription?: boolean
+  /** Footer buttons; give the primary one the `auction-card__action` class */
+  actions: ReactNode
 }
 
-export function AuctionCard({ auction }: AuctionCardProps): React.JSX.Element {
+export function AuctionCard({ auction, showDescription = false, actions }: AuctionCardProps): React.JSX.Element {
   const titleId = `auction-${auction.id}-title`
 
   return (
     <article className="auction-card" aria-labelledby={titleId}>
-      <div className="auction-card__head">
-        <time className="auction-card__date" dateTime={auction.saleDate}>
-          <span className="auction-card__day">{formatSaleDay(auction.saleDate)}</span>
-          <span className="auction-card__month">{formatSaleMonth(auction.saleDate)}</span>
-        </time>
-        <Badge>{auction.category}</Badge>
-      </div>
+      <AuctionDateStrip saleDate={auction.saleDate} category={auction.category} />
+      {auction.image ? (
+        <img className="auction-card__image" src={auction.image.src} alt={auction.image.alt} loading="lazy" />
+      ) : null}
 
       <div className="auction-card__body">
         <h3 id={titleId} className="auction-card__title">
@@ -32,27 +31,10 @@ export function AuctionCard({ auction }: AuctionCardProps): React.JSX.Element {
           {`${auction.house} · ${auction.city}`}
         </p>
         <p className="auction-card__meta">{formatAuctionMeta(auction)}</p>
+        {showDescription ? <p className="auction-card__description">{auction.description}</p> : null}
       </div>
 
-      <div className="auction-card__foot">
-        <ButtonLink
-          variant="link"
-          href={auction.catalogueUrl}
-          target="_blank"
-          rel="noreferrer"
-          aria-label={`Catalogue (PDF) for ${auction.title}, opens in a new tab`}
-        >
-          <FileIcon size={16} />
-          Catalogue (PDF)
-        </ButtonLink>
-        <ButtonLink
-          className="auction-card__request"
-          to={{ pathname: paths.requestBid, search: `?auction=${auction.id}` }}
-          aria-label={`Request a bid: ${auction.title}`}
-        >
-          Request a bid
-        </ButtonLink>
-      </div>
+      <div className="auction-card__foot">{actions}</div>
     </article>
   )
 }

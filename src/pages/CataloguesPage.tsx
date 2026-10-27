@@ -1,23 +1,24 @@
-import { featuredAuctionsId, paths } from '../app/paths'
+import { Suspense } from 'react'
+import { useLoaderData } from 'react-router'
+import type { cataloguesLoader } from '../app/loaders'
 import { PageContainer } from '../components/layout/PageContainer'
-import { ButtonLink } from '../components/ui/Button'
-import { PlaceholderPanel } from '../components/ui/PlaceholderPanel'
+import { SaleStatusFilter } from '../features/auctions/SaleStatusFilter'
+import { CatalogueGridSkeleton } from '../features/catalogues/CatalogueCardSkeleton'
+import { CatalogueResults } from '../features/catalogues/CatalogueResults'
 
 export function CataloguesPage(): React.JSX.Element {
+  const { status, catalogues } = useLoaderData<typeof cataloguesLoader>()
+
   return (
     <PageContainer
       eyebrow="Catalogues"
       title="Auction catalogues"
-      description="Each auction links to the house's official PDF catalogue, so you can study every lot before requesting a bid."
+      description="Each sale's official PDF catalogue, published by the auction house. Study every lot, then ask the agent to bid on the ones you want."
     >
-      <PlaceholderPanel
-        actions={
-          <ButtonLink to={{ pathname: paths.home, hash: featuredAuctionsId }}>See featured auctions</ButtonLink>
-        }
-      >
-        Catalogue browsing is on its way. The featured auctions on the home page already link to their PDF
-        catalogues.
-      </PlaceholderPanel>
+      <SaleStatusFilter value={status} label="Show catalogues for" />
+      <Suspense key={status} fallback={<CatalogueGridSkeleton count={4} label={`Loading catalogues for ${status} sales`} />}>
+        <CatalogueResults catalogues={catalogues} status={status} />
+      </Suspense>
     </PageContainer>
   )
 }

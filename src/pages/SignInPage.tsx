@@ -1,7 +1,7 @@
 import { paths } from '../app/paths'
 import { PageContainer } from '../components/layout/PageContainer'
 import { ButtonLink } from '../components/ui/Button'
-import { PlaceholderPanel } from '../components/ui/PlaceholderPanel'
+import { EmptyState } from '../components/ui/EmptyState'
 
 export function SignInPage(): React.JSX.Element {
   return (
@@ -10,7 +10,8 @@ export function SignInPage(): React.JSX.Element {
       title="Sign in"
       description="Sign in to submit bid requests and follow their status under My requests."
     >
-      <PlaceholderPanel
+      <EmptyState
+        title="Coming soon"
         actions={
           <ButtonLink to={paths.register} variant="secondary">
             Create account
@@ -18,7 +19,7 @@ export function SignInPage(): React.JSX.Element {
         }
       >
         Signing in is on its way. New customers will be able to create a free account.
-      </PlaceholderPanel>
+      </EmptyState>
     </PageContainer>
   )
 }
