@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Notice } from '../../components/ui/Notice'
+import { Notice } from './Notice'
 
 type PrototypeNoticeProps = {
   children: ReactNode

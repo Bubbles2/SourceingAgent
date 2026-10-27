@@ -1,5 +1,13 @@
 /* Form controls — see DESIGN.md §6.8, §11.5 */
 
+/* Sections, legends and side-by-side rows shared by every form */
+.form-section { display: flex; flex-direction: column; gap: var(--space-5); min-width: 0; margin: 0; padding: 0; border: 0; }
+.form-section__legend {
+  margin-bottom: var(--space-1); padding: 0;
+  font-size: var(--text-sub); font-weight: 600; line-height: 1.3; color: var(--navy);
+}
+.form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: var(--space-5); }
+
 .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .field__label { font-size: 14px; font-weight: 500; color: var(--navy); }
 .req { color: var(--red); }
@@ -37,6 +45,19 @@
 }
 .amount-input__control { padding-left: 32px; font-variant-numeric: tabular-nums; }
 
+/* Password with the Show/Hide button inside the field */
+.password-input { position: relative; }
+.password-input__control { padding-right: 96px; }
+.password-input__toggle {
+  position: absolute; top: 0; right: 0; bottom: 0;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 0 14px; background: none; border: 0; border-radius: var(--r-sm);
+  font: 500 14px var(--font-sans); color: var(--blue); cursor: pointer;
+  transition: color var(--ease);
+}
+.password-input__toggle:hover { color: var(--navy); text-decoration: underline; }
+.password-input__toggle:focus-visible { outline: 2px solid var(--blue); outline-offset: -4px; }
+
 /* Checkbox: the whole label is the tap target */
 .checkbox-field { display: flex; flex-direction: column; gap: 6px; }
 .checkbox-field__row { display: flex; align-items: flex-start; gap: var(--space-3); }
@@ -57,6 +78,9 @@
 }
 .error-summary:focus-visible { outline: 2px solid var(--red-text); outline-offset: 2px; }
 .error-summary__title { font-family: var(--font-sans); font-size: 16px; font-weight: 600; line-height: 1.4; color: var(--red-text); }
-.error-summary__list { display: flex; flex-direction: column; gap: var(--space-1); margin: 0; padding-left: var(--space-5); }
-.error-summary__list a { color: var(--red-text); font-weight: 500; }
+.error-summary__list {
+  display: flex; flex-direction: column; gap: var(--space-1); margin: 0; padding-left: var(--space-5);
+  font-weight: 500; color: var(--red-text);
+}
+.error-summary__list a { color: var(--red-text); }
 .error-summary__list a:hover { color: var(--navy); }

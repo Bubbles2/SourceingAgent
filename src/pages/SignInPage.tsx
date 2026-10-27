@@ -1,25 +1,46 @@
-import { paths } from '../app/paths'
+import { useSearchParams } from 'react-router'
+import { paths, safeRedirectPath } from '../app/paths'
 import { PageContainer } from '../components/layout/PageContainer'
 import { ButtonLink } from '../components/ui/Button'
-import { EmptyState } from '../components/ui/EmptyState'
+import { PrototypeNotice } from '../components/ui/PrototypeNotice'
+import { AuthAside, AuthLayout } from '../features/auth/AuthLayout'
+import { SignInForm } from '../features/auth/SignInForm'
+import { mockDemoAccount } from '../mocks/accounts'
 
 export function SignInPage(): React.JSX.Element {
+  const [searchParams] = useSearchParams()
+  const redirectTo = safeRedirectPath(searchParams.get('redirectTo'))
+
   return (
     <PageContainer
       eyebrow="Account"
       title="Sign in"
-      description="Sign in to submit bid requests and follow their status under My requests."
+      description={
+        redirectTo
+          ? 'You need to sign in to see that page.'
+          : 'Sign in to request bids and follow their status under My requests.'
+      }
     >
-      <EmptyState
-        title="Coming soon"
-        actions={
-          <ButtonLink to={paths.register} variant="secondary">
-            Create account
-          </ButtonLink>
-        }
-      >
-        Signing in is on its way. New customers will be able to create a free account.
-      </EmptyState>
+      <AuthLayout aside={<SignInAside />}>
+        <PrototypeNotice>
+          Sign-in is simulated in this browser and is not secure: passwords are never checked or saved. To try it, use{' '}
+          <strong>{mockDemoAccount.email}</strong> with any password, or an account you created in this browser.
+        </PrototypeNotice>
+        <SignInForm redirectTo={redirectTo ?? paths.account} />
+      </AuthLayout>
     </PageContainer>
+  )
+}
+
+function SignInAside(): React.JSX.Element {
+  return (
+    <AuthAside title="New here?">
+      <p className="auth-aside__text">
+        A free account lets you ask the agent to bid on lots at Parisien auctions and follow each request.
+      </p>
+      <ButtonLink to={paths.register} variant="secondary">
+        Create an account
+      </ButtonLink>
+    </AuthAside>
   )
 }

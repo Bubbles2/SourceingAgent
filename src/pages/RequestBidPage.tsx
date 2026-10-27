@@ -5,7 +5,7 @@ import { PageContainer } from '../components/layout/PageContainer'
 import type { AuctionWithCatalogues } from '../features/auctions/types'
 import { BidRequestForm } from '../features/bid-requests/BidRequestForm'
 import { BidRequestFormSkeleton } from '../features/bid-requests/BidRequestFormSkeleton'
-import { PrototypeNotice } from '../features/bid-requests/PrototypeNotice'
+import { PrototypeNotice } from '../components/ui/PrototypeNotice'
 
 export function RequestBidPage(): React.JSX.Element {
   const { auctions, auctionId, catalogueId } = useLoaderData<typeof requestBidLoader>()

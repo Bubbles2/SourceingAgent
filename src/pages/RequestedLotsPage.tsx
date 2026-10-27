@@ -3,7 +3,7 @@ import { useLoaderData } from 'react-router'
 import type { requestedLotsLoader } from '../app/loaders'
 import { PageContainer } from '../components/layout/PageContainer'
 import { TableSkeleton } from '../components/ui/TableSkeleton'
-import { PrototypeNotice } from '../features/bid-requests/PrototypeNotice'
+import { PrototypeNotice } from '../components/ui/PrototypeNotice'
 import { RequestedLotsTable } from '../features/bid-requests/RequestedLotsTable'
 
 export function RequestedLotsPage(): React.JSX.Element {

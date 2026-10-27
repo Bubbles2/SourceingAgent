@@ -12,3 +12,7 @@
 /* Neutral information (blue-tint is the "info backgrounds" token, DESIGN.md §2.1) */
 .notice--info { background: var(--blue-tint); border-color: color-mix(in srgb, var(--blue) 30%, var(--white)); }
 .notice--info svg { color: var(--blue); }
+
+/* Confirmations (green pairing from DESIGN.md §2.2) */
+.notice--success { background: var(--green-tint); border-color: color-mix(in srgb, var(--green) 35%, var(--white)); }
+.notice--success svg { color: var(--green); }

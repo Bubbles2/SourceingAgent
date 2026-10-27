@@ -91,8 +91,8 @@ export function BidRequestForm({ auctions, initialAuctionId, initialCatalogueId 
       <form className="bid-form" noValidate aria-busy={form.isSubmitting} onSubmit={handleSubmit}>
         {summaryErrors.length > 0 ? <ErrorSummary key={form.failedSubmits} errors={summaryErrors} /> : null}
 
-        <fieldset className="bid-form__section">
-          <legend className="bid-form__legend">Which lot?</legend>
+        <fieldset className="form-section">
+          <legend className="form-section__legend">Which lot?</legend>
           <SelectField
             id={fieldIds.auctionId}
             label="Auction"
@@ -119,7 +119,7 @@ export function BidRequestForm({ auctions, initialAuctionId, initialCatalogueId 
             error={errors.catalogueId}
             onChange={handleCatalogueChange}
           />
-          <div className="bid-form__row">
+          <div className="form-row">
             <TextField
               id={fieldIds.lotNumber}
               label="Lot number"
@@ -147,8 +147,8 @@ export function BidRequestForm({ auctions, initialAuctionId, initialCatalogueId 
           </div>
         </fieldset>
 
-        <fieldset className="bid-form__section">
-          <legend className="bid-form__legend">Anything the agent should know?</legend>
+        <fieldset className="form-section">
+          <legend className="form-section__legend">Anything the agent should know?</legend>
           <TextAreaField
             id={fieldIds.instructions}
             label="Instructions for the agent"
@@ -160,7 +160,7 @@ export function BidRequestForm({ auctions, initialAuctionId, initialCatalogueId 
           />
         </fieldset>
 
-        <div className="bid-form__section">
+        <div className="form-section">
           <PricingNotice id={pricingNoticeId} />
           <CheckboxField
             id={fieldIds.acknowledgedCharges}

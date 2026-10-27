@@ -7,7 +7,7 @@ import { Button, ButtonLink } from '../components/ui/Button'
 import { TableSkeleton } from '../components/ui/TableSkeleton'
 import { resetDemoBidRequests } from '../features/bid-requests/bidRequestService'
 import { MyRequestsTable } from '../features/bid-requests/MyRequestsTable'
-import { PrototypeNotice } from '../features/bid-requests/PrototypeNotice'
+import { PrototypeNotice } from '../components/ui/PrototypeNotice'
 import { StatusLegend } from '../features/bid-requests/StatusLegend'
 import './MyRequestsPage.css'
 

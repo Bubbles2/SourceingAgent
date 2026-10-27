@@ -1,0 +1,9 @@
+/* Customer initials — header account link (sm) and account page (lg) */
+
+.avatar {
+  display: inline-flex; flex: none; align-items: center; justify-content: center;
+  border-radius: 50%; background: var(--navy); color: var(--ivory);
+  font-weight: 600; line-height: 1; letter-spacing: 0.02em;
+}
+.avatar--sm { width: 32px; height: 32px; font-size: 13px; }
+.avatar--lg { width: 64px; height: 64px; font-size: 22px; }

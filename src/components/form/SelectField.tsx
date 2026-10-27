@@ -14,10 +14,11 @@ type SelectFieldProps = FieldBaseProps & {
   /** First, empty option, e.g. "Choose an auction" */
   placeholder: string
   disabled?: boolean
+  autoComplete?: string
   onChange: (value: string) => void
 }
 
-export function SelectField({ value, options, placeholder, disabled = false, onChange, ...field }: SelectFieldProps): React.JSX.Element {
+export function SelectField({ value, options, placeholder, disabled = false, autoComplete, onChange, ...field }: SelectFieldProps): React.JSX.Element {
   function handleChange(event: ChangeEvent<HTMLSelectElement>): void {
     onChange(event.target.value)
   }
@@ -30,6 +31,7 @@ export function SelectField({ value, options, placeholder, disabled = false, onC
           className="field__input"
           value={value}
           disabled={disabled}
+          autoComplete={autoComplete}
           required={field.required}
           aria-invalid={field.error ? true : undefined}
           aria-describedby={describedBy(field)}
