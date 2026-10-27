@@ -1,0 +1,7 @@
+/* Featured auctions section */
+
+.featured-auctions { display: flex; flex-direction: column; gap: 36px; }
+.featured-auctions__head {
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: var(--space-4);
+}
+.featured-auctions__view-all { gap: var(--space-2); }

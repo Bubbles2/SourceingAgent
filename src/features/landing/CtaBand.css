@@ -1,0 +1,21 @@
+/* CTA band — see DESIGN.md §6.11 */
+
+.cta-band { background: var(--navy); color: var(--ivory); }
+.cta-band :focus-visible { outline-color: var(--gold); }
+
+.cta-band__inner {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-8) var(--space-12);
+  padding-block: 56px;
+}
+.cta-band__content { flex: 1 1 420px; display: flex; flex-direction: column; gap: 18px; }
+.cta-band__title { font-size: 38px; color: var(--ivory); }
+.cta-band__lead { max-width: 560px; font-size: 17px; line-height: 1.6; color: var(--on-navy-soft); }
+.cta-band__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: 6px; }
+.cta-band__mascot { flex: none; width: 220px; height: 220px; object-fit: contain; margin-left: auto; }
+
+@media (max-width: 639px) {
+  .cta-band__inner { padding-block: var(--section-pad); }
+  .cta-band__title { font-size: var(--text-section); }
+  .cta-band__actions > * { flex: 1 1 auto; }
+  .cta-band__mascot { display: none; }
+}

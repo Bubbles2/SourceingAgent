@@ -1,0 +1,87 @@
+/* Tokens (`tokens.css`) — see DESIGN.md §11.1 */
+
+:root {
+  /* Colour */
+  --ivory: #FBF7EE;
+  --ivory-deep: #F3ECDB;
+  --cream-line: #E6DCC3;
+  --white: #FFFFFF;
+  --navy: #0F2A5F;
+  --blue: #1F5FD0;
+  --blue-hover: #174CA8;
+  --blue-tint: #E8F0FB;
+  --ribbon-blue: #1E3A8A;
+  --gold: #C9A227;
+  --gold-hover: #D9B43A;
+  --gold-line: #E3C96A;
+  --gold-tint: #FFF9E6;
+  --gold-text: #7A5F0B;
+  --red: #D62828;
+  --red-hover: #B81F1F;
+  --red-tint: #FDE8E8;
+  --red-text: #9B1C1C;
+  --green: #1E7A4A;
+  --green-tint: #E3F3EA;
+  --grey-tint: #EEF0F4;
+  --ink: #1B1F2A;
+  --ink-soft: #3C4760;
+  --ink-muted: #55607A;
+  --on-navy-soft: #D6DEEE;
+
+  /* Type */
+  --font-display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-sans: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --text-display: 52px;
+  --text-section: 36px;
+  --text-card: 22px;
+  --text-sub: 18px;
+  --text-lead: 18px;
+  --text-body: 15px;
+  --text-meta: 14px;
+  --text-eyebrow: 13px;
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* Radius */
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 10px;
+  --r-pill: 999px;
+
+  /* Elevation */
+  --shadow-card-hover: 0 10px 30px rgba(15, 42, 95, 0.12);
+  --shadow-raised: 0 16px 48px rgba(15, 42, 95, 0.12);
+
+  /* Layout */
+  --page-max: 1200px;
+  --gutter: 32px;
+  --section-pad: 80px;
+  --tap: 44px;
+
+  /* Motion */
+  --ease: 150ms ease-out;
+}
+
+@media (max-width: 639px) {
+  :root {
+    --text-display: 40px;
+    --text-section: 30px;
+    --gutter: 16px;
+    --section-pad: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --ease: 0s; }
+}

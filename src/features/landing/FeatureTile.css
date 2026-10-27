@@ -1,0 +1,10 @@
+/* Feature tile (Why an agent) — see DESIGN.md §6.5 */
+
+.feature-tile { display: flex; flex-direction: column; gap: var(--space-3); }
+.feature-tile__icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 48px; height: 48px; border-radius: var(--r-md);
+  background: var(--blue-tint); color: var(--navy);
+}
+.feature-tile__title { line-height: normal; }
+.feature-tile__text { color: var(--ink-soft); }

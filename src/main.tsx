@@ -1,7 +1,9 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+// Global styles load before any component stylesheet so components can refine them.
+import './styles/tokens.css'
+import './styles/base.css'
 import App from './App'
-import './styles.css'
 
 const rootElement = document.getElementById('root')
 

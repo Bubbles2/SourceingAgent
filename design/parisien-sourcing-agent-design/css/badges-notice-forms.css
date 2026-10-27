@@ -1,0 +1,45 @@
+/* Badges, notice, forms — see DESIGN.md §11.5 */
+
+/* Category badge (gold on navy card head) */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 5px 10px; border-radius: var(--r-pill);
+  font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--gold); color: var(--navy);
+}
+
+/* Status badges — text + icon, colour only reinforces. Use with .badge: class="badge status--won" */
+.status--pending   { background: var(--gold-tint);  color: var(--gold-text); }
+.status--accepted  { background: var(--blue-tint);  color: var(--navy); }
+.status--rejected  { background: var(--red-tint);   color: var(--red-text); }
+.status--cancelled { background: var(--grey-tint);  color: var(--ink-muted); }
+.status--placed    { background: var(--navy);       color: var(--ivory); }
+.status--won       { background: var(--green-tint); color: var(--green); }
+.status--lost      { background: var(--grey-tint);  color: var(--ink-soft); }
+
+/* Mandatory fees notice */
+.notice {
+  display: flex; gap: var(--space-4); align-items: flex-start;
+  padding: var(--space-5) var(--space-6);
+  background: var(--gold-tint); border: 1px solid var(--gold-line); border-radius: var(--r-md);
+  color: var(--ink-soft);
+}
+.notice svg { flex: 0 0 auto; color: var(--gold-text); margin-top: 2px; }
+.notice strong { color: var(--navy); }
+
+/* Forms */
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field__label { font-size: 14px; font-weight: 500; color: var(--navy); }
+.field__label .req { color: var(--red); }
+.field__input {
+  min-height: var(--tap); padding: 0 14px;
+  background: var(--white); border: 1px solid var(--cream-line); border-radius: var(--r-sm);
+  font: 400 15px var(--font-sans); color: var(--ink);
+  transition: border-color var(--ease), box-shadow var(--ease);
+}
+.field__input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 2px rgba(31, 95, 208, 0.25); }
+.field--error .field__input { border-color: var(--red); }
+.field__error { font-size: 13px; color: var(--red-text); display: flex; gap: 4px; align-items: center; }
+.field--amount { position: relative; }
+.field--amount .field__input { padding-left: 34px; font-variant-numeric: tabular-nums; }
+.field--amount::before { content: '€'; position: absolute; left: 14px; bottom: 13px; color: var(--ink-muted); }

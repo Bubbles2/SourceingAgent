@@ -1,0 +1,17 @@
+/* Category and status badges — see DESIGN.md §6.7, §11.5 */
+
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 5px 10px; border-radius: var(--r-pill);
+  font-size: 12px; font-weight: 600; line-height: normal; letter-spacing: 0.06em; text-transform: uppercase;
+  background: var(--gold); color: var(--navy);
+}
+
+/* Status badges — text + icon, colour only reinforces */
+.status--pending   { background: var(--gold-tint);  color: var(--gold-text); }
+.status--accepted  { background: var(--blue-tint);  color: var(--navy); }
+.status--rejected  { background: var(--red-tint);   color: var(--red-text); }
+.status--cancelled { background: var(--grey-tint);  color: var(--ink-muted); }
+.status--placed    { background: var(--navy);       color: var(--ivory); }
+.status--won       { background: var(--green-tint); color: var(--green); }
+.status--lost      { background: var(--grey-tint);  color: var(--ink-soft); }

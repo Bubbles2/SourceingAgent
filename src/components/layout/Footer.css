@@ -1,0 +1,47 @@
+/* Footer — see DESIGN.md §6.12 */
+
+.site-footer { background: var(--ivory-deep); border-top: 1px solid var(--cream-line); }
+
+.site-footer__inner {
+  display: flex; flex-direction: column; gap: var(--space-8);
+  padding-block: var(--space-12) var(--space-8);
+}
+
+.site-footer__top { display: flex; flex-wrap: wrap; gap: var(--space-8) var(--space-12); }
+
+.site-footer__brand { flex: 2 1 280px; display: flex; flex-direction: column; gap: var(--space-3); }
+.site-footer__wordmark {
+  font-family: var(--font-display); font-size: 20px; font-weight: 700; line-height: normal; color: var(--navy);
+}
+.site-footer__about { max-width: 360px; font-size: var(--text-meta); color: var(--ink-muted); }
+
+.site-footer__column {
+  flex: 1 1 140px; display: flex; flex-direction: column; gap: var(--space-2);
+  font-size: var(--text-meta);
+}
+.site-footer__title {
+  font-family: var(--font-sans); font-size: 12px; font-weight: 600; line-height: normal;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.site-footer__links {
+  display: flex; flex-direction: column; gap: var(--space-2);
+  margin: 0; padding: 0; list-style: none;
+}
+.site-footer__link {
+  display: block; padding-block: var(--space-1); line-height: normal;
+  color: var(--navy); text-decoration: none;
+  transition: color var(--ease);
+}
+.site-footer__link:hover { color: var(--blue); }
+
+.site-footer__bottom {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3);
+  padding-top: var(--space-5); border-top: 1px solid var(--cream-line);
+  font-size: 13px; line-height: normal; color: var(--ink-muted);
+}
+
+/* Mobile: full 44 px touch targets */
+@media (max-width: 639px) {
+  .site-footer__links { gap: 0; }
+  .site-footer__link { display: flex; align-items: center; min-height: var(--tap); padding-block: 0; }
+}

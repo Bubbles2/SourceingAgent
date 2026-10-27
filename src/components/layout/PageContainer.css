@@ -1,0 +1,9 @@
+/* Interior page frame — spacing from DESIGN.md §4 */
+
+.page__inner { display: flex; flex-direction: column; gap: var(--space-10); }
+
+.page__header { display: flex; flex-direction: column; gap: 10px; max-width: 720px; }
+.page__eyebrow { line-height: normal; }
+.page__title { font-size: var(--text-section); line-height: 1.15; }
+
+.page__body { display: flex; flex-direction: column; gap: var(--space-6); }

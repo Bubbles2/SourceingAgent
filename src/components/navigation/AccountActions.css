@@ -1,0 +1,7 @@
+/* Sign in + Create account — see DESIGN.md §6.1 */
+
+.account-actions { display: flex; align-items: center; gap: 10px; }
+
+@media (max-width: 639px) {
+  .account-actions { display: grid; grid-template-columns: 1fr 1fr; }
+}

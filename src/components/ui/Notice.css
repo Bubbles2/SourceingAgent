@@ -1,0 +1,10 @@
+/* Mandatory fees notice — see DESIGN.md §6.6, §11.5 */
+
+.notice {
+  display: flex; gap: var(--space-4); align-items: flex-start;
+  padding: var(--space-5) var(--space-6);
+  background: var(--gold-tint); border: 1px solid var(--gold-line); border-radius: var(--r-md);
+  color: var(--ink-soft);
+}
+.notice svg { flex: 0 0 auto; color: var(--gold-text); margin-top: 2px; }
+.notice strong { color: var(--navy); }

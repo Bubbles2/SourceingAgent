@@ -62,6 +62,9 @@ playwright/.cache/
 *.sln
 *.sw?
 
+# Design handoff archive (extracted copy lives in design/)
+parisien-sourcing-agent-design.zip
+
 # OS files
 .DS_Store
 Thumbs.db

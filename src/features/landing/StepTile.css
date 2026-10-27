@@ -1,0 +1,15 @@
+/* Step tile (How it works) — see DESIGN.md §6.4 */
+
+.step-tile {
+  display: flex; flex-direction: column; gap: 14px;
+  padding: var(--space-6);
+  background: var(--ivory); border: 1px solid var(--cream-line); border-radius: var(--r-md);
+}
+.step-tile__number {
+  display: inline-flex; align-items: center; justify-content: center;
+  box-sizing: content-box; width: 40px; height: 40px;
+  border: 2px solid var(--gold); border-radius: 50%;
+  font-family: var(--font-display); font-size: 18px; font-weight: 700; line-height: normal; color: var(--navy);
+}
+.step-tile__title { line-height: normal; }
+.step-tile__text { color: var(--ink-soft); }

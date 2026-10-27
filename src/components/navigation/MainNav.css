@@ -1,0 +1,27 @@
+/* Main navigation — see DESIGN.md §6.1 */
+
+.main-nav { font-size: var(--text-body); font-weight: 500; line-height: normal; }
+
+.main-nav__list {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-1) 26px;
+  margin: 0; padding: 0; list-style: none;
+}
+
+.main-nav__link {
+  display: flex; align-items: center; min-height: var(--tap);
+  color: var(--navy); text-decoration: none;
+  transition: color var(--ease);
+}
+.main-nav__link:hover { color: var(--blue); }
+
+/* Active page: blue text plus an underline, so the state never relies on colour alone */
+.main-nav__link[aria-current='page'] {
+  color: var(--blue);
+  text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px;
+}
+
+/* Mobile: stacked rows inside the header menu */
+@media (max-width: 639px) {
+  .main-nav__list { flex-direction: column; align-items: stretch; gap: 0; }
+  .main-nav__link { border-bottom: 1px solid var(--cream-line); }
+}

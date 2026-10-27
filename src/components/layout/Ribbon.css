@@ -1,0 +1,3 @@
+/* The base .ribbon lives in styles/base.css; this adds the 60 × 4 px footer sign-off. */
+
+.ribbon--signoff { flex: none; width: 60px; height: 4px; border-radius: 2px; overflow: hidden; }

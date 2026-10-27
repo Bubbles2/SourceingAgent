@@ -1,0 +1,25 @@
+/* Tables and calendar — see DESIGN.md §11.6 */
+
+.table-wrap { overflow-x: auto; border: 1px solid var(--cream-line); border-radius: var(--r-md); background: var(--white); }
+.table { width: 100%; border-collapse: collapse; }
+.table th {
+  background: var(--ivory-deep); padding: 0 var(--space-4); height: 44px; text-align: left;
+  font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--navy);
+}
+.table td { height: 52px; padding: 0 var(--space-4); border-top: 1px solid var(--cream-line); }
+.table tbody tr:nth-child(even) { background: #FDFBF5; }
+.table tbody tr:hover { background: var(--blue-tint); }
+.table td.amount { text-align: right; }
+
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 1px; background: var(--cream-line); border: 1px solid var(--cream-line); }
+.cal__cell { background: var(--white); min-height: 110px; padding: var(--space-2); }
+.cal__cell--weekend { background: var(--ivory); }
+.cal__cell--today { background: var(--blue-tint); }
+.cal__cell--today .cal__num { color: var(--blue); font-weight: 600; }
+.cal__event {
+  display: block; margin-top: 4px; padding: 3px 8px; border-radius: var(--r-pill);
+  background: var(--navy); color: var(--ivory); font-size: 12px; font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-decoration: none;
+}
+.popover { background: var(--white); border: 1px solid var(--cream-line); border-radius: var(--r-md); box-shadow: var(--shadow-raised); padding: var(--space-5); }
+@media (max-width: 639px) { .cal { display: none; } .cal-agenda { display: block; } }

@@ -1,0 +1,4 @@
+/* Eyebrow + section title */
+
+.section-heading { display: flex; flex-direction: column; gap: 10px; max-width: 640px; }
+.section-heading__eyebrow { line-height: normal; }

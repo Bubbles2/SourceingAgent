@@ -1,0 +1,27 @@
+/* Auction card (`AuctionCard.css`) — see DESIGN.md §11.4 */
+
+.auction-card {
+  display: flex; flex-direction: column;
+  background: var(--white); border: 1px solid var(--cream-line);
+  border-radius: var(--r-lg); overflow: hidden;
+  transition: box-shadow var(--ease);
+}
+.auction-card:hover { box-shadow: var(--shadow-card-hover); }
+
+.auction-card__head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  background: var(--navy); color: var(--ivory);
+}
+.auction-card__date { display: flex; align-items: baseline; gap: var(--space-2); }
+.auction-card__day { font-family: var(--font-display); font-size: 30px; font-weight: 600; line-height: 1; }
+.auction-card__month { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+
+.auction-card__body { display: flex; flex-direction: column; gap: var(--space-3); padding: 22px var(--space-5) var(--space-5); flex: 1 1 auto; }
+.auction-card__title { font-family: var(--font-display); font-size: var(--text-card); font-weight: 600; line-height: 1.25; color: var(--navy); }
+.auction-card__house { display: flex; align-items: center; gap: var(--space-2); color: var(--ink-soft); }
+
+.auction-card__foot {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+  padding: var(--space-4) var(--space-5); border-top: 1px solid var(--cream-line);
+}
