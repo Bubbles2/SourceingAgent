@@ -13,10 +13,17 @@ export const mainNavItems: readonly NavItem[] = [
   { label: 'Requested lots', to: paths.requestedLots },
 ]
 
-/** Customer links; per DESIGN.md §6.1 the header only shows these once sign-in exists. */
-export const accountNavItems: readonly NavItem[] = [
+/** Shown in the header and footer while signed out (DESIGN.md §6.1) */
+export const guestAccountNavItems: readonly NavItem[] = [
   { label: 'Sign in', to: paths.signIn },
   { label: 'Create account', to: paths.register },
+]
+
+/** Shown in the footer while signed in; the header shows the avatar link instead */
+export const customerAccountNavItems: readonly NavItem[] = [{ label: 'Your account', to: paths.account }]
+
+/** Open to everyone until bid requests require sign-in */
+export const bidRequestNavItems: readonly NavItem[] = [
   { label: 'Request a bid', to: paths.requestBid },
   { label: 'My requests', to: paths.myRequests },
 ]

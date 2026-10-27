@@ -12,6 +12,9 @@ export const accountLimits = {
   telephoneMaxDigits: 15,
 } as const
 
+/** Shown in hints and errors; non-breaking spaces keep the number on one line */
+export const telephoneExample = '+33 1 23 45 67 89'.replaceAll(' ', String.fromCharCode(0xa0))
+
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const telephonePattern = /^\+?[\d\s().-]+$/
 
@@ -88,7 +91,7 @@ export function checkTelephone(telephone: string): string | null {
     return null
   }
   if (!telephonePattern.test(telephone)) {
-    return 'Enter a telephone number using digits, spaces and a + before the country code, like +33 1 23 45 67 89.'
+    return `Enter a telephone number using digits, spaces and a + before the country code, like ${telephoneExample}.`
   }
   const digits = telephone.replace(/\D/g, '').length
   if (digits < accountLimits.telephoneMinDigits || digits > accountLimits.telephoneMaxDigits) {

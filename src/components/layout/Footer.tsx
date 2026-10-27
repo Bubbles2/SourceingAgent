@@ -1,23 +1,24 @@
 import { Link } from 'react-router'
-import { accountNavItems, mainNavItems, type NavItem } from '../../app/navigation'
+import { bidRequestNavItems, customerAccountNavItems, guestAccountNavItems, mainNavItems, type NavItem } from '../../app/navigation'
 import { feesNoticeId, paths } from '../../app/paths'
+import { useCurrentCustomer } from '../../features/auth/useCurrentCustomer'
 import { Ribbon } from './Ribbon'
 import './Footer.css'
 
-const footerColumns: readonly { title: string; links: readonly NavItem[] }[] = [
-  { title: 'Explore', links: mainNavItems },
-  { title: 'Account', links: accountNavItems },
-  {
-    title: 'Legal',
-    links: [
-      { label: 'Terms of service', to: paths.terms },
-      { label: 'Privacy', to: paths.privacy },
-      { label: 'Fees notice', to: `${paths.home}#${feesNoticeId}` },
-    ],
-  },
+const legalNavItems: readonly NavItem[] = [
+  { label: 'Terms of service', to: paths.terms },
+  { label: 'Privacy', to: paths.privacy },
+  { label: 'Fees notice', to: `${paths.home}#${feesNoticeId}` },
 ]
 
 export function Footer(): React.JSX.Element {
+  const customer = useCurrentCustomer()
+  const footerColumns: readonly { title: string; links: readonly NavItem[] }[] = [
+    { title: 'Explore', links: mainNavItems },
+    { title: 'Account', links: [...(customer ? customerAccountNavItems : guestAccountNavItems), ...bidRequestNavItems] },
+    { title: 'Legal', links: legalNavItems },
+  ]
+
   return (
     <footer className="site-footer">
       <div className="container site-footer__inner">

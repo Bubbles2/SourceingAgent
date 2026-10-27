@@ -1,11 +1,13 @@
 // Route loaders start data requests as navigation begins and hand the promises to the page,
 // which renders skeletons inside <Suspense> until they resolve.
-import type { LoaderFunctionArgs } from 'react-router'
+import { redirect, type LoaderFunctionArgs } from 'react-router'
 import { getAuction, listAuctions, listAuctionsBetween, listFeaturedAuctions } from '../features/auctions/auctionService'
 import { parseSaleStatus } from '../features/auctions/saleStatus'
+import { getCurrentAccount, isSignedIn } from '../features/auth/authService'
 import { listMyRequests, listRequestedLots } from '../features/bid-requests/bidRequestService'
 import { getMonthGridRange, parseMonthKey } from '../features/calendar/calendarDates'
 import { listCatalogues } from '../features/catalogues/catalogueService'
+import { paths, signInPath } from './paths'
 
 function readSaleStatus(request: Request) {
   return parseSaleStatus(new URL(request.url).searchParams.get('status'))
@@ -52,4 +54,20 @@ export function myRequestsLoader() {
 export function cataloguesLoader({ request }: LoaderFunctionArgs) {
   const status = readSaleStatus(request)
   return { status, catalogues: listCatalogues({ status }) }
+}
+
+/** Signed-in customers skip the sign-in and registration pages. */
+export function guestOnlyLoader() {
+  if (isSignedIn()) {
+    throw redirect(paths.account)
+  }
+  return null
+}
+
+/** Signed-out visitors are sent to sign in, then brought back here. */
+export function accountLoader() {
+  if (!isSignedIn()) {
+    throw redirect(signInPath(paths.account))
+  }
+  return { account: getCurrentAccount() }
 }

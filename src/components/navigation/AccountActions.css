@@ -1,6 +1,22 @@
-/* Sign in + Create account — see DESIGN.md §6.1 */
+/* Sign in + Create account, or My requests + account link — see DESIGN.md §6.1 */
 
 .account-actions { display: flex; align-items: center; gap: 10px; }
+
+/* Signed in: avatar and first name, linking to the account page */
+.account-link {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: var(--tap); padding: 0 16px 0 6px;
+  background: var(--white); border: 1px solid var(--cream-line); border-radius: var(--r-pill);
+  font-size: var(--text-body); font-weight: 500; line-height: normal; color: var(--navy); text-decoration: none;
+  transition: background-color var(--ease), border-color var(--ease);
+}
+.account-link:hover { background: var(--blue-tint); border-color: var(--blue); color: var(--navy); }
+.account-link__name { max-width: 14ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Current page: blue border plus an underline, so the state never relies on colour alone */
+.account-link[aria-current='page'] { background: var(--blue-tint); border-color: var(--blue); }
+.account-link[aria-current='page'] .account-link__name {
+  text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px;
+}
 
 @media (max-width: 639px) {
   .account-actions { display: grid; grid-template-columns: 1fr 1fr; }

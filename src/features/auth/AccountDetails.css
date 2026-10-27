@@ -1,0 +1,45 @@
+/* Account page: the profile card beside the bid request links; stacked when narrow */
+
+.account { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-6); }
+
+.account-card {
+  display: flex; flex-direction: column; gap: var(--space-5); min-width: 0;
+  padding: var(--space-8); background: var(--white); border: 1px solid var(--cream-line); border-radius: var(--r-lg);
+}
+.account-profile { flex: 2 1 480px; }
+.account-requests { flex: 1 1 280px; }
+.account-card__title { font-size: var(--text-card); line-height: 1.25; }
+.account-card__text { color: var(--ink-soft); }
+.account-card__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+.account-profile__header { display: flex; align-items: center; gap: var(--space-4); }
+.account-profile__identity { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.account-profile__name { font-size: 28px; line-height: 1.2; overflow-wrap: anywhere; }
+.account-profile__since { font-size: var(--text-meta); color: var(--ink-muted); }
+
+.account-profile__details { display: flex; flex-direction: column; margin: 0; }
+.account-profile__details > div {
+  display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: var(--space-3);
+  padding-block: var(--space-3); border-top: 1px solid var(--cream-line);
+}
+.account-profile__details dt { font-size: var(--text-meta); font-weight: 600; line-height: 1.7; color: var(--navy); }
+.account-profile__details dd { margin: 0; color: var(--ink); overflow-wrap: anywhere; }
+.account-profile__empty { color: var(--ink-muted); }
+
+.account-profile__footer {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3);
+  padding-top: var(--space-5); border-top: 1px solid var(--cream-line);
+}
+.account-profile__footer .btn { gap: var(--space-2); }
+
+/* Loading skeleton */
+.account-skeleton__avatar { flex: none; width: 64px; height: 64px; border-radius: 50%; }
+.account-skeleton__identity { flex: 1 1 auto; gap: var(--space-2); }
+
+@media (max-width: 639px) {
+  .account-card { padding: var(--space-5); }
+  .account-profile__name { font-size: 24px; }
+  .account-profile__details > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .account-card__actions > *,
+  .account-profile__footer > .btn { flex: 1 1 auto; }
+}

@@ -1,10 +1,12 @@
 import { createBrowserRouter } from 'react-router'
 import { PageLoading } from '../components/layout/PageLoading'
 import { SiteLayout } from '../components/layout/SiteLayout'
+import { AccountPage } from '../pages/AccountPage'
 import { AuctionDetailsPage } from '../pages/AuctionDetailsPage'
 import { AuctionsPage } from '../pages/AuctionsPage'
 import { CalendarPage } from '../pages/CalendarPage'
 import { CataloguesPage } from '../pages/CataloguesPage'
+import { ForgotPasswordPage } from '../pages/ForgotPasswordPage'
 import { LandingPage } from '../pages/LandingPage'
 import { MyRequestsPage } from '../pages/MyRequestsPage'
 import { NotFoundPage } from '../pages/NotFoundPage'
@@ -16,10 +18,12 @@ import { RouteErrorPage } from '../pages/RouteErrorPage'
 import { SignInPage } from '../pages/SignInPage'
 import { TermsPage } from '../pages/TermsPage'
 import {
+  accountLoader,
   auctionDetailsLoader,
   auctionsLoader,
   calendarLoader,
   cataloguesLoader,
+  guestOnlyLoader,
   landingLoader,
   myRequestsLoader,
   requestBidLoader,
@@ -75,8 +79,20 @@ export const router = createBrowserRouter([
             element: <MyRequestsPage />,
             hydrateFallbackElement: pageLoading,
           },
-          { path: paths.signIn, element: <SignInPage /> },
-          { path: paths.register, element: <RegisterPage /> },
+          { path: paths.signIn, loader: guestOnlyLoader, element: <SignInPage />, hydrateFallbackElement: pageLoading },
+          {
+            path: paths.register,
+            loader: guestOnlyLoader,
+            element: <RegisterPage />,
+            hydrateFallbackElement: pageLoading,
+          },
+          { path: paths.forgotPassword, element: <ForgotPasswordPage /> },
+          {
+            path: paths.account,
+            loader: accountLoader,
+            element: <AccountPage />,
+            hydrateFallbackElement: pageLoading,
+          },
           { path: paths.terms, element: <TermsPage /> },
           { path: paths.privacy, element: <PrivacyPage /> },
           { path: '*', element: <NotFoundPage /> },

@@ -27,8 +27,8 @@ export function MyRequestsPage(): React.JSX.Element {
       description="Every bid request you have made, with its maximum bid and where it stands."
     >
       <PrototypeNotice>
-        You are viewing a demo customer's requests, because sign-in isn't built yet. Requests you submit are saved in
-        this browser only.
+        You are viewing the demo customer's sample requests: bid requests aren't linked to the account you sign in
+        with yet. Requests you submit are saved in this browser only.
       </PrototypeNotice>
       <div className="my-requests__toolbar">
         <ButtonLink to={paths.requestBid}>Request a bid</ButtonLink>

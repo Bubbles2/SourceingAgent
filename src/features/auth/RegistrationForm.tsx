@@ -7,7 +7,7 @@ import { SelectField, type SelectOption } from '../../components/form/SelectFiel
 import { TextField } from '../../components/form/TextField'
 import { toSummaryErrors, useValidatedForm, type FormErrors } from '../../components/form/useValidatedForm'
 import { Button } from '../../components/ui/Button'
-import { accountLimits } from './authRules'
+import { accountLimits, telephoneExample } from './authRules'
 import { registerCustomer } from './authService'
 import { emptyRegistrationValues, validateRegistration, type RegistrationFormValues } from './authValidation'
 import { listCountries } from './countries'
@@ -152,7 +152,7 @@ export function RegistrationForm(): React.JSX.Element {
               label="Telephone number"
               autoComplete="tel"
               value={values.telephone}
-              hint="Include the country code, like +33 1 23 45 67 89."
+              hint={`Include the country code, like ${telephoneExample}.`}
               error={errors.telephone}
               onChange={fieldSetter('telephone')}
             />
