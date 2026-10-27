@@ -42,6 +42,12 @@ export function formatSaleDateShort(isoDate: string): string {
   return `${weekdayFormatter.format(date)} ${dayNumberFormatter.format(date)} ${monthFormatter.format(date)} ${date.getUTCFullYear()}`
 }
 
+/** "14 Nov 2026" */
+export function formatDayMonthYear(isoDate: string): string {
+  const date = parseIsoDate(isoDate)
+  return `${dayNumberFormatter.format(date)} ${monthFormatter.format(date)} ${date.getUTCFullYear()}`
+}
+
 /** "Saturday, 14 November 2026" */
 export function formatSaleDateLong(isoDate: string): string {
   return longDateFormatter.format(parseIsoDate(isoDate))

@@ -1,0 +1,62 @@
+/* Form controls — see DESIGN.md §6.8, §11.5 */
+
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field__label { font-size: 14px; font-weight: 500; color: var(--navy); }
+.req { color: var(--red); }
+.field__optional { font-weight: 400; color: var(--ink-muted); }
+.field__hint { font-size: 13px; line-height: 1.5; color: var(--ink-muted); }
+.field__count { white-space: nowrap; }
+
+.field__input {
+  width: 100%; min-height: var(--tap); padding: 0 14px;
+  background: var(--white); border: 1px solid var(--cream-line); border-radius: var(--r-sm);
+  font: 400 15px var(--font-sans); color: var(--ink);
+  transition: border-color var(--ease), box-shadow var(--ease);
+}
+.field__input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 2px rgba(31, 95, 208, 0.25); }
+.field__input:disabled { background: var(--ivory); color: var(--ink-muted); cursor: not-allowed; }
+.field__input--multiline { min-height: 112px; padding: 10px 14px; line-height: 1.55; resize: vertical; }
+.field--error .field__input { border-color: var(--red); }
+.field__error { display: flex; gap: 4px; align-items: flex-start; font-size: 13px; line-height: 1.4; color: var(--red-text); }
+.field__error svg { flex: none; margin-top: 2px; }
+
+/* Select with a chevron icon */
+.select-input { position: relative; }
+.select-input .field__input { appearance: none; padding-right: 40px; text-overflow: ellipsis; cursor: pointer; }
+.select-input .field__input:disabled { cursor: not-allowed; }
+.select-input__icon {
+  position: absolute; top: 50%; right: 14px; transform: translateY(-50%);
+  color: var(--ink-muted); pointer-events: none;
+}
+
+/* Amount with the € prefix inside the field */
+.amount-input { position: relative; }
+.amount-input__prefix {
+  position: absolute; top: 50%; left: 14px; transform: translateY(-50%);
+  color: var(--ink-muted); pointer-events: none;
+}
+.amount-input__control { padding-left: 32px; font-variant-numeric: tabular-nums; }
+
+/* Checkbox: the whole label is the tap target */
+.checkbox-field { display: flex; flex-direction: column; gap: 6px; }
+.checkbox-field__row { display: flex; align-items: flex-start; gap: var(--space-3); }
+.checkbox-field__input {
+  flex: none; width: 22px; height: 22px; margin: 2px 0 0;
+  accent-color: var(--blue); cursor: pointer;
+}
+.checkbox-field__label { color: var(--ink); cursor: pointer; }
+.field--error .checkbox-field__input { outline: 2px solid var(--red); outline-offset: 1px; }
+/* Line the error up with the label text, not the box */
+.checkbox-field .field__error { padding-left: calc(22px + var(--space-3)); }
+
+/* Error summary */
+.error-summary {
+  display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-5) var(--space-6);
+  background: var(--red-tint); border: 1px solid var(--red); border-radius: var(--r-md);
+}
+.error-summary:focus-visible { outline: 2px solid var(--red-text); outline-offset: 2px; }
+.error-summary__title { font-family: var(--font-sans); font-size: 16px; font-weight: 600; line-height: 1.4; color: var(--red-text); }
+.error-summary__list { display: flex; flex-direction: column; gap: var(--space-1); margin: 0; padding-left: var(--space-5); }
+.error-summary__list a { color: var(--red-text); font-weight: 500; }
+.error-summary__list a:hover { color: var(--navy); }

@@ -3,6 +3,7 @@
 import type { LoaderFunctionArgs } from 'react-router'
 import { getAuction, listAuctions, listAuctionsBetween, listFeaturedAuctions } from '../features/auctions/auctionService'
 import { parseSaleStatus } from '../features/auctions/saleStatus'
+import { listMyRequests, listRequestedLots } from '../features/bid-requests/bidRequestService'
 import { getMonthGridRange, parseMonthKey } from '../features/calendar/calendarDates'
 import { listCatalogues } from '../features/catalogues/catalogueService'
 
@@ -28,6 +29,24 @@ export function calendarLoader({ request }: LoaderFunctionArgs) {
   const month = parseMonthKey(new URL(request.url).searchParams.get('month'))
   // Fetch the whole visible grid so sales on the neighbouring months' padding days show too.
   return { month, auctions: listAuctionsBetween(getMonthGridRange(month)) }
+}
+
+/** Only upcoming sales can take requests; ?auction= and ?catalogue= pre-select the form. */
+export function requestBidLoader({ request }: LoaderFunctionArgs) {
+  const searchParams = new URL(request.url).searchParams
+  return {
+    auctionId: searchParams.get('auction'),
+    catalogueId: searchParams.get('catalogue'),
+    auctions: listAuctions({ status: 'upcoming' }),
+  }
+}
+
+export function requestedLotsLoader() {
+  return { lots: listRequestedLots() }
+}
+
+export function myRequestsLoader() {
+  return { requests: listMyRequests() }
 }
 
 export function cataloguesLoader({ request }: LoaderFunctionArgs) {

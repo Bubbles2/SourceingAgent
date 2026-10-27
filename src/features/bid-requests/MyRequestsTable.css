@@ -1,0 +1,4 @@
+/* Keep columns readable on small screens; the wrapper scrolls instead (DESIGN.md §5) */
+.my-requests-table { min-width: 860px; }
+.my-requests-table__date { white-space: nowrap; color: var(--ink-soft); }
+.my-requests-table .badge { white-space: nowrap; }

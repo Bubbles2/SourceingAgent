@@ -1,0 +1,5 @@
+.my-requests__toolbar { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+
+@media (max-width: 639px) {
+  .my-requests__toolbar > * { flex: 1 1 auto; }
+}

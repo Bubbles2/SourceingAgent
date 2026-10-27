@@ -17,6 +17,11 @@ export function todayInParis(): string {
   return parisDateFormatter.format(new Date())
 }
 
+/** Calendar date in Paris (YYYY-MM-DD) for an ISO date-time */
+export function toParisDate(isoDateTime: string): string {
+  return parisDateFormatter.format(new Date(isoDateTime))
+}
+
 /** A sale stays upcoming until the end of its sale day in Paris. */
 export function getSaleStatus(saleDate: string, today: string = todayInParis()): SaleStatus {
   return saleDate >= today ? 'upcoming' : 'completed'

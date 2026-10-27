@@ -8,3 +8,7 @@
 }
 .notice svg { flex: 0 0 auto; color: var(--gold-text); margin-top: 2px; }
 .notice strong { color: var(--navy); }
+
+/* Neutral information (blue-tint is the "info backgrounds" token, DESIGN.md §2.1) */
+.notice--info { background: var(--blue-tint); border-color: color-mix(in srgb, var(--blue) 30%, var(--white)); }
+.notice--info svg { color: var(--blue); }

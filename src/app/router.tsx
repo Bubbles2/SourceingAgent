@@ -15,7 +15,16 @@ import { RequestedLotsPage } from '../pages/RequestedLotsPage'
 import { RouteErrorPage } from '../pages/RouteErrorPage'
 import { SignInPage } from '../pages/SignInPage'
 import { TermsPage } from '../pages/TermsPage'
-import { auctionDetailsLoader, auctionsLoader, calendarLoader, cataloguesLoader, landingLoader } from './loaders'
+import {
+  auctionDetailsLoader,
+  auctionsLoader,
+  calendarLoader,
+  cataloguesLoader,
+  landingLoader,
+  myRequestsLoader,
+  requestBidLoader,
+  requestedLotsLoader,
+} from './loaders'
 import { paths } from './paths'
 
 const pageLoading = <PageLoading />
@@ -48,9 +57,24 @@ export const router = createBrowserRouter([
             element: <CalendarPage />,
             hydrateFallbackElement: pageLoading,
           },
-          { path: paths.requestedLots, element: <RequestedLotsPage /> },
-          { path: paths.requestBid, element: <RequestBidPage /> },
-          { path: paths.myRequests, element: <MyRequestsPage /> },
+          {
+            path: paths.requestedLots,
+            loader: requestedLotsLoader,
+            element: <RequestedLotsPage />,
+            hydrateFallbackElement: pageLoading,
+          },
+          {
+            path: paths.requestBid,
+            loader: requestBidLoader,
+            element: <RequestBidPage />,
+            hydrateFallbackElement: pageLoading,
+          },
+          {
+            path: paths.myRequests,
+            loader: myRequestsLoader,
+            element: <MyRequestsPage />,
+            hydrateFallbackElement: pageLoading,
+          },
           { path: paths.signIn, element: <SignInPage /> },
           { path: paths.register, element: <RegisterPage /> },
           { path: paths.terms, element: <TermsPage /> },

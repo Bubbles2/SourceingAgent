@@ -4,7 +4,7 @@ import { auctionCataloguesId, paths } from '../../app/paths'
 import { PageContainer } from '../../components/layout/PageContainer'
 import { ButtonLink } from '../../components/ui/Button'
 import { EmptyState } from '../../components/ui/EmptyState'
-import { FeesNotice } from '../bid-requests/FeesNotice'
+import { PricingNotice } from '../bid-requests/PricingNotice'
 import { CatalogueCard } from '../catalogues/CatalogueCard'
 import { AuctionFacts } from './AuctionFacts'
 import { getSaleStatus, type SaleStatus } from './saleStatus'
@@ -39,7 +39,7 @@ export function AuctionDetails({ auction: auctionPromise }: AuctionDetailsProps)
       <div className="auction-details">
         <div className="auction-details__aside">
           <AuctionFacts auction={auction} status={status} />
-          {status === 'upcoming' ? <FeesNotice /> : null}
+          {status === 'upcoming' ? <PricingNotice /> : null}
         </div>
 
         <div className="auction-details__main">
