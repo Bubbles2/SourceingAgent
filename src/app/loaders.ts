@@ -13,13 +13,14 @@ import {
   listOpenAuctions,
 } from '../features/auctions/auctionService'
 import { parseSaleStatus } from '../features/auctions/saleStatus'
-import { loadSession } from '../features/auth/sessionStore'
+import { loadSession, sessionCheckFailed } from '../features/auth/sessionStore'
 import type { CustomerAccount } from '../features/auth/types'
 import { listMyRequests, listRequestedLots } from '../features/bid-requests/bidRequestService'
 import { getMonthGridRange, parseMonthKey } from '../features/calendar/calendarDates'
 import { listCatalogues } from '../features/catalogues/catalogueService'
 import { parseReviewView } from '../features/request-review/reviewDecisions'
 import { listReviewRequests } from '../features/request-review/reviewService'
+import { ApiError } from '../services/apiClient'
 import { parsePageNumber } from '../services/pagination'
 import { paths, signInPath } from './paths'
 
@@ -49,9 +50,16 @@ export function calendarLoader({ request }: LoaderFunctionArgs) {
   return { month, auctions: listAuctionsBetween(getMonthGridRange(month)) }
 }
 
-/** Visitors are sent to sign in, then brought back to the same address (filters included). */
+/**
+ * Visitors are sent to sign in, then brought back to the same address (filters included). If the API
+ * couldn't be reached, the page shows the "couldn't load" error instead of asking a signed-in customer
+ * to sign in again.
+ */
 async function requireSignIn(request: Request): Promise<CustomerAccount> {
   const account = await loadSession()
+  if (!account && sessionCheckFailed()) {
+    throw new ApiError(503, 'service_unavailable', 'The service is temporarily unavailable. Please try again in a moment.')
+  }
   if (!account) {
     const url = new URL(request.url)
     throw redirect(signInPath(`${url.pathname}${url.search}`))

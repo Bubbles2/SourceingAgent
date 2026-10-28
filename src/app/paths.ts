@@ -1,4 +1,5 @@
 import type { To } from 'react-router'
+import { hasControlCharacters } from '../utils/links'
 
 export const paths = {
   home: '/',
@@ -74,7 +75,7 @@ export function signInPath(redirectTo: string): string {
 
 /** Accepts only paths on this site, so a crafted ?redirectTo= link can't send customers elsewhere. */
 export function safeRedirectPath(value: string | null): string | null {
-  if (!value || !value.startsWith('/') || value.startsWith('//') || value.startsWith('/\\')) {
+  if (!value || !value.startsWith('/') || value.startsWith('//') || value.startsWith('/\\') || hasControlCharacters(value)) {
     return null
   }
   return value

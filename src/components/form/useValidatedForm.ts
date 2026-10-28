@@ -61,7 +61,9 @@ export function useValidatedForm<Values extends object, Input>({
     let submitErrors: FormErrors<Values> | null
     try {
       submitErrors = await onSubmit(input)
-    } catch {
+    } catch (error) {
+      // API refusals come back as form errors, so this is a bug: keep it visible to developers.
+      console.error(error)
       submitErrors = {}
       submitErrors.form = unexpectedErrorMessage
     }

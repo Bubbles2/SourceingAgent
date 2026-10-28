@@ -327,6 +327,8 @@ describe('managing sales', () => {
       [{ viewing: { start: day(ahead + 9), end: day(ahead + 11) } }, 'body.viewing.end'],
       [{ image: { src: 'http://example.com/a.jpg', alt: 'A lot' } }, 'body.image.src'],
       [{ image: { src: '//example.com/a.jpg', alt: 'A lot' } }, 'body.image.src'],
+      // Browsers drop the tab, leaving //example.com/a.jpg
+      [{ image: { src: '/\t/example.com/a.jpg', alt: 'A lot' } }, 'body.image.src'],
       [{ image: { src: '/images/a.jpg', alt: '' } }, 'body.image.alt'],
       [{ status: 'postponed' }, 'body.status'],
       [{ databaseId: 'x' }, 'body'],

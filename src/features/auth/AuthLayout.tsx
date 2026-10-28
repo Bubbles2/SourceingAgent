@@ -27,7 +27,7 @@ export function AuthAside({ title, children }: AuthAsideProps): React.JSX.Elemen
 
   return (
     <aside className="auth-aside" aria-labelledby={titleId}>
-      <img className="auth-aside__mascot" src="/assets/owl-mascot.png" alt="" width={120} height={120} />
+      <img className="auth-aside__mascot" src="/assets/owl-mascot-440.png" alt="" width={120} height={120} />
       <h2 id={titleId} className="auth-aside__title">
         {title}
       </h2>

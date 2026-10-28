@@ -58,12 +58,19 @@ const envSchema = z.object({
     .default('http://localhost:3000')
     .transform((value) => value.split(',').map((item) => item.trim()).filter(Boolean))
     .pipe(z.array(origin).min(1)),
-  AUTH_SECRET: z.string().min(32, 'must be at least 32 characters; see .env.example to generate one'),
+  AUTH_SECRET: z
+    .string()
+    .min(32, 'must be at least 32 characters; see .env.example to generate one')
+    .refine((value) => !value.startsWith('replace-with'), 'is still the placeholder from .env.example; generate a random one'),
   SESSION_IDLE_MINUTES: z.coerce.number().int().min(5).max(10_080).default(720),
   SESSION_MAX_AGE_HOURS: z.coerce.number().int().min(1).max(2_160).default(168),
   // Defaults to true in production; browsers only send Secure cookies over HTTPS (and to localhost)
   COOKIE_SECURE: booleanFlag.optional(),
   TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(10).default(0),
+}).refine((values) => !(values.NODE_ENV === 'production' && values.COOKIE_SECURE === false), {
+  // A copied .env.example would otherwise send the session cookie over plain HTTP.
+  message: 'must not be false in production; session cookies need HTTPS',
+  path: ['COOKIE_SECURE'],
 })
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {

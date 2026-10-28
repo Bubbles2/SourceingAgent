@@ -8,6 +8,7 @@ import type { CustomerAccount } from './types'
 const listeners = new Set<() => void>()
 let current: CustomerAccount | null = null
 let loading: Promise<CustomerAccount | null> | null = null
+let lastCheckFailed = false
 
 // Signing in or out in one tab tells the others to ask again.
 const channel = typeof BroadcastChannel === 'undefined' ? null : new BroadcastChannel('psa-session')
@@ -23,12 +24,20 @@ async function fetchCurrentAccount(): Promise<CustomerAccount | null> {
   try {
     const data = await apiRequest('/api/auth/session')
     const signedOut = typeof data === 'object' && data !== null && 'user' in data && data.user === null
-    return signedOut ? null : parseAccountResponse(data)
+    const account = signedOut ? null : parseAccountResponse(data)
+    lastCheckFailed = false
+    return account
   } catch {
     // The API is unreachable: carry on as a visitor, and ask again next time.
     loading = null
+    lastCheckFailed = true
     return null
   }
+}
+
+/** True when the last check couldn't reach the API, so "no account" may not mean signed out. */
+export function sessionCheckFailed(): boolean {
+  return lastCheckFailed
 }
 
 /** The signed-in customer, fetched once and then kept up to date. */
@@ -50,6 +59,7 @@ export function refreshSession(): Promise<CustomerAccount | null> {
 export function setSessionAccount(account: CustomerAccount | null): void {
   // Administrators see sales others can't, so nothing fetched for the previous account is reused.
   clearCachedResponses()
+  lastCheckFailed = false
   loading = Promise.resolve(account)
   publish(account)
   channel?.postMessage('changed')

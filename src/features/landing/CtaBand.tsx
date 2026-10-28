@@ -23,7 +23,7 @@ export function CtaBand({ title, lead, children }: CtaBandProps): React.JSX.Elem
         </div>
         <img
           className="cta-band__mascot"
-          src="/assets/owl-mascot.png"
+          src="/assets/owl-mascot-440.png"
           alt="The Parisien Sourcing Agent owl mascot holding a magnifying glass and a gilt frame"
           width={220}
           height={220}

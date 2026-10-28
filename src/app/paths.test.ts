@@ -6,7 +6,7 @@ describe('safeRedirectPath', () => {
     expect(safeRedirectPath(path)).toBe(path)
   })
 
-  it.each([null, '', 'account', 'https://evil.example', '//evil.example/phish', '/\\evil.example'])(
+  it.each([null, '', 'account', 'https://evil.example', '//evil.example/phish', '/\\evil.example', '/\t/evil.example', '/\n/evil.example'])(
     'refuses anything that could leave the site: %j',
     (value) => {
       expect(safeRedirectPath(value)).toBeNull()

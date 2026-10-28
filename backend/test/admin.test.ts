@@ -161,7 +161,7 @@ describe('protected operations', () => {
 })
 
 describe('dashboard summary', () => {
-  test('counts upcoming, draft and completed sales, published catalogues and open requests', async () => {
+  test('counts upcoming, draft and completed sales, upcoming published catalogues and open requests', async () => {
     const before = await summary()
     await createSale('draft', 'draft', '30 days')
     await createSale('upcoming', 'published', '30 days')
@@ -182,8 +182,8 @@ describe('dashboard summary', () => {
         acceptedRequests: after.acceptedRequests - before.acceptedRequests,
         placedBids: after.placedBids - before.placedBids,
       },
-      // The draft's catalogue isn't published; the past sale's is.
-      { upcomingAuctions: 1, draftAuctions: 1, completedAuctions: 1, publishedCatalogues: 2, pendingRequests: 1, acceptedRequests: 1, placedBids: 0 },
+      // Only the upcoming published sale's catalogue counts, as the card's list (upcoming catalogues) shows.
+      { upcomingAuctions: 1, draftAuctions: 1, completedAuctions: 1, publishedCatalogues: 1, pendingRequests: 1, acceptedRequests: 1, placedBids: 0 },
     )
     assert.ok(pending)
   })

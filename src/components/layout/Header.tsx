@@ -38,7 +38,7 @@ export function Header(): React.JSX.Element {
       >
         <div className="container site-header__inner">
           <Link to={paths.home} className="site-header__brand" onClick={handleCloseMenu}>
-            <img className="site-header__logo" src="/assets/owl-mascot.png" alt="" width={46} height={46} />
+            <img className="site-header__logo" src="/assets/owl-mascot-440.png" alt="" width={46} height={46} />
             <span className="site-header__wordmark">Parisien Sourcing Agent</span>
           </Link>
 

@@ -33,6 +33,15 @@ export function isPublicHttpsUrl(value: string): boolean {
   )
 }
 
+/**
+ * A path on this site, such as /images/sale.jpg, never //other.example or /\other.example. Control
+ * characters are refused too: browsers drop tabs and newlines, so "/\t/other.example" would become
+ * "//other.example".
+ */
+export function isSitePath(value: string): boolean {
+  return /^\/[^/\\]/.test(value) && !/[\u0000-\u001f\u007f]/.test(value)
+}
+
 /** An https:// address, at most `maxLength` characters long */
 export function httpsUrlField(message: string, maxLength = 2048) {
   return z
@@ -49,7 +58,7 @@ export const imageField = z.object({
     .trim()
     .max(2048, 'Keep the address to 2,048 characters or fewer.')
     .refine(
-      (src) => isPublicHttpsUrl(src) || /^\/[^/\\]/.test(src),
+      (src) => isPublicHttpsUrl(src) || isSitePath(src),
       'Use an https:// address or a path on this site, such as /images/sale.jpg.',
     ),
   alt: requiredText(300, "Describe the image for people who can't see it."),

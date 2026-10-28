@@ -1,5 +1,6 @@
 // Fixed-window rate limiting held in memory. Enough for a single API process; several processes
 // would need a shared store such as PostgreSQL or Redis.
+import { isIPv6 } from 'node:net'
 import type { Request, RequestHandler, Response } from 'express'
 import { HttpError } from '../lib/httpError.ts'
 
@@ -58,8 +59,27 @@ export function rateLimit({ windowMs, max, key }: RateLimitOptions): RequestHand
   }
 }
 
+/**
+ * The client's address. An IPv6 client usually controls a whole /64 network, so IPv6 addresses are
+ * counted by that network; IPv4 addresses (including IPv4-mapped IPv6) are counted one by one.
+ */
 export function byClientIp(req: Request): string {
-  return req.ip ?? req.socket.remoteAddress ?? 'unknown'
+  const ip = req.ip ?? req.socket.remoteAddress ?? 'unknown'
+  return isIPv6(ip) && !ip.includes('.') ? ipv6Network(ip) : ip
+}
+
+/** "2001:db8:0:1:aaaa::1" becomes "2001:db8:0:1::/64" */
+export function ipv6Network(ip: string): string {
+  const [address = ''] = ip.split('%') // drop a zone such as %eth0
+  const [head = '', tail] = address.split('::')
+  const headGroups = head ? head.split(':') : []
+  const tailGroups = tail ? tail.split(':') : []
+  const zeros = tail === undefined ? [] : Array<string>(8 - headGroups.length - tailGroups.length).fill('0')
+  const groups = [...headGroups, ...zeros, ...tailGroups]
+  return `${groups
+    .slice(0, 4)
+    .map((group) => Number.parseInt(group, 16).toString(16))
+    .join(':')}::/64`
 }
 
 /** The normalised email in a JSON body, or null when there isn't one to count. */

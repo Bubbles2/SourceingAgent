@@ -88,7 +88,9 @@ export function useBidRequestForm(options: UseBidRequestFormOptions) {
     let result: Awaited<ReturnType<typeof submitBidRequest>>
     try {
       result = await submitBidRequest(input)
-    } catch {
+    } catch (error) {
+      // API refusals come back as form errors, so this is a bug: keep it visible to developers.
+      console.error(error)
       result = { ok: false, errors: { form: 'Something went wrong on our side. Please try again.' } }
     }
     setIsSubmitting(false)

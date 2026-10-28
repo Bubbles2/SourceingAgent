@@ -125,5 +125,6 @@ describe('links', () => {
     expect(isHttpsUrl('https://user:secret@example.com/c.pdf')).toBe(false)
     expect(isSitePath('/images/sale.jpg')).toBe(true)
     expect(isSitePath('//other.example/sale.jpg')).toBe(false)
+    expect(isSitePath('/\t/other.example/sale.jpg')).toBe(false)
   })
 })

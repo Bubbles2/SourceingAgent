@@ -8,7 +8,7 @@ export type AdminSummary = {
   draftAuctions: number
   /** Published sales whose sale day has ended */
   completedAuctions: number
-  /** Catalogues of published sales */
+  /** Catalogues of published sales that haven't ended, as the dashboard card's list shows them */
   publishedCatalogues: number
   pendingRequests: number
   acceptedRequests: number
@@ -21,8 +21,8 @@ export async function readAdminSummary(): Promise<AdminSummary> {
        (SELECT count(*)::int FROM auctions a WHERE a.status = 'published' AND ${saleIsOpen}) AS "upcomingAuctions",
        (SELECT count(*)::int FROM auctions a WHERE a.status = 'draft') AS "draftAuctions",
        (SELECT count(*)::int FROM auctions a WHERE a.status = 'published' AND NOT (${saleIsOpen})) AS "completedAuctions",
-       (SELECT count(*)::int FROM catalogues c JOIN auctions a ON a.id = c.auction_id WHERE a.status = 'published')
-         AS "publishedCatalogues",
+       (SELECT count(*)::int FROM catalogues c JOIN auctions a ON a.id = c.auction_id
+         WHERE a.status = 'published' AND ${saleIsOpen}) AS "publishedCatalogues",
        (SELECT count(*)::int FROM bid_requests WHERE status = 'pending') AS "pendingRequests",
        (SELECT count(*)::int FROM bid_requests WHERE status = 'accepted') AS "acceptedRequests",
        (SELECT count(*)::int FROM bid_requests WHERE status = 'placed') AS "placedBids"`,
