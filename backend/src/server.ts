@@ -3,6 +3,7 @@ import { config } from './config/env.ts'
 import { closePool, query } from './db/pool.ts'
 import { describeError } from './lib/describeError.ts'
 import { logger } from './lib/logger.ts'
+import { deleteExpiredSessions } from './repositories/sessionsRepository.ts'
 
 const server = createApp().listen(config.port, (error?: Error) => {
   if (error) {
@@ -22,6 +23,18 @@ async function reportDatabaseConnection(): Promise<void> {
     logger.warn('PostgreSQL is not reachable yet. Check the DB_* settings in backend/.env.', describeError(error))
   }
 }
+
+// Expired sessions are already refused; this just keeps the table small.
+const sessionCleanup = setInterval(() => {
+  deleteExpiredSessions(config.auth.sessionIdleMinutes)
+    .then((count) => {
+      if (count > 0) {
+        logger.info('Removed expired sessions', { count })
+      }
+    })
+    .catch((error: unknown) => logger.warn('Session cleanup failed', describeError(error)))
+}, 3_600_000)
+sessionCleanup.unref()
 
 function shutdown(signal: NodeJS.Signals): void {
   logger.info('Shutting down', { signal })

@@ -2,10 +2,8 @@ import { useSearchParams } from 'react-router'
 import { paths, safeRedirectPath } from '../app/paths'
 import { PageContainer } from '../components/layout/PageContainer'
 import { ButtonLink } from '../components/ui/Button'
-import { PrototypeNotice } from '../components/ui/PrototypeNotice'
 import { AuthAside, AuthLayout } from '../features/auth/AuthLayout'
 import { SignInForm } from '../features/auth/SignInForm'
-import { mockDemoAccount } from '../mocks/accounts'
 
 export function SignInPage(): React.JSX.Element {
   const [searchParams] = useSearchParams()
@@ -22,10 +20,6 @@ export function SignInPage(): React.JSX.Element {
       }
     >
       <AuthLayout aside={<SignInAside />}>
-        <PrototypeNotice>
-          Sign-in is simulated in this browser and is not secure: passwords are never checked or saved. To try it, use{' '}
-          <strong>{mockDemoAccount.email}</strong> with any password, or an account you created in this browser.
-        </PrototypeNotice>
         <SignInForm redirectTo={redirectTo ?? paths.account} />
       </AuthLayout>
     </PageContainer>

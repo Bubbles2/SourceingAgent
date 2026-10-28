@@ -1,5 +1,5 @@
-// Account rules shared by the forms (instant feedback) and the mock auth service (checks again on
-// submission). Each check returns a customer-facing message, or null when the value is fine.
+// Account rules for the forms' instant feedback; the API applies the same rules on submission.
+// Each check returns a customer-facing message, or null when the value is fine.
 import { isCountryCode } from './countries'
 
 export const accountLimits = {
@@ -17,10 +17,6 @@ export const telephoneExample = '+33 1 23 45 67 89'.replaceAll(' ', String.fromC
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const telephonePattern = /^\+?[\d\s().-]+$/
-
-export function normalizeEmail(email: string): string {
-  return email.trim().toLowerCase()
-}
 
 export function normalizeTelephone(telephone: string): string {
   return telephone.trim().replace(/\s+/g, ' ')

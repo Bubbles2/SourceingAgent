@@ -4,27 +4,26 @@ export const bidRequestStatuses = ['pending', 'accepted', 'rejected', 'cancelled
 
 export type BidRequestStatus = (typeof bidRequestStatuses)[number]
 
-/** Full record as the server would store it. Customer and amount fields are private. */
-export type BidRequest = {
-  id: string
-  customerId: string
+/** What a customer sends when requesting a bid. Amounts are whole euros. */
+export type BidRequestInput = {
   auctionId: string
   catalogueId: string
+  lotNumber: number
+  maxBidEur: number
+  instructions: string
+}
+
+type CatalogueSummary = Pick<Catalogue, 'id' | 'title'>
+
+/** The signed-in customer's own request, joined with its sale and catalogue */
+export type MyBidRequest = {
+  id: string
   lotNumber: number
   maxBidEur: number
   instructions: string
   status: BidRequestStatus
   /** ISO date-time */
   submittedAt: string
-}
-
-/** What a customer sends when requesting a bid */
-export type BidRequestInput = Pick<BidRequest, 'auctionId' | 'catalogueId' | 'lotNumber' | 'maxBidEur' | 'instructions'>
-
-type CatalogueSummary = Pick<Catalogue, 'id' | 'title'>
-
-/** A customer's own request, joined with its sale and catalogue */
-export type MyBidRequest = Pick<BidRequest, 'id' | 'lotNumber' | 'maxBidEur' | 'instructions' | 'status' | 'submittedAt'> & {
   auction: AuctionSummary
   catalogue: CatalogueSummary
 }

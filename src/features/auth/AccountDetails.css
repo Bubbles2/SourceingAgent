@@ -25,16 +25,13 @@
 .account-profile__details dt { font-size: var(--text-meta); font-weight: 600; line-height: 1.7; color: var(--navy); }
 .account-profile__details dd { margin: 0; color: var(--ink); overflow-wrap: anywhere; }
 .account-profile__empty { color: var(--ink-muted); }
+.account-profile__status { display: block; font-size: var(--text-meta); color: var(--ink-muted); }
 
 .account-profile__footer {
   display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3);
   padding-top: var(--space-5); border-top: 1px solid var(--cream-line);
 }
 .account-profile__footer .btn { gap: var(--space-2); }
-
-/* Loading skeleton */
-.account-skeleton__avatar { flex: none; width: 64px; height: 64px; border-radius: 50%; }
-.account-skeleton__identity { flex: 1 1 auto; gap: var(--space-2); }
 
 @media (max-width: 639px) {
   .account-card { padding: var(--space-5); }

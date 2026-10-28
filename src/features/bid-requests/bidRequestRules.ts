@@ -1,4 +1,4 @@
-// Business rules shared by the form (instant feedback) and the mock server (enforcement).
+// Business rules for the form's instant feedback; the API enforces the same rules on submission.
 import { formatEur } from '../../utils/money'
 import type { Catalogue } from '../auctions/types'
 

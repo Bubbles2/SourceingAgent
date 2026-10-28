@@ -5,6 +5,8 @@ import { z } from 'zod'
 export type Config = {
   env: 'development' | 'test' | 'production'
   port: number
+  /** The website's origin, for links in emails */
+  appOrigin: string
   /** Contains the database password: never log this object. */
   database: {
     host: string
@@ -16,6 +18,15 @@ export type Config = {
     poolMax: number
   }
   corsOrigins: readonly string[]
+  /** Contains the signing secret: never log this object. */
+  auth: {
+    secret: string
+    sessionIdleMinutes: number
+    sessionMaxAgeHours: number
+    cookieSecure: boolean
+  }
+  /** Proxies in front of the API whose X-Forwarded-For can be trusted (0 = none) */
+  trustProxyHops: number
 }
 
 function isOrigin(value: string): boolean {
@@ -33,6 +44,7 @@ const origin = z.string().refine(isOrigin, 'must be an origin such as http://loc
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: portNumber.default(4000),
+  APP_ORIGIN: origin.default('http://localhost:3000'),
   DB_HOST: z.string().min(1),
   DB_PORT: portNumber.default(5432),
   DB_NAME: z.string().min(1),
@@ -46,6 +58,12 @@ const envSchema = z.object({
     .default('http://localhost:3000')
     .transform((value) => value.split(',').map((item) => item.trim()).filter(Boolean))
     .pipe(z.array(origin).min(1)),
+  AUTH_SECRET: z.string().min(32, 'must be at least 32 characters; see .env.example to generate one'),
+  SESSION_IDLE_MINUTES: z.coerce.number().int().min(5).max(10_080).default(720),
+  SESSION_MAX_AGE_HOURS: z.coerce.number().int().min(1).max(2_160).default(168),
+  // Defaults to true in production; browsers only send Secure cookies over HTTPS (and to localhost)
+  COOKIE_SECURE: booleanFlag.optional(),
+  TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(10).default(0),
 })
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
@@ -59,6 +77,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
   return Object.freeze({
     env: values.NODE_ENV,
     port: values.PORT,
+    appOrigin: values.APP_ORIGIN,
     database: Object.freeze({
       host: values.DB_HOST,
       port: values.DB_PORT,
@@ -69,6 +88,13 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
       poolMax: values.DB_POOL_MAX,
     }),
     corsOrigins: Object.freeze(values.CORS_ORIGINS),
+    auth: Object.freeze({
+      secret: values.AUTH_SECRET,
+      sessionIdleMinutes: values.SESSION_IDLE_MINUTES,
+      sessionMaxAgeHours: values.SESSION_MAX_AGE_HOURS,
+      cookieSecure: values.COOKIE_SECURE ?? values.NODE_ENV === 'production',
+    }),
+    trustProxyHops: values.TRUST_PROXY_HOPS,
   })
 }
 

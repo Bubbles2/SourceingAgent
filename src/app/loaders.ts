@@ -3,7 +3,7 @@
 import { redirect, type LoaderFunctionArgs } from 'react-router'
 import { getAuction, listAuctions, listAuctionsBetween, listFeaturedAuctions } from '../features/auctions/auctionService'
 import { parseSaleStatus } from '../features/auctions/saleStatus'
-import { getCurrentAccount, isSignedIn } from '../features/auth/authService'
+import { loadSession } from '../features/auth/sessionStore'
 import { listMyRequests, listRequestedLots } from '../features/bid-requests/bidRequestService'
 import { getMonthGridRange, parseMonthKey } from '../features/calendar/calendarDates'
 import { listCatalogues } from '../features/catalogues/catalogueService'
@@ -33,8 +33,17 @@ export function calendarLoader({ request }: LoaderFunctionArgs) {
   return { month, auctions: listAuctionsBetween(getMonthGridRange(month)) }
 }
 
+/** Visitors are sent to sign in, then brought back to the same address (filters included). */
+async function requireSignIn(request: Request): Promise<void> {
+  if (!(await loadSession())) {
+    const url = new URL(request.url)
+    throw redirect(signInPath(`${url.pathname}${url.search}`))
+  }
+}
+
 /** Only upcoming sales can take requests; ?auction= and ?catalogue= pre-select the form. */
-export function requestBidLoader({ request }: LoaderFunctionArgs) {
+export async function requestBidLoader({ request }: LoaderFunctionArgs) {
+  await requireSignIn(request)
   const searchParams = new URL(request.url).searchParams
   return {
     auctionId: searchParams.get('auction'),
@@ -47,7 +56,8 @@ export function requestedLotsLoader() {
   return { lots: listRequestedLots() }
 }
 
-export function myRequestsLoader() {
+export async function myRequestsLoader({ request }: LoaderFunctionArgs) {
+  await requireSignIn(request)
   return { requests: listMyRequests() }
 }
 
@@ -56,18 +66,21 @@ export function cataloguesLoader({ request }: LoaderFunctionArgs) {
   return { status, catalogues: listCatalogues({ status }) }
 }
 
+/** Finds out who is signed in before the first render, so the header never flickers. */
+export async function rootLoader() {
+  await loadSession()
+  return null
+}
+
 /** Signed-in customers skip the sign-in and registration pages. */
-export function guestOnlyLoader() {
-  if (isSignedIn()) {
+export async function guestOnlyLoader() {
+  if (await loadSession()) {
     throw redirect(paths.account)
   }
   return null
 }
 
-/** Signed-out visitors are sent to sign in, then brought back here. */
-export function accountLoader() {
-  if (!isSignedIn()) {
-    throw redirect(signInPath(paths.account))
-  }
-  return { account: getCurrentAccount() }
+export async function accountLoader({ request }: LoaderFunctionArgs) {
+  await requireSignIn(request)
+  return null
 }

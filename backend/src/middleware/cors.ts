@@ -7,7 +7,7 @@ export const corsMiddleware = cors({
   origin: [...config.corsOrigins],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-  allowedHeaders: ['Content-Type'],
+  allowedHeaders: ['Content-Type', 'X-CSRF-Token'],
   exposedHeaders: ['X-Request-Id'],
   maxAge: 600,
 })

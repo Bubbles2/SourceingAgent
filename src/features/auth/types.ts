@@ -1,4 +1,6 @@
-/** A customer's profile. The prototype never keeps a password alongside it. */
+export type CustomerRole = 'customer' | 'administrator'
+
+/** The signed-in person's profile, as the API returns it. Never includes the password. */
 export type CustomerAccount = {
   id: string
   firstName: string
@@ -8,12 +10,20 @@ export type CustomerAccount = {
   countryCode: string
   companyName: string | null
   telephone: string | null
+  role: CustomerRole
+  emailVerified: boolean
   /** ISO timestamp */
   createdAt: string
 }
 
-export type RegistrationInput = Omit<CustomerAccount, 'id' | 'createdAt'> & {
+export type RegistrationInput = {
+  firstName: string
+  lastName: string
+  email: string
   password: string
+  countryCode: string
+  companyName: string | null
+  telephone: string | null
 }
 
 export type SignInInput = {

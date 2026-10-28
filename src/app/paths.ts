@@ -10,6 +10,8 @@ export const paths = {
   signIn: '/sign-in',
   register: '/register',
   forgotPassword: '/forgot-password',
+  resetPassword: '/reset-password',
+  verifyEmail: '/verify-email',
   account: '/account',
   myRequests: '/my-requests',
   terms: '/terms',

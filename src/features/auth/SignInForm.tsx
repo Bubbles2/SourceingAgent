@@ -6,6 +6,7 @@ import { PasswordField } from '../../components/form/PasswordField'
 import { TextField } from '../../components/form/TextField'
 import { toSummaryErrors, useValidatedForm, type FormErrors } from '../../components/form/useValidatedForm'
 import { Button } from '../../components/ui/Button'
+import { formErrorsFromApi } from './apiFormErrors'
 import { signIn } from './authService'
 import { validateSignIn, type SignInFormValues } from './authValidation'
 import type { SignInInput } from './types'
@@ -30,11 +31,10 @@ export function SignInForm({ redirectTo }: SignInFormProps): React.JSX.Element {
   const { values, errors, setField } = form
 
   async function handleSignIn(input: SignInInput): Promise<FormErrors<SignInFormValues> | null> {
-    const result = await signIn(input)
-    if (!result.ok) {
-      const serverErrors: FormErrors<SignInFormValues> = {}
-      serverErrors.form = result.message
-      return serverErrors
+    try {
+      await signIn(input)
+    } catch (error) {
+      return formErrorsFromApi<SignInFormValues>(error, ['email', 'password'])
     }
     navigate(redirectTo, { replace: true })
     return null

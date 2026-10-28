@@ -1,10 +1,9 @@
-import { use, useId, useState } from 'react'
+import { useId, useState } from 'react'
 import { LogOut } from 'lucide-react'
 import { useNavigate } from 'react-router'
 import { paths } from '../../app/paths'
 import { Avatar } from '../../components/ui/Avatar'
 import { Button, ButtonLink } from '../../components/ui/Button'
-import { EmptyState } from '../../components/ui/EmptyState'
 import { formatDayMonthYear } from '../auctions/formatAuction'
 import { toParisDate } from '../auctions/saleStatus'
 import { signOut } from './authService'
@@ -12,22 +11,12 @@ import { getCountryName } from './countries'
 import type { CustomerAccount } from './types'
 import './AccountDetails.css'
 
-type AccountDetailsProps = {
-  account: Promise<CustomerAccount | null>
+const roleLabels: Record<CustomerAccount['role'], string> = {
+  customer: 'Customer',
+  administrator: 'Administrator',
 }
 
-export function AccountDetails({ account: accountPromise }: AccountDetailsProps): React.JSX.Element {
-  const account = use(accountPromise)
-
-  // Signed out in another tab while this page was loading
-  if (!account) {
-    return (
-      <EmptyState title="You're signed out" actions={<ButtonLink to={paths.signIn}>Sign in</ButtonLink>}>
-        Sign in again to see your account.
-      </EmptyState>
-    )
-  }
-
+export function AccountDetails({ account }: { account: CustomerAccount }): React.JSX.Element {
   return (
     <div className="account">
       <AccountProfile account={account} />
@@ -48,7 +37,7 @@ function AccountProfile({ account }: { account: CustomerAccount }): React.JSX.El
             {`${account.firstName} ${account.lastName}`}
           </h2>
           <p className="account-profile__since">
-            Customer since{' '}
+            {roleLabels[account.role]} since{' '}
             <time dateTime={account.createdAt}>{formatDayMonthYear(toParisDate(account.createdAt))}</time>
           </p>
         </div>
@@ -57,7 +46,10 @@ function AccountProfile({ account }: { account: CustomerAccount }): React.JSX.El
       <dl className="account-profile__details">
         <div>
           <dt>Email address</dt>
-          <dd>{account.email}</dd>
+          <dd>
+            {account.email}
+            <span className="account-profile__status">{account.emailVerified ? 'Confirmed' : 'Not confirmed yet'}</span>
+          </dd>
         </div>
         <div>
           <dt>Country</dt>

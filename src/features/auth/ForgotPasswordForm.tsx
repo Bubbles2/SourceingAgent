@@ -5,9 +5,10 @@ import { Link } from 'react-router'
 import { paths } from '../../app/paths'
 import { ErrorSummary } from '../../components/form/ErrorSummary'
 import { TextField } from '../../components/form/TextField'
-import { toSummaryErrors, useValidatedForm } from '../../components/form/useValidatedForm'
+import { toSummaryErrors, useValidatedForm, type FormErrors } from '../../components/form/useValidatedForm'
 import { Button, ButtonLink } from '../../components/ui/Button'
 import { focusOnMount } from '../../utils/dom'
+import { formErrorsFromApi } from './apiFormErrors'
 import { requestPasswordReset } from './authService'
 import { validateForgotPassword, type ForgotPasswordFormValues } from './authValidation'
 
@@ -38,8 +39,12 @@ function ResetRequestForm({ onSent }: { onSent: (email: string) => void }): Reac
     onSubmit: handleRequestReset,
   })
 
-  async function handleRequestReset(email: string): Promise<null> {
-    await requestPasswordReset(email)
+  async function handleRequestReset(email: string): Promise<FormErrors<ForgotPasswordFormValues> | null> {
+    try {
+      await requestPasswordReset(email)
+    } catch (error) {
+      return formErrorsFromApi<ForgotPasswordFormValues>(error, ['email'])
+    }
     onSent(email)
     return null
   }
@@ -102,7 +107,8 @@ function ResetLinkSent({ email, onUseAnotherEmail }: ResetLinkSentProps): React.
         </h2>
       </div>
       <p className="auth-card__text">
-        If an account exists for <strong>{email}</strong>, we will send it a link to choose a new password.
+        If an account exists for <strong>{email}</strong>, we have sent it a link to choose a new password. The link
+        works once and expires in an hour.
       </p>
       <div className="auth-card__actions">
         <ButtonLink to={paths.signIn}>Back to sign in</ButtonLink>

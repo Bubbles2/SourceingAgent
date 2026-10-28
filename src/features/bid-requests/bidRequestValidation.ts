@@ -1,5 +1,5 @@
 // Client-side validation for the bid request form: instant, helpful feedback only.
-// The mock server (bidRequestService) checks everything again on submission.
+// The API checks everything again on submission.
 import { parseWholeEuros } from '../../utils/money'
 import type { AuctionWithCatalogues } from '../auctions/types'
 import { bidLimits, checkLotNumber, checkMaxBid } from './bidRequestRules'
@@ -16,7 +16,8 @@ export type BidRequestFormValues = {
 
 export type BidRequestField = keyof BidRequestFormValues
 
-export type BidRequestErrors = Partial<Record<BidRequestField, string>>
+/** Errors by field; `form` holds problems with the whole request, such as needing to sign in again. */
+export type BidRequestErrors = Partial<Record<BidRequestField | 'form', string>>
 
 /** Form order, used to list errors in the summary */
 export const bidRequestFields: readonly BidRequestField[] = [

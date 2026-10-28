@@ -30,6 +30,9 @@ pool.on('error', (error) => {
   logger.error('Idle database connection failed', describeError(error))
 })
 
+/** The pool, or one client inside withTransaction; repositories accept either. */
+export type Queryable = pg.Pool | pg.PoolClient
+
 export function query<Row extends pg.QueryResultRow>(text: string, values: unknown[] = []): Promise<pg.QueryResult<Row>> {
   return pool.query<Row>(text, values)
 }

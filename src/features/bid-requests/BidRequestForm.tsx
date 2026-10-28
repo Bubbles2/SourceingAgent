@@ -52,10 +52,11 @@ export function BidRequestForm({ auctions, initialAuctionId, initialCatalogueId 
     value: catalogue.id,
     label: `${catalogue.title} (lots ${catalogue.lots.first}–${catalogue.lots.last})`,
   }))
-  const summaryErrors: FormError[] = bidRequestFields.flatMap((field) => {
+  const fieldErrors: FormError[] = bidRequestFields.flatMap((field) => {
     const message = errors[field]
     return message ? [{ fieldId: fieldIds[field], message }] : []
   })
+  const summaryErrors: FormError[] = errors.form ? [{ message: errors.form }, ...fieldErrors] : fieldErrors
 
   function handleSubmit(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault()

@@ -7,6 +7,7 @@ import { SelectField, type SelectOption } from '../../components/form/SelectFiel
 import { TextField } from '../../components/form/TextField'
 import { toSummaryErrors, useValidatedForm, type FormErrors } from '../../components/form/useValidatedForm'
 import { Button } from '../../components/ui/Button'
+import { formErrorsFromApi } from './apiFormErrors'
 import { accountLimits, telephoneExample } from './authRules'
 import { registerCustomer } from './authService'
 import { emptyRegistrationValues, validateRegistration, type RegistrationFormValues } from './authValidation'
@@ -25,6 +26,8 @@ const fieldIds: Record<keyof RegistrationFormValues, string> = {
   telephone: 'register-telephone',
 }
 
+const registrationFields = Object.keys(fieldIds) as (keyof RegistrationFormValues)[]
+
 const countryOptions: SelectOption[] = listCountries().map((country) => ({ value: country.code, label: country.name }))
 
 export function RegistrationForm(): React.JSX.Element {
@@ -37,11 +40,10 @@ export function RegistrationForm(): React.JSX.Element {
   const { values, errors, setField } = form
 
   async function handleRegister(input: RegistrationInput): Promise<FormErrors<RegistrationFormValues> | null> {
-    const result = await registerCustomer(input)
-    if (!result.ok) {
-      const serverErrors: FormErrors<RegistrationFormValues> = {}
-      serverErrors[result.field] = result.message
-      return serverErrors
+    try {
+      await registerCustomer(input)
+    } catch (error) {
+      return formErrorsFromApi<RegistrationFormValues>(error, registrationFields, { email_taken: 'email' })
     }
     navigate(paths.account, { replace: true, state: welcomeState })
     return null

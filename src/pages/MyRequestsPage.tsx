@@ -1,24 +1,20 @@
 import { Suspense } from 'react'
-import { useLoaderData, useRevalidator } from 'react-router'
+import { useLoaderData } from 'react-router'
 import type { myRequestsLoader } from '../app/loaders'
 import { paths } from '../app/paths'
 import { PageContainer } from '../components/layout/PageContainer'
-import { Button, ButtonLink } from '../components/ui/Button'
+import { ButtonLink } from '../components/ui/Button'
+import { EmptyState } from '../components/ui/EmptyState'
 import { TableSkeleton } from '../components/ui/TableSkeleton'
-import { resetDemoBidRequests } from '../features/bid-requests/bidRequestService'
+import { useCurrentCustomer } from '../features/auth/useCurrentCustomer'
 import { MyRequestsTable } from '../features/bid-requests/MyRequestsTable'
-import { PrototypeNotice } from '../components/ui/PrototypeNotice'
 import { StatusLegend } from '../features/bid-requests/StatusLegend'
 import './MyRequestsPage.css'
 
+// myRequestsLoader sends visitors to sign in first; signing out elsewhere hides the list here too.
 export function MyRequestsPage(): React.JSX.Element {
   const { requests } = useLoaderData<typeof myRequestsLoader>()
-  const revalidator = useRevalidator()
-
-  function handleClearSubmitted(): void {
-    resetDemoBidRequests()
-    void revalidator.revalidate()
-  }
+  const customer = useCurrentCustomer()
 
   return (
     <PageContainer
@@ -26,20 +22,21 @@ export function MyRequestsPage(): React.JSX.Element {
       title="My requests"
       description="Every bid request you have made, with its maximum bid and where it stands."
     >
-      <PrototypeNotice>
-        You are viewing the demo customer's sample requests: bid requests aren't linked to the account you sign in
-        with yet. Requests you submit are saved in this browser only.
-      </PrototypeNotice>
-      <div className="my-requests__toolbar">
-        <ButtonLink to={paths.requestBid}>Request a bid</ButtonLink>
-        <Button variant="secondary" onClick={handleClearSubmitted}>
-          Clear requests made in this browser
-        </Button>
-      </div>
-      <Suspense fallback={<TableSkeleton rows={7} label="Loading your requests" />}>
-        <MyRequestsTable requests={requests} />
-      </Suspense>
-      <StatusLegend />
+      {customer ? (
+        <>
+          <div className="my-requests__toolbar">
+            <ButtonLink to={paths.requestBid}>Request a bid</ButtonLink>
+          </div>
+          <Suspense fallback={<TableSkeleton rows={5} label="Loading your requests" />}>
+            <MyRequestsTable requests={requests} />
+          </Suspense>
+          <StatusLegend />
+        </>
+      ) : (
+        <EmptyState title="You're signed out" actions={<ButtonLink to={paths.signIn}>Sign in</ButtonLink>}>
+          Sign in again to see your requests.
+        </EmptyState>
+      )}
     </PageContainer>
   )
 }

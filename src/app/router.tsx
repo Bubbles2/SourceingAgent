@@ -14,9 +14,11 @@ import { PrivacyPage } from '../pages/PrivacyPage'
 import { RegisterPage } from '../pages/RegisterPage'
 import { RequestBidPage } from '../pages/RequestBidPage'
 import { RequestedLotsPage } from '../pages/RequestedLotsPage'
+import { ResetPasswordPage } from '../pages/ResetPasswordPage'
 import { RouteErrorPage } from '../pages/RouteErrorPage'
 import { SignInPage } from '../pages/SignInPage'
 import { TermsPage } from '../pages/TermsPage'
+import { VerifyEmailPage } from '../pages/VerifyEmailPage'
 import {
   accountLoader,
   auctionDetailsLoader,
@@ -28,6 +30,7 @@ import {
   myRequestsLoader,
   requestBidLoader,
   requestedLotsLoader,
+  rootLoader,
 } from './loaders'
 import { paths } from './paths'
 
@@ -36,6 +39,10 @@ const pageLoading = <PageLoading />
 export const router = createBrowserRouter([
   {
     element: <SiteLayout />,
+    loader: rootLoader,
+    // The session is loaded once; sign-in and sign-out keep it current from then on.
+    shouldRevalidate: () => false,
+    hydrateFallbackElement: pageLoading,
     children: [
       {
         // Errors render inside the layout so the header and footer stay available.
@@ -87,6 +94,8 @@ export const router = createBrowserRouter([
             hydrateFallbackElement: pageLoading,
           },
           { path: paths.forgotPassword, element: <ForgotPasswordPage /> },
+          { path: paths.resetPassword, element: <ResetPasswordPage /> },
+          { path: paths.verifyEmail, element: <VerifyEmailPage /> },
           {
             path: paths.account,
             loader: accountLoader,

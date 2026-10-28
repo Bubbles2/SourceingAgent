@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { AuctionWithCatalogues } from '../auctions/types'
-import { submitBidRequest, type SubmitBidRequestError } from './bidRequestService'
+import { submitBidRequest } from './bidRequestService'
 import {
   validateBidRequest,
   type BidRequestErrors,
@@ -22,15 +22,6 @@ const emptyValues: BidRequestFormValues = {
   maxBid: '',
   instructions: '',
   acknowledgedCharges: false,
-}
-
-const serverErrorFields: Record<SubmitBidRequestError['code'], BidRequestField> = {
-  'sale-closed': 'auctionId',
-  'catalogue-mismatch': 'catalogueId',
-  'lot-out-of-range': 'lotNumber',
-  'invalid-amount': 'maxBid',
-  'lot-reserved': 'lotNumber',
-  'already-requested': 'lotNumber',
 }
 
 /** A sale with a single catalogue gets it pre-selected. */
@@ -94,11 +85,16 @@ export function useBidRequestForm(options: UseBidRequestFormOptions) {
     }
 
     setIsSubmitting(true)
-    const result = await submitBidRequest(input)
+    let result: Awaited<ReturnType<typeof submitBidRequest>>
+    try {
+      result = await submitBidRequest(input)
+    } catch {
+      result = { ok: false, errors: { form: 'Something went wrong on our side. Please try again.' } }
+    }
     setIsSubmitting(false)
 
     if (!result.ok) {
-      setErrors({ [serverErrorFields[result.code]]: result.message })
+      setErrors(result.errors)
       setFailedSubmits((count) => count + 1)
       return
     }

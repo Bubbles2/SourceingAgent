@@ -48,3 +48,13 @@
   .auth-card__actions > * { flex: 1 1 auto; }
   .auth-aside__mascot { display: none; }
 }
+
+/* Results of email links (verification, password reset) */
+.auth-card__icon--error { color: var(--red); }
+
+/* "Send a new link" with its outcome underneath */
+.resend-verification { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); }
+.resend-verification__status { font-size: var(--text-meta); color: var(--green); font-weight: 500; }
+
+/* Account page: unconfirmed email */
+.verify-notice__body { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }

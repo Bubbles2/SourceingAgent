@@ -53,7 +53,7 @@ before(async () => {
   ids.auction = await insertId(insertAuction, ['schema-test-sale'])
   ids.otherAuction = await insertId(insertAuction, ['schema-test-other-sale'])
   ids.catalogue = await insertId(
-    "INSERT INTO catalogues (auction_id, title, description, first_lot, last_lot, pdf_url) VALUES ($1, 'Test catalogue', '', 1, 100, 'https://example.com/catalogue.pdf')",
+    "INSERT INTO catalogues (slug, auction_id, title, description, first_lot, last_lot, pdf_url) VALUES ('schema-test-catalogue', $1, 'Test catalogue', '', 1, 100, 'https://example.com/catalogue.pdf')",
     [ids.auction],
   )
   ids.aliceRequest = await insertId(insertRequest, [ids.alice, ids.auction, ids.catalogue, 45, '12500.50', 'accepted'])

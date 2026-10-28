@@ -1,6 +1,5 @@
 import { Gavel, ListChecks, Lock } from 'lucide-react'
 import { PageContainer } from '../components/layout/PageContainer'
-import { PrototypeNotice } from '../components/ui/PrototypeNotice'
 import { AuthAside, AuthLayout } from '../features/auth/AuthLayout'
 import { RegistrationForm } from '../features/auth/RegistrationForm'
 
@@ -12,11 +11,6 @@ export function RegisterPage(): React.JSX.Element {
       description="A free account lets you ask the agent to bid on lots for you and follow each request from review to result."
     >
       <AuthLayout aside={<RegisterAside />}>
-        <PrototypeNotice>
-          Registration is simulated in this browser, so please use made-up details: they are saved in this browser
-          only. Your password is never saved or sent anywhere, which also means the prototype cannot protect an
-          account.
-        </PrototypeNotice>
         <RegistrationForm />
       </AuthLayout>
     </PageContainer>

@@ -3,7 +3,6 @@ import { CircleCheck } from 'lucide-react'
 import { paths } from '../../app/paths'
 import { Button, ButtonLink } from '../../components/ui/Button'
 import { StatusBadge } from '../../components/ui/Badge'
-import { PrototypeNotice } from '../../components/ui/PrototypeNotice'
 import { focusOnMount } from '../../utils/dom'
 import { formatEur } from '../../utils/money'
 import { formatSaleDateLong } from '../auctions/formatAuction'
@@ -29,7 +28,7 @@ export function BidRequestConfirmation({ request, onRequestAnother }: BidRequest
         </h2>
       </div>
       <p className="bid-confirmation__lead">
-        The agent will review your request. You can follow its status under My requests.
+        The agent will review your request and update its status under My requests.
       </p>
 
       <dl className="bid-confirmation__summary">
@@ -68,11 +67,6 @@ export function BidRequestConfirmation({ request, onRequestAnother }: BidRequest
           </dd>
         </div>
       </dl>
-
-      <PrototypeNotice>
-        Nothing was sent to a server. This request is saved in this browser only, and the availability check ran
-        against sample data.
-      </PrototypeNotice>
 
       <div className="bid-confirmation__actions">
         <ButtonLink to={paths.myRequests}>View my requests</ButtonLink>

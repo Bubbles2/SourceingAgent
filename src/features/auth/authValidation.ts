@@ -1,5 +1,5 @@
 // Client-side validation for the account forms: instant, helpful feedback only.
-// The mock auth service (authService) checks again on submission, as the API will.
+// The API checks everything again on submission.
 import type { FormErrors, FormValidation } from '../../components/form/useValidatedForm'
 import {
   checkCompanyName,
@@ -41,6 +41,11 @@ export type SignInFormValues = {
 
 export type ForgotPasswordFormValues = {
   email: string
+}
+
+export type ResetPasswordFormValues = {
+  password: string
+  confirmPassword: string
 }
 
 function hasErrors<Values>(errors: FormErrors<Values>): boolean {
@@ -111,4 +116,16 @@ export function validateForgotPassword(values: ForgotPasswordFormValues): FormVa
   const email = values.email.trim()
   const message = checkEmail(email)
   return message ? { errors: { email: message }, input: null } : { errors: {}, input: email }
+}
+
+/** Valid when the new password meets the rules and both entries match; the input is the password. */
+export function validateResetPassword(values: ResetPasswordFormValues): FormValidation<ResetPasswordFormValues, string> {
+  const errors: FormErrors<ResetPasswordFormValues> = {}
+  addError(errors, 'password', checkNewPassword(values.password))
+  if (!values.confirmPassword) {
+    errors.confirmPassword = 'Enter your new password again to confirm it.'
+  } else if (values.confirmPassword !== values.password) {
+    errors.confirmPassword = "The passwords don't match. Enter the same password in both fields."
+  }
+  return hasErrors(errors) ? { errors, input: null } : { errors: {}, input: values.password }
 }
