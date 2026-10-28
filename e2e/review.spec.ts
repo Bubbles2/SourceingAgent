@@ -58,7 +58,7 @@ test('the agent accepts a request, records the bid and the result, and the custo
     )
   })
 
-  await test.step('a customer with a confirmed email requests a bid on lot 7', async () => {
+  await test.step('a customer with a confirmed email requests bids on lots 7 and 8', async () => {
     await expectStatus(
       await sendChange(customerApi, 'POST', '/api/auth/register', {
         firstName: 'Hugo',
@@ -71,17 +71,22 @@ test('the agent accepts a request, records the bid and the result, and the custo
     )
     const token = latestEmailLink(customerEmail, 'verify-email').split('#token=')[1]
     await expectStatus(await sendChange(customerApi, 'POST', '/api/auth/email-verification', { token }), 200)
-    await expectStatus(
-      await sendChange(customerApi, 'POST', '/api/bid-requests', {
-        auctionId: saleId,
-        catalogueId,
-        lotNumber: 7,
-        maxBidEur: 1200,
-        instructions: '',
-        acknowledgedCharges: true,
-      }),
-      201,
-    )
+    for (const [lotNumber, maxBidEur] of [
+      [7, 1200],
+      [8, 450],
+    ]) {
+      await expectStatus(
+        await sendChange(customerApi, 'POST', '/api/bid-requests', {
+          auctionId: saleId,
+          catalogueId,
+          lotNumber,
+          maxBidEur,
+          instructions: '',
+          acknowledgedCharges: true,
+        }),
+        201,
+      )
+    }
   })
 
   const reviewButton = page.getByRole('button', { name: 'Review lot 7 for Hugo Lefèvre' })
@@ -109,13 +114,19 @@ test('the agent accepts a request, records the bid and the result, and the custo
     await expect(page.locator(':focus')).toContainText(`Lot 7 in ${saleTitle} is now marked “Accepted”.`)
   })
 
-  await test.step('the lot shows as reserved on the public list', async () => {
+  await test.step('the administrator rejects the request for lot 8', async () => {
+    await page.getByRole('button', { name: 'Review lot 8 for Hugo Lefèvre' }).click()
+    await dialog.getByRole('button', { name: 'Reject' }).click()
+    await expect(dialog).toBeHidden()
+    await expect(page.getByText(`Lot 8 in ${saleTitle} is now marked “Rejected”.`)).toBeVisible()
+  })
+
+  await test.step('only the accepted lot shows as reserved on the public list', async () => {
     await page.goto('/requested-lots')
-    const row = page
-      .getByRole('row')
-      .filter({ hasText: saleTitle })
-      .filter({ has: page.getByRole('cell', { name: '7', exact: true }) })
+    const saleRows = page.getByRole('row').filter({ hasText: saleTitle })
+    const row = saleRows.filter({ has: page.getByRole('cell', { name: '7', exact: true }) })
     await expect(row).toContainText('Reserved')
+    await expect(saleRows).toHaveCount(1)
     await expect(page.getByRole('main')).not.toContainText('Lefèvre')
   })
 
@@ -135,15 +146,33 @@ test('the agent accepts a request, records the bid and the result, and the custo
     await reviewButton.click()
     await expect(dialog.getByText('“Won” is final, so this request won\'t change again.')).toBeVisible()
     await expect(dialog.getByRole('listitem')).toHaveCount(4)
+    await page.keyboard.press('Escape')
+    await expect(dialog).toBeHidden()
   })
 
-  await test.step('the customer sees the result, but not the notes', async () => {
+  await test.step('the customer sees both results, but not the notes', async () => {
     const response = await customerApi.get('/api/bid-requests')
     const text = await response.text()
     expect(text).toContain('"status":"won"')
+    expect(text).toContain('"status":"rejected"')
     expect(text).not.toContain(note)
     // Customers can't reach the review API.
     await expectStatus(await customerApi.get('/api/admin/bid-requests'), 403)
+  })
+
+  await test.step('when the session ends, the next page asks the administrator to sign in again', async () => {
+    // Signed out behind the page's back, as when the session expires or ends on another device
+    await expectStatus(await sendChange(page.request, 'POST', '/api/auth/logout'), 200)
+    await page.getByRole('navigation', { name: 'Administration' }).getByRole('link', { name: 'Dashboard' }).click()
+    await expect(page.getByRole('heading', { name: 'Your session has ended' })).toBeVisible()
+    await expect(page.getByRole('banner').getByRole('link', { name: 'Sign in' })).toBeVisible()
+
+    await page.getByRole('main').getByRole('link', { name: 'Sign in' }).click()
+    await page.getByLabel('Email address').fill(adminEmail)
+    await page.getByRole('textbox', { name: 'Password', exact: true }).fill(testPassword)
+    await page.getByRole('button', { name: 'Sign in' }).click()
+    await expect(page).toHaveURL(/\/admin$/)
+    await expect(page.getByRole('heading', { level: 1, name: 'Dashboard' })).toBeVisible()
   })
 
   await customerApi.dispose()

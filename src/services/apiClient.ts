@@ -22,6 +22,11 @@ export class ApiError extends Error {
   }
 }
 
+/** The API turned the request away: signed out or the session ended (401), or not allowed (403). */
+export function isAccessError(error: unknown): error is ApiError {
+  return error instanceof ApiError && (error.code === 'unauthenticated' || error.code === 'forbidden')
+}
+
 type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
 type RequestOptions = {

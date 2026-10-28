@@ -79,7 +79,6 @@ export async function myRequestsLoader({ request }: LoaderFunctionArgs) {
   return { requests: listMyRequests() }
 }
 
-/** Only administrators get the list; anyone else signed in is told the page isn't for them. */
 /**
  * Administration pages: visitors sign in first, and anyone else gets the "Administrators only" page
  * before anything is fetched. The API refuses them too; this only spares them a failed page.

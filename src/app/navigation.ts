@@ -22,7 +22,7 @@ export const guestAccountNavItems: readonly NavItem[] = [
 /** Shown in the footer while signed in; the header shows the avatar link instead */
 export const customerAccountNavItems: readonly NavItem[] = [{ label: 'Your account', to: paths.account }]
 
-/** Open to everyone until bid requests require sign-in */
+/** In the footer for everyone; visitors are asked to sign in first, then brought back */
 export const bidRequestNavItems: readonly NavItem[] = [
   { label: 'Request a bid', to: paths.requestBid },
   { label: 'My requests', to: paths.myRequests },

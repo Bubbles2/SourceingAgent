@@ -5,6 +5,7 @@ import './styles/tokens.css'
 import './styles/base.css'
 import './styles/utilities.css'
 import App from './App'
+import { reportCaughtError } from './app/errorReporting'
 
 const rootElement = document.getElementById('root')
 
@@ -12,7 +13,7 @@ if (!rootElement) {
   throw new Error('Root element not found')
 }
 
-createRoot(rootElement).render(
+createRoot(rootElement, { onCaughtError: reportCaughtError }).render(
   <StrictMode>
     <App />
   </StrictMode>,
