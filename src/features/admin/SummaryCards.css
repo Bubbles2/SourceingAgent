@@ -1,0 +1,23 @@
+/* Dashboard counts: flat white cards with the one soft hover shadow (DESIGN.md §4, §12) */
+
+.summary-cards {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: var(--space-4);
+  margin: 0; padding: 0; list-style: none;
+}
+.summary-card {
+  display: flex; flex-direction: column; gap: var(--space-1); height: 100%;
+  padding: var(--space-5) var(--space-6);
+  background: var(--white); border: 1px solid var(--cream-line); border-radius: var(--r-lg);
+  color: var(--ink); text-decoration: none;
+  transition: box-shadow var(--ease), border-color var(--ease);
+}
+a.summary-card:hover { box-shadow: var(--shadow-card-hover); border-color: var(--gold-line); color: var(--ink); }
+.summary-card__value {
+  font-family: var(--font-display); font-size: 40px; font-weight: 700; line-height: 1.1;
+  font-variant-numeric: tabular-nums; color: var(--navy);
+}
+.summary-card__label { font-weight: 600; color: var(--navy); }
+.summary-card__note { font-size: var(--text-meta); color: var(--ink-muted); }
+
+.summary-card--skeleton { gap: var(--space-3); }
+.summary-card__value-skeleton { width: 40%; height: 40px; }

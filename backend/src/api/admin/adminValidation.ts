@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { pageQuery } from '../../lib/validationFields.ts'
+import { pageQuery, slugField } from '../../lib/validationFields.ts'
 import { bidRequestStatuses } from '../../repositories/bidRequestsRepository.ts'
 
 export const listUsersQuery = z.object({
@@ -11,13 +11,23 @@ export type ListUsersQuery = z.infer<typeof listUsersQuery>
 
 const statusMessage = `Use one of: ${bidRequestStatuses.join(', ')}.`
 
-/** ?status=pending, or several separated by commas (status=rejected,cancelled) */
+/**
+ * ?status=pending, several separated by commas (status=rejected,cancelled) or all; optionally
+ * one sale (?auction=) and customers matching a search (?customer=).
+ */
 export const listBidRequestsQuery = z.object({
   status: z
     .string({ error: statusMessage })
     .default('pending')
-    .transform((value) => value.split(','))
+    .transform((value) => (value === 'all' ? [...bidRequestStatuses] : value.split(',')))
     .pipe(z.array(z.enum(bidRequestStatuses, { error: statusMessage })).min(1, statusMessage)),
+  auction: slugField('auction must be the id of a sale.').optional(),
+  customer: z
+    .string({ error: 'customer must be text.' })
+    .trim()
+    .max(200, 'Keep the customer search to 200 characters or fewer.')
+    .optional()
+    .transform((value) => value || undefined),
   ...pageQuery(25),
 })
 

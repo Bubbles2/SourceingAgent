@@ -162,8 +162,8 @@ function checkChange(current: ReviewBidRequestRow, { from, to }: StatusChangeBod
   }
 }
 
-export async function getReviewPage({ status, limit, offset }: ListBidRequestsQuery): Promise<ReviewPage> {
-  const { requests, total } = await listReviewBidRequests(status, { limit, offset })
+export async function getReviewPage({ status, auction, customer, limit, offset }: ListBidRequestsQuery): Promise<ReviewPage> {
+  const { requests, total } = await listReviewBidRequests({ statuses: status, auctionSlug: auction, customer }, { limit, offset })
   return { requests: requests.map(toReviewBidRequest), total, limit, offset }
 }
 

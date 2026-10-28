@@ -218,24 +218,58 @@ const reviewRequestQuery = `
   JOIN catalogues c ON c.id = br.catalogue_id
   JOIN users u ON u.id = br.customer_id`
 
+export type ReviewFilters = {
+  statuses: readonly BidRequestStatus[]
+  /** Only requests for this sale (its public id) */
+  auctionSlug?: string
+  /** Only customers whose name, email address or company contains this text */
+  customer?: string
+}
+
+/** Escapes LIKE wildcards so customer searches match the text as typed */
+function containsPattern(text: string): string {
+  return `%${text.replace(/[\\%_]/g, (character) => `\\${character}`)}%`
+}
+
 /**
- * Requests with the given statuses. Open work comes in sale order, soonest sale first, so the
- * most urgent requests lead; anything including closed requests comes most recently changed first.
+ * Requests matching the filters. Open work comes in sale order, soonest sale first, so the most
+ * urgent requests lead; anything including closed requests comes most recently changed first.
  */
 export async function listReviewBidRequests(
-  statuses: readonly BidRequestStatus[],
+  filters: ReviewFilters,
   { limit, offset }: { limit: number; offset: number },
 ): Promise<{ requests: ReviewBidRequestRow[]; total: number }> {
-  const onlyOpen = statuses.every((status) => !closedStatuses.includes(status))
+  // $1 is used by the query's "lot held by another request" check; filters follow from $2.
+  const values: unknown[] = [reservingStatuses, filters.statuses]
+  const conditions = ['br.status = ANY($2::text[])']
+  if (filters.auctionSlug) {
+    values.push(filters.auctionSlug)
+    conditions.push(`a.slug = $${values.length}`)
+  }
+  if (filters.customer) {
+    values.push(containsPattern(filters.customer))
+    const pattern = `$${values.length}`
+    conditions.push(
+      `(u.first_name || ' ' || u.last_name ILIKE ${pattern} OR u.email ILIKE ${pattern} OR u.company_name ILIKE ${pattern})`,
+    )
+  }
+  const where = conditions.join(' AND ')
+  const onlyOpen = filters.statuses.every((status) => !closedStatuses.includes(status))
   const order = onlyOpen ? 'a.starts_at, c.slug, br.lot_number, br.submitted_at, br.id' : 'br.updated_at DESC, br.id'
+
   const [page, count] = await Promise.all([
     pool.query<ReviewBidRequestRow>(
-      `${reviewRequestQuery} WHERE br.status = ANY($2::text[]) ORDER BY ${order} LIMIT $3 OFFSET $4`,
-      [reservingStatuses, statuses, limit, offset],
+      `${reviewRequestQuery} WHERE ${where} ORDER BY ${order} LIMIT $${values.length + 1} OFFSET $${values.length + 2}`,
+      [...values, limit, offset],
     ),
-    pool.query<{ total: number }>('SELECT count(*)::int AS total FROM bid_requests WHERE status = ANY($1::text[])', [
-      statuses,
-    ]),
+    // The same filters; $1 stays in the list (unused here) so the placeholders keep their numbers.
+    pool.query<{ total: number }>(
+      `SELECT count(*)::int AS total FROM bid_requests br
+       JOIN auctions a ON a.id = br.auction_id
+       JOIN users u ON u.id = br.customer_id
+       WHERE $1::text[] IS NOT NULL AND ${where}`,
+      values,
+    ),
   ])
   return { requests: page.rows, total: count.rows[0]?.total ?? 0 }
 }

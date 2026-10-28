@@ -11,9 +11,16 @@ type AuctionCalendarProps = {
   /** Sales across the whole visible grid, including the padding days of neighbouring months */
   auctions: Promise<readonly AuctionWithCatalogues[]>
   labelledBy: string
+  /** Administrators can create a sale from a day of the grid */
+  canAddAuctions?: boolean
 }
 
-export function AuctionCalendar({ month, auctions: auctionsPromise, labelledBy }: AuctionCalendarProps): React.JSX.Element {
+export function AuctionCalendar({
+  month,
+  auctions: auctionsPromise,
+  labelledBy,
+  canAddAuctions = false,
+}: AuctionCalendarProps): React.JSX.Element {
   const auctions = use(auctionsPromise)
   const [selectedAuctionId, setSelectedAuctionId] = useState<string | null>(null)
 
@@ -34,6 +41,7 @@ export function AuctionCalendar({ month, auctions: auctionsPromise, labelledBy }
         today={today}
         labelledBy={labelledBy}
         onSelectAuction={setSelectedAuctionId}
+        canAddAuctions={canAddAuctions}
       />
       <MonthAgenda month={month} auctionsByDate={auctionsByDate} today={today} onSelectAuction={setSelectedAuctionId} />
       {hasSalesThisMonth ? null : <p className="cal-empty">{`No auctions are scheduled in ${formatMonthTitle(month)}.`}</p>}

@@ -1,0 +1,5 @@
+/* Sale status badges, from the same palette as the request statuses (DESIGN.md §2.2) */
+.auction-status--draft     { background: var(--gold-tint);  color: var(--gold-text); }
+.auction-status--published { background: var(--green-tint); color: var(--green); }
+.auction-status--cancelled { background: var(--grey-tint);  color: var(--ink-muted); }
+.badge[class*='auction-status--'] { white-space: nowrap; }

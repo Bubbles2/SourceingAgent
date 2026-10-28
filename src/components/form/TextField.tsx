@@ -3,7 +3,8 @@ import { describedBy, FieldShell, type FieldBaseProps } from './FieldShell'
 
 type TextFieldProps = FieldBaseProps & {
   value: string
-  type?: 'text' | 'email' | 'tel'
+  /** date and time use the browser's own pickers and give YYYY-MM-DD and HH:mm */
+  type?: 'text' | 'email' | 'tel' | 'url' | 'date' | 'time'
   inputMode?: HTMLAttributes<HTMLInputElement>['inputMode']
   autoComplete?: string
   className?: string

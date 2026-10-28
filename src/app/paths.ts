@@ -14,6 +14,9 @@ export const paths = {
   verifyEmail: '/verify-email',
   account: '/account',
   myRequests: '/my-requests',
+  admin: '/admin',
+  adminAuctions: '/admin/auctions',
+  adminCatalogues: '/admin/catalogues',
   reviewRequests: '/admin/requests',
   terms: '/terms',
   privacy: '/privacy',
@@ -34,6 +37,34 @@ export function requestBidPath(auctionId: string, catalogueId?: string): To {
     search.set('catalogue', catalogueId)
   }
   return { pathname: paths.requestBid, search: `?${search.toString()}` }
+}
+
+export function adminAuctionPath(auctionId: string): string {
+  return `${paths.adminAuctions}/${encodeURIComponent(auctionId)}`
+}
+
+export function editAuctionPath(auctionId: string): string {
+  return `${adminAuctionPath(auctionId)}/edit`
+}
+
+/** The new-auction form, with the sale date filled in when it was chosen on the calendar */
+export function newAuctionPath(saleDate?: string): string {
+  return saleDate ? `${paths.adminAuctions}/new?${new URLSearchParams({ date: saleDate }).toString()}` : `${paths.adminAuctions}/new`
+}
+
+export function editCataloguePath(catalogueId: string): string {
+  return `${paths.adminCatalogues}/${encodeURIComponent(catalogueId)}/edit`
+}
+
+/** The new-catalogue form, with its sale chosen when opened from that sale */
+export function newCataloguePath(auctionId?: string): string {
+  return auctionId ? `${paths.adminCatalogues}/new?${new URLSearchParams({ auction: auctionId }).toString()}` : `${paths.adminCatalogues}/new`
+}
+
+/** The bid request review page, filtered */
+export function reviewRequestsPath(filters: { view?: string; auction?: string; customer?: string } = {}): string {
+  const search = new URLSearchParams(Object.entries(filters).filter((entry): entry is [string, string] => Boolean(entry[1])))
+  return search.size > 0 ? `${paths.reviewRequests}?${search.toString()}` : paths.reviewRequests
 }
 
 /** Sign-in page that returns to `redirectTo` once the customer has signed in */

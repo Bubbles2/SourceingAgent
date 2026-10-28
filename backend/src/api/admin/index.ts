@@ -3,12 +3,14 @@ import { Router } from 'express'
 import { bySignedInUser, rateLimit } from '../../middleware/rateLimit.ts'
 import { validate } from '../../middleware/validate.ts'
 import * as adminBidRequestsController from './adminBidRequestsController.ts'
+import * as adminSummaryController from './adminSummaryController.ts'
 import * as adminUsersController from './adminUsersController.ts'
 import { bidRequestParams, listBidRequestsQuery, listUsersQuery, statusChangeBody } from './adminValidation.ts'
 
 export function createAdminRouter(): Router {
   const router = Router()
 
+  router.get('/summary', adminSummaryController.show)
   router.get('/users', validate({ query: listUsersQuery }), adminUsersController.list)
 
   // Reviewing bid requests: accept or reject them, then record the bid and its result.

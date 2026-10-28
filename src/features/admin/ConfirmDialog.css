@@ -1,0 +1,13 @@
+.confirm-dialog { display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-6); }
+.confirm-dialog__title { font-size: var(--text-card); line-height: 1.25; }
+.confirm-dialog__body { display: flex; flex-direction: column; gap: var(--space-2); color: var(--ink-soft); }
+.confirm-dialog__error {
+  padding: var(--space-3) var(--space-4); border-radius: var(--r-md);
+  background: var(--red-tint); color: var(--red-text); font-weight: 500;
+}
+.confirm-dialog__actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+@media (max-width: 639px) {
+  .confirm-dialog { padding: var(--space-5); }
+  .confirm-dialog__actions > *, .confirm-dialog__actions form > * { flex: 1 1 auto; width: 100%; }
+}

@@ -11,7 +11,7 @@ type AccountActionsProps = {
 }
 
 /**
- * Header actions: Sign in + Create account, or My requests (Review requests for administrators) and
+ * Header actions: Sign in + Create account, or My requests (Administration for administrators) and
  * the account link once signed in (DESIGN.md §6.1).
  */
 export function AccountActions({ className, onNavigate }: AccountActionsProps): React.JSX.Element {
@@ -22,8 +22,8 @@ export function AccountActions({ className, onNavigate }: AccountActionsProps): 
     return (
       <div className={actionsClassName}>
         {customer.role === 'administrator' ? (
-          <ButtonLink to={paths.reviewRequests} variant="secondary" onClick={onNavigate}>
-            Review requests
+          <ButtonLink to={paths.admin} variant="secondary" onClick={onNavigate}>
+            Administration
           </ButtonLink>
         ) : (
           <ButtonLink to={paths.myRequests} variant="secondary" onClick={onNavigate}>

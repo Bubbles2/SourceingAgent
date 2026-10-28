@@ -37,4 +37,4 @@ export type ReviewDetail = {
 }
 
 /** The review page's tabs */
-export type ReviewView = 'pending' | 'accepted' | 'placed' | 'closed'
+export type ReviewView = 'pending' | 'accepted' | 'placed' | 'closed' | 'all'

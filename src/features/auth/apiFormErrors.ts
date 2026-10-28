@@ -11,6 +11,8 @@ export function formErrorsFromApi<Values>(
   fields: readonly (keyof Values & string)[],
   /** Error codes that belong to one field, e.g. { email_taken: 'email' } */
   codeFields: Partial<Record<string, keyof Values>> = {},
+  /** API paths that don't match a field's name, e.g. { 'body.viewing.end': 'viewingEnd' } */
+  pathFields: Partial<Record<string, keyof Values>> = {},
 ): FormErrors<Values> {
   if (!(error instanceof ApiError)) {
     throw error
@@ -24,7 +26,7 @@ export function formErrorsFromApi<Values>(
   }
 
   for (const detail of error.details) {
-    const field = fields.find((name) => `body.${name}` === detail.path)
+    const field = pathFields[detail.path] ?? fields.find((name) => `body.${name}` === detail.path)
     if (field && !errors[field]) {
       errors[field] = detail.message
     }

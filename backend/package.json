@@ -19,7 +19,7 @@
     "db:seed": "node --env-file-if-exists=.env src/cli/seedSampleData.ts",
     "user:role": "node --env-file-if-exists=.env src/cli/setUserRole.ts",
     "mail:outbox": "node --env-file-if-exists=.env src/cli/showOutbox.ts",
-    "test": "node --env-file-if-exists=.env --test \"test/**/*.test.ts\"",
+    "test": "node --env-file-if-exists=.env --test --test-concurrency=1 \"test/**/*.test.ts\"",
     "test:cleanup": "node --env-file-if-exists=.env src/cli/removeTestAccounts.ts"
   },
   "dependencies": {

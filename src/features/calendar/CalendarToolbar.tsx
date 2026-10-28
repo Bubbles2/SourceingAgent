@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { ButtonLink } from '../../components/ui/Button'
 import { addMonths, currentMonthKey, formatMonthTitle, type MonthKey } from './calendarDates'
@@ -7,10 +8,12 @@ type CalendarToolbarProps = {
   month: MonthKey
   /** Id for the month heading, which also labels the grid */
   headingId: string
+  /** Extra controls at the end of the toolbar, such as New auction for administrators */
+  actions?: ReactNode
 }
 
 /** Today / previous / next controls. They are links, so each month has its own shareable URL. */
-export function CalendarToolbar({ month, headingId }: CalendarToolbarProps): React.JSX.Element {
+export function CalendarToolbar({ month, headingId, actions }: CalendarToolbarProps): React.JSX.Element {
   const previousMonth = addMonths(month, -1)
   const nextMonth = addMonths(month, 1)
 
@@ -42,6 +45,7 @@ export function CalendarToolbar({ month, headingId }: CalendarToolbarProps): Rea
       <h2 id={headingId} className="cal-toolbar__title" aria-live="polite">
         {formatMonthTitle(month)}
       </h2>
+      {actions ? <div className="cal-toolbar__actions">{actions}</div> : null}
     </div>
   )
 }

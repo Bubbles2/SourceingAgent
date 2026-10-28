@@ -23,11 +23,27 @@ export const reviewViewOptions: readonly { value: ReviewView; label: string }[] 
   { value: 'accepted', label: 'Accepted' },
   { value: 'placed', label: 'Bid placed' },
   { value: 'closed', label: 'Closed' },
+  { value: 'all', label: 'All' },
 ]
 
 /** Reads the `view` search param, defaulting to requests waiting for review. */
 export function parseReviewView(value: string | null): ReviewView {
   return reviewViewOptions.find((option) => option.value === value)?.value ?? 'pending'
+}
+
+/** The page's address for a tab and page, keeping any filters */
+export function reviewSearch(view: ReviewView, filters: { auction: string; customer: string }, page = 1): string {
+  const search = new URLSearchParams({ view })
+  if (filters.auction) {
+    search.set('auction', filters.auction)
+  }
+  if (filters.customer) {
+    search.set('customer', filters.customer)
+  }
+  if (page > 1) {
+    search.set('page', String(page))
+  }
+  return `?${search.toString()}`
 }
 
 const parisTimeFormatter = new Intl.DateTimeFormat('en-GB', {

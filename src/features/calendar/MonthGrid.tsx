@@ -1,3 +1,6 @@
+import { Plus } from 'lucide-react'
+import { Link } from 'react-router'
+import { newAuctionPath } from '../../app/paths'
 import { formatSaleDateLong } from '../auctions/formatAuction'
 import type { Auction } from '../auctions/types'
 import { formatDayAndMonth, getMonthWeeks, weekdays, type CalendarDay, type MonthKey } from './calendarDates'
@@ -10,10 +13,19 @@ type MonthGridProps = {
   today: string
   labelledBy: string
   onSelectAuction?: (auctionId: string) => void
+  /** Administrators get a link on each day from today on, to create a sale on that date */
+  canAddAuctions?: boolean
 }
 
 /** Desktop and tablet month view (DESIGN.md §6.10). Below 640 px MonthAgenda takes over. */
-export function MonthGrid({ month, auctionsByDate, today, labelledBy, onSelectAuction }: MonthGridProps): React.JSX.Element {
+export function MonthGrid({
+  month,
+  auctionsByDate,
+  today,
+  labelledBy,
+  onSelectAuction,
+  canAddAuctions = false,
+}: MonthGridProps): React.JSX.Element {
   return (
     <table className="cal" aria-labelledby={labelledBy}>
       <thead>
@@ -36,6 +48,7 @@ export function MonthGrid({ month, auctionsByDate, today, labelledBy, onSelectAu
                 isToday={day.date === today}
                 auctions={auctionsByDate.get(day.date) ?? []}
                 onSelectAuction={onSelectAuction}
+                canAddAuction={canAddAuctions && day.date >= today}
               />
             ))}
           </tr>
@@ -50,9 +63,10 @@ type DayCellProps = {
   isToday: boolean
   auctions: readonly Auction[]
   onSelectAuction?: (auctionId: string) => void
+  canAddAuction: boolean
 }
 
-function DayCell({ day, isToday, auctions, onSelectAuction }: DayCellProps): React.JSX.Element {
+function DayCell({ day, isToday, auctions, onSelectAuction, canAddAuction }: DayCellProps): React.JSX.Element {
   const className = [
     'cal__cell',
     day.isWeekend && 'cal__cell--weekend',
@@ -64,10 +78,17 @@ function DayCell({ day, isToday, auctions, onSelectAuction }: DayCellProps): Rea
 
   return (
     <td className={className} aria-current={isToday ? 'date' : undefined}>
-      <time className="cal__num" dateTime={day.date}>
-        {day.dayOfMonth === 1 ? formatDayAndMonth(day.date) : day.dayOfMonth}
-      </time>
-      {isToday ? <span className="visually-hidden">, today</span> : null}
+      <div className="cal__day-head">
+        <time className="cal__num" dateTime={day.date}>
+          {day.dayOfMonth === 1 ? formatDayAndMonth(day.date) : day.dayOfMonth}
+        </time>
+        {isToday ? <span className="visually-hidden">, today</span> : null}
+        {canAddAuction ? (
+          <Link className="cal__add" to={newAuctionPath(day.date)} aria-label={`Add an auction on ${formatSaleDateLong(day.date)}`}>
+            <Plus size={16} />
+          </Link>
+        ) : null}
+      </div>
       {auctions.length > 0 ? (
         <ul className="cal__events">
           {auctions.map((auction) => (

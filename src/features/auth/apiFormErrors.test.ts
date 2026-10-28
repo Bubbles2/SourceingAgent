@@ -34,6 +34,16 @@ describe('formErrorsFromApi', () => {
   it('rethrows errors that are not from the API', () => {
     expect(() => formErrorsFromApi<Values>(new Error('bug'), ['email'])).toThrow('bug')
   })
+
+  it('maps nested API paths to the form fields that hold them', () => {
+    type SaleValues = { viewingStart: string; viewingEnd: string }
+    const error = new ApiError(400, 'validation_failed', 'Invalid', [
+      { path: 'body.viewing.end', message: 'Viewing must end on or before the sale date.' },
+    ])
+    expect(formErrorsFromApi<SaleValues>(error, ['viewingStart', 'viewingEnd'], {}, { 'body.viewing.end': 'viewingEnd' })).toEqual({
+      viewingEnd: 'Viewing must end on or before the sale date.',
+    })
+  })
 })
 
 describe('parseAccountResponse', () => {

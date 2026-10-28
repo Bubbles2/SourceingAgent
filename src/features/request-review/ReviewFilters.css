@@ -1,0 +1,13 @@
+/* Sale and customer filters above the review table */
+.review-filters {
+  display: flex; flex-wrap: wrap; align-items: flex-end; gap: var(--space-4);
+  padding: var(--space-4) var(--space-5); background: var(--white); border: 1px solid var(--cream-line); border-radius: var(--r-lg);
+}
+.review-filters__sale { flex: 2 1 280px; }
+.review-filters__customer { flex: 1 1 220px; }
+.review-filters__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+
+@media (max-width: 639px) {
+  .review-filters__actions { width: 100%; }
+  .review-filters__actions > * { flex: 1 1 auto; }
+}

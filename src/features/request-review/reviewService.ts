@@ -9,20 +9,34 @@ import type { ReviewBidRequest, ReviewDetail, ReviewView } from './types'
 
 export const reviewPageSize = 25
 
-/** The statuses each tab of the review page lists */
-export const viewStatuses: Record<ReviewView, readonly BidRequestStatus[]> = {
-  pending: ['pending'],
-  accepted: ['accepted'],
-  placed: ['placed'],
-  closed: ['rejected', 'cancelled', 'won', 'lost'],
+/** The statuses each tab of the review page lists, as the API's status filter */
+const viewStatuses: Record<ReviewView, string> = {
+  pending: 'pending',
+  accepted: 'accepted',
+  placed: 'placed',
+  closed: 'rejected,cancelled,won,lost',
+  all: 'all',
 }
 
-export function listReviewRequests({ view, page }: { view: ReviewView; page: number }): Promise<Page<ReviewBidRequest>> {
-  const search = new URLSearchParams({
-    status: viewStatuses[view].join(','),
-    limit: String(reviewPageSize),
-    offset: String(pageOffset(page, reviewPageSize)),
-  })
+export type ReviewFilters = {
+  view: ReviewView
+  page: number
+  /** One sale's requests, by its id */
+  auction?: string
+  /** Customers whose name, email address or company contains this text */
+  customer?: string
+}
+
+export function listReviewRequests({ view, page, auction, customer }: ReviewFilters): Promise<Page<ReviewBidRequest>> {
+  const search = new URLSearchParams({ status: viewStatuses[view] })
+  if (auction) {
+    search.set('auction', auction)
+  }
+  if (customer) {
+    search.set('customer', customer)
+  }
+  search.set('limit', String(reviewPageSize))
+  search.set('offset', String(pageOffset(page, reviewPageSize)))
   return apiRequest(`/api/admin/bid-requests?${search}`).then(parseReviewPage)
 }
 

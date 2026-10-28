@@ -1,11 +1,12 @@
 import { useId } from 'react'
 import { CalendarDays, Eye, Landmark, MapPin, X } from 'lucide-react'
-import { auctionPath, requestBidPath } from '../../app/paths'
+import { adminAuctionPath, auctionPath, requestBidPath } from '../../app/paths'
 import { Button, ButtonLink } from '../../components/ui/Button'
 import { Dialog } from '../../components/ui/Dialog'
 import { AuctionDateStrip } from '../auctions/AuctionDateStrip'
 import { formatSaleDateLong, formatViewingRange } from '../auctions/formatAuction'
 import { getSaleStatus } from '../auctions/saleStatus'
+import { useCurrentCustomer } from '../auth/useCurrentCustomer'
 import type { AuctionWithCatalogues } from '../auctions/types'
 import { CatalogueLink } from '../catalogues/CatalogueLink'
 import './AuctionDialog.css'
@@ -18,6 +19,7 @@ type AuctionDialogProps = {
 export function AuctionDialog({ auction, onClose }: AuctionDialogProps): React.JSX.Element {
   const titleId = useId()
   const isUpcoming = getSaleStatus(auction.saleDate) === 'upcoming'
+  const isAdministrator = useCurrentCustomer()?.role === 'administrator'
 
   return (
     <Dialog labelledBy={titleId} onClose={onClose}>
@@ -75,6 +77,11 @@ export function AuctionDialog({ auction, onClose }: AuctionDialogProps): React.J
       <div className="auction-dialog__foot">
         <CatalogueLink auction={auction} label="View catalogue" />
         <div className="auction-dialog__actions">
+          {isAdministrator ? (
+            <ButtonLink to={adminAuctionPath(auction.id)} variant="secondary">
+              Manage
+            </ButtonLink>
+          ) : null}
           <ButtonLink to={auctionPath(auction.id)} variant="secondary">
             View details
           </ButtonLink>

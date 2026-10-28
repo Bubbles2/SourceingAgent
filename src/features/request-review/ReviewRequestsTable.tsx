@@ -1,7 +1,7 @@
 import { use, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { Link } from 'react-router'
-import { auctionPath } from '../../app/paths'
+import { adminAuctionPath } from '../../app/paths'
 import { StatusBadge, statusLabel } from '../../components/ui/Badge'
 import { Button, ButtonLink } from '../../components/ui/Button'
 import { EmptyState } from '../../components/ui/EmptyState'
@@ -12,6 +12,7 @@ import { formatEur } from '../../utils/money'
 import { formatDayMonthYear, formatSaleDateShort } from '../auctions/formatAuction'
 import { toParisDate } from '../auctions/saleStatus'
 import { ReviewRequestDialog } from './ReviewRequestDialog'
+import { reviewSearch } from './reviewDecisions'
 import { getReviewDetail, type DetailResult } from './reviewService'
 import type { ReviewBidRequest, ReviewView } from './types'
 import '../../components/ui/Table.css'
@@ -21,6 +22,8 @@ type ReviewRequestsTableProps = {
   requests: Promise<Page<ReviewBidRequest>>
   view: ReviewView
   page: number
+  /** The sale and customer filters, kept when moving between pages */
+  filters: { auction: string; customer: string }
 }
 
 const emptyMessages: Record<ReviewView, { title: string; body: string }> = {
@@ -28,6 +31,7 @@ const emptyMessages: Record<ReviewView, { title: string; body: string }> = {
   accepted: { title: 'No accepted requests', body: 'Requests you accept appear here until you record the bid.' },
   placed: { title: 'No bids awaiting a result', body: 'Bids you record as placed appear here until the result is in.' },
   closed: { title: 'No closed requests yet', body: 'Rejected, cancelled, won and lost requests appear here.' },
+  all: { title: 'No requests yet', body: 'Requests from customers appear here as they arrive.' },
 }
 
 type Selection = {
@@ -35,11 +39,7 @@ type Selection = {
   detail: Promise<DetailResult>
 }
 
-function viewSearch(view: ReviewView, page: number): string {
-  return page > 1 ? `?view=${view}&page=${page}` : `?view=${view}`
-}
-
-export function ReviewRequestsTable({ requests: requestsPromise, view, page }: ReviewRequestsTableProps): React.JSX.Element {
+export function ReviewRequestsTable({ requests: requestsPromise, view, page, filters }: ReviewRequestsTableProps): React.JSX.Element {
   const { items, total, limit } = use(requestsPromise)
   // Requests changed on this page since it loaded; they keep their row until the list is reloaded.
   const [changed, setChanged] = useState<ReadonlyMap<string, ReviewBidRequest>>(new Map())
@@ -86,7 +86,12 @@ export function ReviewRequestsTable({ requests: requestsPromise, view, page }: R
   }
 
   if (total === 0) {
-    return <EmptyState title={emptyMessages[view].title}>{emptyMessages[view].body}</EmptyState>
+    const filtered = Boolean(filters.auction || filters.customer)
+    return (
+      <EmptyState title={filtered ? 'No requests match these filters' : emptyMessages[view].title}>
+        {filtered ? 'Try another sale or customer, or clear the filters.' : emptyMessages[view].body}
+      </EmptyState>
+    )
   }
 
   if (items.length === 0) {
@@ -94,7 +99,7 @@ export function ReviewRequestsTable({ requests: requestsPromise, view, page }: R
       <EmptyState
         title="No requests on this page"
         actions={
-          <ButtonLink to={{ search: viewSearch(view, 1) }} variant="secondary">
+          <ButtonLink to={{ search: reviewSearch(view, filters) }} variant="secondary">
             Go to the first page
           </ButtonLink>
         }
@@ -138,7 +143,7 @@ export function ReviewRequestsTable({ requests: requestsPromise, view, page }: R
             {rows.map((request) => (
               <tr key={request.id}>
                 <td>
-                  <Link className="table__primary" to={auctionPath(request.auction.id)}>
+                  <Link className="table__primary" to={adminAuctionPath(request.auction.id)}>
                     {request.auction.title}
                   </Link>
                   <span className="table__secondary">
@@ -150,7 +155,13 @@ export function ReviewRequestsTable({ requests: requestsPromise, view, page }: R
                   <span className="table__secondary">{request.catalogue.title}</span>
                 </td>
                 <td>
-                  <span className="table__primary">{`${request.customer.firstName} ${request.customer.lastName}`}</span>
+                  <Link
+                    className="table__primary"
+                    to={{ search: reviewSearch('all', { auction: '', customer: request.customer.email }) }}
+                    aria-label={`All requests from ${request.customer.firstName} ${request.customer.lastName}`}
+                  >
+                    {`${request.customer.firstName} ${request.customer.lastName}`}
+                  </Link>
                   <span className="table__secondary">{request.customer.email}</span>
                 </td>
                 <td className="amount">{formatEur(request.maxBidEur)}</td>
@@ -182,7 +193,7 @@ export function ReviewRequestsTable({ requests: requestsPromise, view, page }: R
         label="Pages of requests"
         page={page}
         pageCount={countPages({ total, limit })}
-        pageLink={(target) => ({ search: viewSearch(view, target) })}
+        pageLink={(target) => ({ search: reviewSearch(view, filters, target) })}
       />
       {selection ? (
         <ReviewRequestDialog

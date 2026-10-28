@@ -1,6 +1,10 @@
 // Route loaders start data requests as navigation begins and hand the promises to the page,
 // which renders skeletons inside <Suspense> until they resolve.
-import { redirect, type LoaderFunctionArgs } from 'react-router'
+import { data, redirect, type LoaderFunctionArgs } from 'react-router'
+import { getAdminAuction, listAdminAuctions, listAllAuctions, parseAdminAuctionView } from '../features/admin/adminAuctionService'
+import { getAdminCatalogue, listAdminCatalogues } from '../features/admin/adminCatalogueService'
+import { getAdminSummary } from '../features/admin/adminSummaryService'
+import { isIsoDate } from '../features/admin/auctionFormRules'
 import {
   getAuction,
   listAuctions,
@@ -76,12 +80,80 @@ export async function myRequestsLoader({ request }: LoaderFunctionArgs) {
 }
 
 /** Only administrators get the list; anyone else signed in is told the page isn't for them. */
-export async function reviewRequestsLoader({ request }: LoaderFunctionArgs) {
+/**
+ * Administration pages: visitors sign in first, and anyone else gets the "Administrators only" page
+ * before anything is fetched. The API refuses them too; this only spares them a failed page.
+ */
+async function requireAdministrator(request: Request): Promise<void> {
   const account = await requireSignIn(request)
+  if (account.role !== 'administrator') {
+    throw data(null, { status: 403 })
+  }
+}
+
+export async function adminDashboardLoader({ request }: LoaderFunctionArgs) {
+  await requireAdministrator(request)
+  return { summary: getAdminSummary() }
+}
+
+export async function adminAuctionsLoader({ request }: LoaderFunctionArgs) {
+  await requireAdministrator(request)
   const searchParams = new URL(request.url).searchParams
-  const view = parseReviewView(searchParams.get('view'))
+  const view = parseAdminAuctionView(searchParams.get('view'))
   const page = parsePageNumber(searchParams.get('page'))
-  return { view, page, requests: account.role === 'administrator' ? listReviewRequests({ view, page }) : null }
+  return { view, page, auctions: listAdminAuctions({ view, page }) }
+}
+
+export async function adminAuctionLoader({ request, params }: LoaderFunctionArgs) {
+  await requireAdministrator(request)
+  const auctionId = params.auctionId ?? ''
+  return { auctionId, auction: getAdminAuction(auctionId) }
+}
+
+/** ?date= comes from the calendar and fills in the sale date */
+export async function newAuctionLoader({ request }: LoaderFunctionArgs) {
+  await requireAdministrator(request)
+  const date = new URL(request.url).searchParams.get('date') ?? ''
+  return { saleDate: isIsoDate(date) ? date : '' }
+}
+
+export async function editAuctionLoader({ request, params }: LoaderFunctionArgs) {
+  await requireAdministrator(request)
+  const auctionId = params.auctionId ?? ''
+  return { auctionId, auction: getAdminAuction(auctionId) }
+}
+
+export async function adminCataloguesLoader({ request }: LoaderFunctionArgs) {
+  await requireAdministrator(request)
+  const searchParams = new URL(request.url).searchParams
+  const period = parseSaleStatus(searchParams.get('period'))
+  const page = parsePageNumber(searchParams.get('page'))
+  return { period, page, catalogues: listAdminCatalogues({ period, page }) }
+}
+
+/** ?auction= chooses the sale when adding a catalogue from it */
+export async function newCatalogueLoader({ request }: LoaderFunctionArgs) {
+  await requireAdministrator(request)
+  return { auctionId: new URL(request.url).searchParams.get('auction') ?? '', auctions: listAllAuctions() }
+}
+
+export async function editCatalogueLoader({ request, params }: LoaderFunctionArgs) {
+  await requireAdministrator(request)
+  const catalogueId = params.catalogueId ?? ''
+  return { catalogueId, catalogue: getAdminCatalogue(catalogueId), auctions: listAllAuctions() }
+}
+
+/** Tabs by status, and optional filters for one sale (?auction=) and a customer search (?customer=) */
+export async function reviewRequestsLoader({ request }: LoaderFunctionArgs) {
+  await requireAdministrator(request)
+  const searchParams = new URL(request.url).searchParams
+  const filters = {
+    view: parseReviewView(searchParams.get('view')),
+    page: parsePageNumber(searchParams.get('page')),
+    auction: searchParams.get('auction')?.trim() ?? '',
+    customer: searchParams.get('customer')?.trim() ?? '',
+  }
+  return { ...filters, requests: listReviewRequests(filters), auctions: listAllAuctions() }
 }
 
 export function cataloguesLoader({ request }: LoaderFunctionArgs) {

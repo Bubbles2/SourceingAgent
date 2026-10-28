@@ -92,7 +92,8 @@ test('the agent accepts a request, records the bid and the result, and the custo
     await page.getByLabel('Email address').fill(adminEmail)
     await page.getByRole('textbox', { name: 'Password', exact: true }).fill(testPassword)
     await page.getByRole('button', { name: 'Sign in' }).click()
-    await page.getByRole('banner').getByRole('link', { name: 'Review requests' }).click()
+    await page.getByRole('banner').getByRole('link', { name: 'Administration' }).click()
+    await page.getByRole('navigation', { name: 'Administration' }).getByRole('link', { name: 'Bid requests' }).click()
     await expect(page.getByRole('heading', { level: 1, name: 'Bid requests' })).toBeVisible()
 
     await reviewButton.click()

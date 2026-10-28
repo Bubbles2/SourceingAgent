@@ -1,0 +1,18 @@
+/* Administration sub-navigation: a band under the header, in the filter-tab style (DESIGN.md §2) */
+
+.admin-bar { background: var(--ivory-deep); border-bottom: 1px solid var(--cream-line); }
+.admin-bar__nav { display: flex; flex-wrap: wrap; gap: var(--space-1); padding-block: var(--space-2); }
+.admin-bar__link {
+  display: inline-flex; align-items: center; min-height: var(--tap); padding: 0 var(--space-4);
+  border-radius: var(--r-sm);
+  font-size: var(--text-body); font-weight: 600; color: var(--navy); text-decoration: none;
+  transition: background var(--ease), color var(--ease);
+}
+.admin-bar__link:hover { background: var(--blue-tint); color: var(--navy); }
+.admin-bar__link[aria-current='page'] { background: var(--navy); color: var(--ivory); }
+
+/* A row of page-level actions, such as New auction */
+.admin-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+@media (max-width: 639px) {
+  .admin-actions > * { flex: 1 1 auto; }
+}
