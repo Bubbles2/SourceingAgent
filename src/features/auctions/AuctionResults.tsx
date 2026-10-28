@@ -1,19 +1,26 @@
 import { use } from 'react'
 import { ButtonLink } from '../../components/ui/Button'
 import { EmptyState } from '../../components/ui/EmptyState'
+import { Pagination } from '../../components/ui/Pagination'
+import { countPages, type Page } from '../../services/pagination'
 import { AuctionListingCard } from './AuctionListingCard'
 import type { SaleStatus } from './saleStatus'
 import type { AuctionWithCatalogues } from './types'
 
 type AuctionResultsProps = {
-  auctions: Promise<readonly AuctionWithCatalogues[]>
+  auctions: Promise<Page<AuctionWithCatalogues>>
   status: SaleStatus
+  page: number
 }
 
-export function AuctionResults({ auctions: auctionsPromise, status }: AuctionResultsProps): React.JSX.Element {
-  const auctions = use(auctionsPromise)
+function pageSearch(status: SaleStatus, page: number): string {
+  return page > 1 ? `?status=${status}&page=${page}` : `?status=${status}`
+}
 
-  if (auctions.length === 0) {
+export function AuctionResults({ auctions: auctionsPromise, status, page }: AuctionResultsProps): React.JSX.Element {
+  const { items: auctions, total, limit } = use(auctionsPromise)
+
+  if (total === 0) {
     const otherStatus: SaleStatus = status === 'upcoming' ? 'completed' : 'upcoming'
     return (
       <EmptyState
@@ -31,16 +38,40 @@ export function AuctionResults({ auctions: auctionsPromise, status }: AuctionRes
     )
   }
 
+  if (auctions.length === 0) {
+    return <PastLastPage status={status} />
+  }
+
   return (
     <>
-      <h2 className="page__results-count">
-        {`${auctions.length} ${status} ${auctions.length === 1 ? 'auction' : 'auctions'}`}
-      </h2>
+      <h2 className="page__results-count">{`${total} ${status} ${total === 1 ? 'auction' : 'auctions'}`}</h2>
       <div className="auction-grid">
         {auctions.map((auction) => (
           <AuctionListingCard key={auction.id} auction={auction} />
         ))}
       </div>
+      <Pagination
+        label={`Pages of ${status} auctions`}
+        page={page}
+        pageCount={countPages({ total, limit })}
+        pageLink={(target) => ({ search: pageSearch(status, target) })}
+      />
     </>
+  )
+}
+
+/** An old or mistyped ?page= beyond the last page */
+function PastLastPage({ status }: { status: SaleStatus }): React.JSX.Element {
+  return (
+    <EmptyState
+      title="No auctions on this page"
+      actions={
+        <ButtonLink to={{ search: pageSearch(status, 1) }} variant="secondary">
+          Go to the first page
+        </ButtonLink>
+      }
+    >
+      {`There are fewer ${status} auctions than this page number suggests.`}
+    </EmptyState>
   )
 }

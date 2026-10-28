@@ -61,10 +61,12 @@ export function AuctionDialog({ auction, onClose }: AuctionDialogProps): React.J
               {' (Paris time)'}
             </span>
           </li>
-          <li>
-            <Eye size={16} />
-            <span>{`Viewing ${formatViewingRange(auction.viewing)}`}</span>
-          </li>
+          {auction.viewing ? (
+            <li>
+              <Eye size={16} />
+              <span>{`Viewing ${formatViewingRange(auction.viewing)}`}</span>
+            </li>
+          ) : null}
         </ul>
 
         <p className="auction-dialog__description">{auction.description}</p>

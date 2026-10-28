@@ -1,6 +1,7 @@
 // Who is signed in, shared by the header, footer, loaders and account pages. The session itself is
 // an HttpOnly cookie the site can't read, so this asks the API (/api/auth/session) and keeps the answer.
 import { apiRequest } from '../../services/apiClient'
+import { clearCachedResponses } from '../../services/responseCache'
 import { parseAccountResponse } from './accountResponse'
 import type { CustomerAccount } from './types'
 
@@ -47,6 +48,8 @@ export function refreshSession(): Promise<CustomerAccount | null> {
 
 /** After signing in, registering or signing out: update this tab and tell the others. */
 export function setSessionAccount(account: CustomerAccount | null): void {
+  // Administrators see sales others can't, so nothing fetched for the previous account is reused.
+  clearCachedResponses()
   loading = Promise.resolve(account)
   publish(account)
   channel?.postMessage('changed')
@@ -58,6 +61,7 @@ export function announceSessionChange(): void {
 }
 
 channel?.addEventListener('message', () => {
+  clearCachedResponses()
   void refreshSession()
 })
 

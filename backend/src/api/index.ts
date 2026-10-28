@@ -4,8 +4,10 @@ import { authenticate } from '../middleware/authenticate.ts'
 import { csrfProtection } from '../middleware/csrfProtection.ts'
 import { requireRole } from '../middleware/requireAuth.ts'
 import { createAdminRouter } from './admin/index.ts'
+import { createAuctionsRouter } from './auctions/index.ts'
 import { createAuthRouter } from './auth/index.ts'
 import { createBidRequestsRouter } from './bid-requests/index.ts'
+import { createCataloguesRouter } from './catalogues/index.ts'
 import { healthRouter } from './health/index.ts'
 import { requestedLotsRouter } from './requested-lots/index.ts'
 
@@ -20,6 +22,8 @@ export function createApiRouter(): Router {
   router.use(csrfProtection)
 
   router.use('/auth', createAuthRouter())
+  router.use('/auctions', createAuctionsRouter())
+  router.use('/catalogues', createCataloguesRouter())
   router.use('/bid-requests', createBidRequestsRouter())
   router.use('/requested-lots', requestedLotsRouter)
   router.use('/admin', requireRole('administrator'), createAdminRouter())

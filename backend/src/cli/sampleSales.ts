@@ -1,7 +1,33 @@
-import type { Auction } from '../features/auctions/types'
+// Fictional auction houses, sales and catalogues for development, loaded by npm run db:seed.
+// Every sale is published as it is loaded. The PDF links are placeholders on example.com.
 
-// Fictional auction houses and sales for the Phase 1 prototype. Replace with API data in Phase 3.
-export const mockAuctions: readonly Auction[] = [
+export type SampleAuction = {
+  id: string
+  title: string
+  category: string
+  house: string
+  city: string
+  /** YYYY-MM-DD, Paris time */
+  saleDate: string
+  /** HH:mm, Paris time */
+  saleTime: string
+  lotCount: number
+  viewing: { start: string; end: string }
+  description: string
+  featured?: boolean
+}
+
+export type SampleCatalogue = {
+  id: string
+  auctionId: string
+  title: string
+  description: string
+  lots: { first: number; last: number }
+  pageCount: number
+  pdfUrl: string
+}
+
+export const sampleAuctions: readonly SampleAuction[] = [
   {
     id: 'vauclair-tableaux-anciens-2026-11',
     title: 'Tableaux anciens & dessins',
@@ -160,5 +186,116 @@ export const mockAuctions: readonly Auction[] = [
     viewing: { start: '2026-09-22', end: '2026-09-23' },
     description:
       'Couture, vintage handbags and luggage from Parisian maisons, together with silk scarves and costume jewellery.',
+  },
+]
+
+export const sampleCatalogues: readonly SampleCatalogue[] = [
+  {
+    id: 'vauclair-tableaux-anciens',
+    auctionId: 'vauclair-tableaux-anciens-2026-11',
+    title: "Collection d'un amateur parisien et à divers",
+    description: 'Fully illustrated catalogue with dimensions, provenance and condition notes for every lot.',
+    lots: { first: 1, last: 212 },
+    pageCount: 168,
+    pdfUrl: 'https://example.com/catalogues/vauclair-tableaux-anciens.pdf',
+  },
+  {
+    id: 'saint-honore-arts-decoratifs',
+    auctionId: 'saint-honore-arts-decoratifs-2026-11',
+    title: 'Art Nouveau, Art Déco & Modernisme',
+    description: "Illustrated catalogue with makers' marks, literature references and condition notes.",
+    lots: { first: 1, last: 148 },
+    pageCount: 124,
+    pdfUrl: 'https://example.com/catalogues/saint-honore-arts-decoratifs.pdf',
+  },
+  {
+    id: 'delorme-art-moderne',
+    auctionId: 'delorme-art-moderne-2026-11',
+    title: 'Art moderne & contemporain — vente du soir',
+    description: 'Illustrated catalogue with signatures, dimensions, exhibition history and literature.',
+    lots: { first: 1, last: 134 },
+    pageCount: 148,
+    pdfUrl: 'https://example.com/catalogues/delorme-art-moderne.pdf',
+  },
+  {
+    id: 'chartrons-grands-vins',
+    auctionId: 'chartrons-grands-vins-2026-12',
+    title: "Cave d'un château du Médoc et à divers",
+    description: 'Lot-by-lot listing with vintages, bottle formats, fill levels and storage history.',
+    lots: { first: 1, last: 320 },
+    pageCount: 88,
+    pdfUrl: 'https://example.com/catalogues/chartrons-grands-vins.pdf',
+  },
+  {
+    id: 'delorme-bijoux-montres',
+    auctionId: 'delorme-bijoux-montres-2026-12',
+    title: 'Bijoux signés & montres de collection',
+    description: 'Illustrated catalogue with stone weights, hallmarks and movement details.',
+    lots: { first: 1, last: 186 },
+    pageCount: 132,
+    pdfUrl: 'https://example.com/catalogues/delorme-bijoux-montres.pdf',
+  },
+  {
+    id: 'bastille-affiches',
+    auctionId: 'bastille-affiches-2026-12',
+    title: 'Affiches originales 1890–1965',
+    description: 'Poster dimensions, printers, backing and condition for every lot, illustrated in colour.',
+    lots: { first: 1, last: 210 },
+    pageCount: 112,
+    pdfUrl: 'https://example.com/catalogues/bastille-affiches.pdf',
+  },
+  {
+    id: 'marchal-livres-volume-1',
+    auctionId: 'marchal-livres-manuscrits-2026-12',
+    title: 'Volume I — Livres imprimés, XVe–XVIIIe siècles',
+    description: 'Early printed books, fine bindings and illustrated travel accounts, with full collations.',
+    lots: { first: 1, last: 205 },
+    pageCount: 196,
+    pdfUrl: 'https://example.com/catalogues/marchal-livres-volume-1.pdf',
+  },
+  {
+    id: 'marchal-livres-volume-2',
+    auctionId: 'marchal-livres-manuscrits-2026-12',
+    title: 'Volume II — Manuscrits & autographes',
+    description: 'Literary manuscripts, autograph letters and historical documents, with transcriptions of key passages.',
+    lots: { first: 206, last: 412 },
+    pageCount: 184,
+    pdfUrl: 'https://example.com/catalogues/marchal-livres-volume-2.pdf',
+  },
+  {
+    id: 'bastille-design',
+    auctionId: 'bastille-design-2027-01',
+    title: 'Design français & scandinave 1940–1980',
+    description: 'Illustrated catalogue with designers, manufacturers, dimensions and condition notes.',
+    lots: { first: 1, last: 164 },
+    pageCount: 140,
+    pdfUrl: 'https://example.com/catalogues/bastille-design.pdf',
+  },
+  {
+    id: 'vauclair-photographies',
+    auctionId: 'vauclair-photographies-2026-10',
+    title: 'Photographies humanistes & contemporaines',
+    description: 'Prints with dates, dimensions, printing details and provenance.',
+    lots: { first: 1, last: 120 },
+    pageCount: 104,
+    pdfUrl: 'https://example.com/catalogues/vauclair-photographies.pdf',
+  },
+  {
+    id: 'saint-honore-argenterie',
+    auctionId: 'saint-honore-argenterie-2026-10',
+    title: 'Argenterie française & objets de vertu',
+    description: 'Hallmarks, weights and provenance for each lot, illustrated throughout.',
+    lots: { first: 1, last: 198 },
+    pageCount: 152,
+    pdfUrl: 'https://example.com/catalogues/saint-honore-argenterie.pdf',
+  },
+  {
+    id: 'delorme-mode-maroquinerie',
+    auctionId: 'delorme-mode-maroquinerie-2026-09',
+    title: 'Mode, maroquinerie & accessoires',
+    description: 'Illustrated catalogue with sizes, materials and condition notes.',
+    lots: { first: 1, last: 265 },
+    pageCount: 176,
+    pdfUrl: 'https://example.com/catalogues/delorme-mode-maroquinerie.pdf',
   },
 ]

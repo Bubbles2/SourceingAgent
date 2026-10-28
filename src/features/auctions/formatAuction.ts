@@ -59,7 +59,7 @@ export function formatSaleDateFrench(isoDate: string): string {
 }
 
 /** "12–13 Nov", or "30 Sep – 1 Oct" across months */
-export function formatViewingRange({ start, end }: Auction['viewing']): string {
+export function formatViewingRange({ start, end }: NonNullable<Auction['viewing']>): string {
   const startDate = parseIsoDate(start)
   const endDate = parseIsoDate(end)
   const startDay = dayNumberFormatter.format(startDate)
@@ -81,12 +81,19 @@ export function formatLotCount(lotCount: number): string {
   return `${countFormatter.format(lotCount)} ${lotCount === 1 ? 'lot' : 'lots'}`
 }
 
-/** "212 lots · Sale at 14:00 · Viewing 12–13 Nov" */
-export function formatAuctionMeta(auction: Auction): string {
-  return `${formatLotCount(auction.lotCount)} · Sale at ${auction.saleTime} · Viewing ${formatViewingRange(auction.viewing)}`
+/** "212 lots · Sale at 14:00 · Viewing 12–13 Nov", leaving out what isn't known yet */
+export function formatAuctionMeta({ lotCount, saleTime, viewing }: Pick<Auction, 'lotCount' | 'saleTime' | 'viewing'>): string {
+  return [
+    lotCount === null ? null : formatLotCount(lotCount),
+    `Sale at ${saleTime}`,
+    viewing ? `Viewing ${formatViewingRange(viewing)}` : null,
+  ]
+    .filter((part) => part !== null)
+    .join(' · ')
 }
 
-/** "Lots 1–212 · 168 pages" */
+/** "Lots 1–212 · 168 pages", or "Lots 1–212" when the page count isn't known */
 export function formatCatalogueMeta({ lots, pageCount }: Pick<Catalogue, 'lots' | 'pageCount'>): string {
-  return `Lots ${lots.first}–${lots.last} · ${countFormatter.format(pageCount)} pages`
+  const lotRange = `Lots ${lots.first}–${lots.last}`
+  return pageCount === null ? lotRange : `${lotRange} · ${countFormatter.format(pageCount)} pages`
 }

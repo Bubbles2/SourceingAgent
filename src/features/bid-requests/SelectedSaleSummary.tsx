@@ -48,10 +48,12 @@ export function SelectedSaleSummary({ auction, catalogue }: SelectedSaleSummaryP
             <CalendarDays size={16} />
             {`${formatSaleDateLong(auction.saleDate)} at ${auction.saleTime}`}
           </li>
-          <li>
-            <Eye size={16} />
-            {`Viewing ${formatViewingRange(auction.viewing)}`}
-          </li>
+          {auction.viewing ? (
+            <li>
+              <Eye size={16} />
+              {`Viewing ${formatViewingRange(auction.viewing)}`}
+            </li>
+          ) : null}
         </ul>
         {catalogue ? (
           <div className="sale-summary__catalogue">

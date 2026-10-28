@@ -7,7 +7,7 @@ import { CatalogueGridSkeleton } from '../features/catalogues/CatalogueCardSkele
 import { CatalogueResults } from '../features/catalogues/CatalogueResults'
 
 export function CataloguesPage(): React.JSX.Element {
-  const { status, catalogues } = useLoaderData<typeof cataloguesLoader>()
+  const { status, page, catalogues } = useLoaderData<typeof cataloguesLoader>()
 
   return (
     <PageContainer
@@ -16,8 +16,11 @@ export function CataloguesPage(): React.JSX.Element {
       description="Each sale's official PDF catalogue, published by the auction house. Study every lot, then ask the agent to bid on the ones you want."
     >
       <SaleStatusFilter value={status} label="Show catalogues for" />
-      <Suspense key={status} fallback={<CatalogueGridSkeleton count={4} label={`Loading catalogues for ${status} sales`} />}>
-        <CatalogueResults catalogues={catalogues} status={status} />
+      <Suspense
+        key={`${status}-${page}`}
+        fallback={<CatalogueGridSkeleton count={4} label={`Loading catalogues for ${status} sales`} />}
+      >
+        <CatalogueResults catalogues={catalogues} status={status} page={page} />
       </Suspense>
     </PageContainer>
   )

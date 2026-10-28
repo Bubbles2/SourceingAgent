@@ -1,4 +1,5 @@
 import { pool, type Queryable } from '../db/pool.ts'
+import { parisSaleDate, parisSaleTime, saleIsOpen } from './saleTimes.ts'
 
 export const bidRequestStatuses = ['pending', 'accepted', 'rejected', 'cancelled', 'placed', 'won', 'lost'] as const
 export type BidRequestStatus = (typeof bidRequestStatuses)[number]
@@ -7,11 +8,6 @@ export type BidRequestStatus = (typeof bidRequestStatuses)[number]
 export const reservingStatuses: readonly BidRequestStatus[] = ['accepted', 'placed', 'won', 'lost']
 /** A customer can't open a second request on a lot while one of these is live (matches the unique index). */
 export const openStatuses: readonly BidRequestStatus[] = ['pending', 'accepted', 'placed']
-
-// Sales take requests until the end of their sale day, Paris time (as the website shows them).
-const parisSaleDate = "to_char(a.starts_at AT TIME ZONE 'Europe/Paris', 'YYYY-MM-DD')"
-const parisSaleTime = "to_char(a.starts_at AT TIME ZONE 'Europe/Paris', 'HH24:MI')"
-const saleIsOpen = "(a.starts_at AT TIME ZONE 'Europe/Paris')::date >= (now() AT TIME ZONE 'Europe/Paris')::date"
 
 export type RequestTarget = {
   auctionId: string
@@ -25,12 +21,13 @@ export type RequestTarget = {
 }
 
 /**
- * The sale and catalogue a request names, by their public slugs. The catalogue row is locked until
- * the transaction ends, so two requests for the same catalogue are checked one after the other.
+ * The published sale and catalogue a request names, by their public slugs. The catalogue row is
+ * locked until the transaction ends, so two requests for the same catalogue are checked one after
+ * the other. Draft and cancelled sales take no requests.
  */
 export async function findRequestTarget(auctionSlug: string, catalogueSlug: string, db: Queryable): Promise<RequestTarget | null> {
   const auctions = await db.query<{ id: string; saleOpen: boolean }>(
-    `SELECT a.id, ${saleIsOpen} AS "saleOpen" FROM auctions a WHERE a.slug = $1`,
+    `SELECT a.id, ${saleIsOpen} AS "saleOpen" FROM auctions a WHERE a.slug = $1 AND a.status = 'published'`,
     [auctionSlug],
   )
   const auction = auctions.rows[0]
@@ -141,7 +138,7 @@ export async function findCustomerBidRequest(
   return rows[0] ?? null
 }
 
-/** The public view of reserved lots. Selects no customer, amount or request id. */
+/** The public view of reserved lots in published sales. Selects no customer, amount or request id. */
 export type ReservedLotRow = {
   auctionSlug: string
   auctionTitle: string
@@ -161,9 +158,22 @@ export async function listReservedLots(): Promise<ReservedLotRow[]> {
      FROM bid_requests br
      JOIN auctions a ON a.id = br.auction_id
      JOIN catalogues c ON c.id = br.catalogue_id
-     WHERE br.status = ANY($1::text[])
+     WHERE br.status = ANY($1::text[]) AND a.status = 'published'
      ORDER BY "saleEnded", a.starts_at, c.title, br.lot_number`,
     [reservingStatuses],
   )
   return rows
+}
+
+/** How many requests name a catalogue, and the lowest and highest lot they ask for */
+export async function summariseCatalogueRequests(
+  catalogueId: string,
+  db: Queryable,
+): Promise<{ count: number; firstLot: number | null; lastLot: number | null }> {
+  const { rows } = await db.query<{ count: number; firstLot: number | null; lastLot: number | null }>(
+    `SELECT count(*)::int AS count, min(lot_number) AS "firstLot", max(lot_number) AS "lastLot"
+     FROM bid_requests WHERE catalogue_id = $1`,
+    [catalogueId],
+  )
+  return rows[0] ?? { count: 0, firstLot: null, lastLot: null }
 }

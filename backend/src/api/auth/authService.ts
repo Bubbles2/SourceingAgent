@@ -1,9 +1,9 @@
 // Account rules: registration, sign-in and sign-out, email verification and password reset.
 // Passwords are hashed with Argon2id before anything is stored; session and email tokens are
 // stored only as SHA-256 hashes.
-import pg from 'pg'
 import { config } from '../../config/env.ts'
 import { withTransaction, type Queryable } from '../../db/pool.ts'
+import { isUniqueViolation } from '../../lib/databaseErrors.ts'
 import { HttpError } from '../../lib/httpError.ts'
 import { logger } from '../../lib/logger.ts'
 import {
@@ -60,10 +60,6 @@ async function issueAuthToken(userId: string, purpose: AuthTokenPurpose, lifetim
 async function sendVerificationEmail(user: UserRecord, db: Queryable): Promise<void> {
   const token = await issueAuthToken(user.id, 'email_verification', emailVerificationHours * 3_600_000, db)
   await enqueueEmail(verificationEmail(user, token), db)
-}
-
-function isUniqueViolation(error: unknown, constraint: string): boolean {
-  return error instanceof pg.DatabaseError && error.code === '23505' && error.constraint === constraint
 }
 
 /** Creates a customer account, queues the verification email and signs the customer in. */

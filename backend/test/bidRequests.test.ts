@@ -18,6 +18,10 @@ const slugs = {
   otherCatalogue: `${prefix}-other-cat`,
   closed: `${prefix}-closed`,
   closedCatalogue: `${prefix}-closed-cat`,
+  draft: `${prefix}-draft`,
+  draftCatalogue: `${prefix}-draft-cat`,
+  cancelled: `${prefix}-cancelled`,
+  cancelledCatalogue: `${prefix}-cancelled-cat`,
 }
 
 const requestBody = z.object({
@@ -53,11 +57,11 @@ let verified: BrowserClient
 let verifiedUserId: string
 let otherCustomerId: string
 
-async function createSale(slug: string, catalogueSlug: string, startsIn: string): Promise<void> {
+async function createSale(slug: string, catalogueSlug: string, startsIn: string, status = 'published'): Promise<void> {
   const { rows } = await pool.query<{ id: string }>(
-    `INSERT INTO auctions (slug, title, category, auction_house, city, starts_at, description)
-     VALUES ($1, 'Test sale', 'Fine art', 'Maison Test', 'Paris', now() + $2::interval, 'A test sale.') RETURNING id`,
-    [slug, startsIn],
+    `INSERT INTO auctions (slug, title, category, auction_house, city, starts_at, description, status)
+     VALUES ($1, 'Test sale', 'Fine art', 'Maison Test', 'Paris', now() + $2::interval, 'A test sale.', $3) RETURNING id`,
+    [slug, startsIn, status],
   )
   await pool.query(
     `INSERT INTO catalogues (slug, auction_id, title, description, first_lot, last_lot, pdf_url)
@@ -94,6 +98,8 @@ before(async () => {
   await createSale(slugs.open, slugs.openCatalogue, '30 days')
   await createSale(slugs.other, slugs.otherCatalogue, '40 days')
   await createSale(slugs.closed, slugs.closedCatalogue, '-10 days')
+  await createSale(slugs.draft, slugs.draftCatalogue, '30 days', 'draft')
+  await createSale(slugs.cancelled, slugs.cancelledCatalogue, '30 days', 'cancelled')
 
   const customer = await newCustomer('verified', { confirmed: true })
   verified = customer.client
@@ -106,6 +112,12 @@ before(async () => {
     `INSERT INTO bid_requests (customer_id, auction_id, catalogue_id, lot_number, max_bid_eur, status)
      SELECT $1, c.auction_id, c.id, 45, 98765, 'accepted' FROM catalogues c WHERE c.slug = $2`,
     [otherCustomerId, slugs.openCatalogue],
+  )
+  // An accepted request made before its sale was cancelled
+  await pool.query(
+    `INSERT INTO bid_requests (customer_id, auction_id, catalogue_id, lot_number, max_bid_eur, status)
+     SELECT $1, c.auction_id, c.id, 7, 500, 'accepted' FROM catalogues c WHERE c.slug = $2`,
+    [otherCustomerId, slugs.cancelledCatalogue],
   )
 })
 
@@ -212,6 +224,15 @@ describe('submitting', () => {
 
     const unknown = await verified.post('/api/bid-requests', bid({ auctionId: `${prefix}-missing` }))
     assert.equal(errorCode(unknown), 'sale_closed')
+
+    // Draft and cancelled sales take no requests, even by their ids.
+    for (const [auctionId, catalogueId] of [
+      [slugs.draft, slugs.draftCatalogue],
+      [slugs.cancelled, slugs.cancelledCatalogue],
+    ]) {
+      const response = await verified.post('/api/bid-requests', bid({ auctionId, catalogueId }))
+      assert.equal(errorCode(response), 'sale_closed', auctionId)
+    }
   })
 
   test('amounts are whole euros within the limits', async () => {
@@ -251,6 +272,10 @@ describe('Requested lots', () => {
       ours.map((lot) => [lot.lotNumber, lot.availability]),
       [[45, 'reserved']],
       'only the accepted request is listed, not pending ones',
+    )
+    assert.ok(
+      lots.every((lot) => lot.catalogue.id !== slugs.cancelledCatalogue),
+      'lots of a cancelled sale are not listed',
     )
     const text = JSON.stringify(response.body)
     assert.ok(!text.includes('98765'))

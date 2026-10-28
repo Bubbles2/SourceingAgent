@@ -11,6 +11,7 @@ function catalogue(id: string, first: number, last: number): Catalogue {
     lots: { first, last },
     pageCount: 10,
     pdfUrl: 'https://example.com/c.pdf',
+    cover: null,
   }
 }
 
@@ -26,6 +27,9 @@ function auction(id: string, catalogues: Catalogue[]): AuctionWithCatalogues {
     lotCount: 100,
     viewing: { start: '2026-11-12', end: '2026-11-13' },
     description: '',
+    image: null,
+    featured: false,
+    status: 'published',
     catalogues,
   }
 }

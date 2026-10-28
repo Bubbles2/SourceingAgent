@@ -1,4 +1,4 @@
-// Database constraints from the initial migration. Everything runs in one transaction that is rolled
+// Database constraints from the migrations. Everything runs in one transaction that is rolled
 // back at the end, so the database is left as it was. Requires `npm run migrate:up` first.
 import assert from 'node:assert/strict'
 import { after, before, test } from 'node:test'
@@ -132,4 +132,20 @@ test('status history is append-only', async () => {
   )
   await expectViolation("UPDATE request_status_history SET note = 'edited' WHERE id = $1", [historyId], { code: '23001' })
   await expectViolation('DELETE FROM request_status_history WHERE id = $1', [historyId], { code: '23001' })
+})
+
+test('new sales start as drafts, and statuses must be known', async () => {
+  const { rows } = await client.query<{ status: string }>('SELECT status FROM auctions WHERE id = $1', [ids.auction])
+  assert.equal(rows[0]?.status, 'draft')
+  await expectViolation("UPDATE auctions SET status = 'postponed' WHERE id = $1", [ids.auction], {
+    code: '23514',
+    constraint: 'auctions_status_valid',
+  })
+})
+
+test('a sale with catalogues cannot be deleted', async () => {
+  await expectViolation('DELETE FROM auctions WHERE id = $1', [ids.auction], {
+    code: '23503',
+    constraint: 'catalogues_auction_id_fkey',
+  })
 })

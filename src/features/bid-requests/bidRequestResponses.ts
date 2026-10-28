@@ -1,50 +1,7 @@
 // Checks bid request responses against the API contract, so a mismatch fails here, loudly, rather
 // than as a blank cell somewhere in a table.
-import { ApiError } from '../../services/apiClient'
-import { bidRequestStatuses, type BidRequestStatus, type MyBidRequest, type RequestedLot } from './types'
-
-type Fields = Record<string, unknown>
-
-function isRecord(value: unknown): value is Fields {
-  return typeof value === 'object' && value !== null
-}
-
-function contractError(): ApiError {
-  return new ApiError(500, 'unexpected_response', 'Something went wrong on our side. Please try again.')
-}
-
-function text(record: Fields, key: string): string {
-  const value = record[key]
-  if (typeof value !== 'string') {
-    throw contractError()
-  }
-  return value
-}
-
-function integer(record: Fields, key: string): number {
-  const value = record[key]
-  if (typeof value !== 'number' || !Number.isInteger(value)) {
-    throw contractError()
-  }
-  return value
-}
-
-function nested(record: Fields, key: string): Fields {
-  const value = record[key]
-  if (!isRecord(value)) {
-    throw contractError()
-  }
-  return value
-}
-
-function status(record: Fields): BidRequestStatus {
-  const value = record.status
-  const match = bidRequestStatuses.find((candidate) => candidate === value)
-  if (!match) {
-    throw contractError()
-  }
-  return match
-}
+import { contractError, integer, isRecord, list, nested, oneOf, text, type Fields } from '../../services/responseFields'
+import { bidRequestStatuses, type MyBidRequest, type RequestedLot } from './types'
 
 /** The API sends amounts as exact decimal strings ("2500.00"); requests are in whole euros. */
 function wholeEuros(record: Fields, key: string): number {
@@ -53,14 +10,6 @@ function wholeEuros(record: Fields, key: string): number {
     throw contractError()
   }
   return amount
-}
-
-function list(data: unknown, key: string): unknown[] {
-  const value = isRecord(data) ? data[key] : undefined
-  if (!Array.isArray(value)) {
-    throw contractError()
-  }
-  return value
 }
 
 export function parseMyBidRequest(value: unknown): MyBidRequest {
@@ -74,7 +23,7 @@ export function parseMyBidRequest(value: unknown): MyBidRequest {
     lotNumber: integer(value, 'lotNumber'),
     maxBidEur: wholeEuros(value, 'maxBidEur'),
     instructions: text(value, 'instructions'),
-    status: status(value),
+    status: oneOf(value, 'status', bidRequestStatuses),
     submittedAt: text(value, 'submittedAt'),
     auction: {
       id: text(auction, 'id'),

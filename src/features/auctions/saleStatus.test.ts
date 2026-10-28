@@ -1,5 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
+  formatAuctionMeta,
+  formatCatalogueMeta,
   formatDayMonthYear,
   formatSaleDateFrench,
   formatSaleDateLong,
@@ -61,5 +63,13 @@ describe('sale date formats', () => {
     expect(formatViewingRange({ start: '2026-11-12', end: '2026-11-13' })).toBe('12–13 Nov')
     expect(formatViewingRange({ start: '2026-09-30', end: '2026-10-01' })).toBe('30 Sep – 1 Oct')
     expect(formatViewingRange({ start: '2026-11-12', end: '2026-11-12' })).toBe('12 Nov')
+  })
+
+  it('leaves out lot counts, viewing days and page counts that are not known yet', () => {
+    const viewing = { start: '2026-11-12', end: '2026-11-13' }
+    expect(formatAuctionMeta({ lotCount: 212, saleTime: '14:00', viewing })).toBe('212 lots · Sale at 14:00 · Viewing 12–13 Nov')
+    expect(formatAuctionMeta({ lotCount: null, saleTime: '14:00', viewing: null })).toBe('Sale at 14:00')
+    expect(formatCatalogueMeta({ lots: { first: 1, last: 212 }, pageCount: 1168 })).toBe('Lots 1–212 · 1,168 pages')
+    expect(formatCatalogueMeta({ lots: { first: 1, last: 212 }, pageCount: null })).toBe('Lots 1–212')
   })
 })

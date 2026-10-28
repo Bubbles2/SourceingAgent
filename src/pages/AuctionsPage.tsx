@@ -7,7 +7,7 @@ import { AuctionResults } from '../features/auctions/AuctionResults'
 import { SaleStatusFilter } from '../features/auctions/SaleStatusFilter'
 
 export function AuctionsPage(): React.JSX.Element {
-  const { status, auctions } = useLoaderData<typeof auctionsLoader>()
+  const { status, page, auctions } = useLoaderData<typeof auctionsLoader>()
 
   return (
     <PageContainer
@@ -16,8 +16,11 @@ export function AuctionsPage(): React.JSX.Element {
       description="Browse upcoming sales in Paris and the regions, or look back at completed ones. Open any auction for its details and catalogue."
     >
       <SaleStatusFilter value={status} label="Show auctions" />
-      <Suspense key={status} fallback={<AuctionGridSkeleton count={6} label={`Loading ${status} auctions`} showDescription />}>
-        <AuctionResults auctions={auctions} status={status} />
+      <Suspense
+        key={`${status}-${page}`}
+        fallback={<AuctionGridSkeleton count={6} label={`Loading ${status} auctions`} showDescription />}
+      >
+        <AuctionResults auctions={auctions} status={status} page={page} />
       </Suspense>
     </PageContainer>
   )

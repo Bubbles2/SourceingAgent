@@ -10,6 +10,11 @@ export function testEmail(label: string): string {
   return `e2e-${run}-${label}@example.com`
 }
 
+/** A sale or catalogue id; removed with the test accounts afterwards */
+export function testId(label: string): string {
+  return `e2e-${run}-${label}`
+}
+
 export const testPassword = 'correct horse battery staple'
 
 /** Runs one of the backend's development scripts and returns what it printed. */
@@ -34,7 +39,12 @@ export function latestEmailLink(email: string, page: 'verify-email' | 'reset-pas
   return link
 }
 
-/** Deletes every e2e-… test account and what belongs to it. */
+/** Administrators are only made from the command line, never through the API. */
+export function makeAdministrator(email: string): void {
+  backendScript('src/cli/setUserRole.ts', [email, 'administrator'])
+}
+
+/** Deletes every e2e-… test account and sale, and what belongs to them. */
 export function removeTestAccounts(): string {
   return backendScript('src/cli/removeTestAccounts.ts', ['e2e-'])
 }

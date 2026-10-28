@@ -31,10 +31,12 @@ export function AuctionFacts({ auction, status }: AuctionFactsProps): React.JSX.
             <dt>Sale time</dt>
             <dd>{`${auction.saleTime}, Paris time`}</dd>
           </div>
-          <div>
-            <dt>Viewing</dt>
-            <dd>{formatViewingRange(auction.viewing)}</dd>
-          </div>
+          {auction.viewing ? (
+            <div>
+              <dt>Viewing</dt>
+              <dd>{formatViewingRange(auction.viewing)}</dd>
+            </div>
+          ) : null}
           <div>
             <dt>Location</dt>
             <dd>
@@ -43,10 +45,12 @@ export function AuctionFacts({ auction, status }: AuctionFactsProps): React.JSX.
               {auction.city}
             </dd>
           </div>
-          <div>
-            <dt>Lots</dt>
-            <dd>{formatLotCount(auction.lotCount)}</dd>
-          </div>
+          {auction.lotCount === null ? null : (
+            <div>
+              <dt>Lots</dt>
+              <dd>{formatLotCount(auction.lotCount)}</dd>
+            </div>
+          )}
         </dl>
         {status === 'upcoming' ? (
           <ButtonLink to={requestBidPath(auction.id)} size="lg" className="auction-facts__cta">

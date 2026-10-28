@@ -35,6 +35,14 @@ export class BrowserClient {
     return this.request('POST', path, { ...options, body })
   }
 
+  patch(path: string, body?: unknown, options: Omit<RequestOptions, 'body'> = {}): Promise<ApiResponse> {
+    return this.request('PATCH', path, { ...options, body })
+  }
+
+  delete(path: string, options: RequestOptions = {}): Promise<ApiResponse> {
+    return this.request('DELETE', path, options)
+  }
+
   async refreshCsrfToken(): Promise<string> {
     const response = await this.get('/api/auth/csrf')
     this.csrfToken = csrfBody.parse(response.body).csrfToken

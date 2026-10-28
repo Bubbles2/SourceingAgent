@@ -1,16 +1,25 @@
 // Route loaders start data requests as navigation begins and hand the promises to the page,
 // which renders skeletons inside <Suspense> until they resolve.
 import { redirect, type LoaderFunctionArgs } from 'react-router'
-import { getAuction, listAuctions, listAuctionsBetween, listFeaturedAuctions } from '../features/auctions/auctionService'
+import {
+  getAuction,
+  listAuctions,
+  listAuctionsBetween,
+  listFeaturedAuctions,
+  listOpenAuctions,
+} from '../features/auctions/auctionService'
 import { parseSaleStatus } from '../features/auctions/saleStatus'
 import { loadSession } from '../features/auth/sessionStore'
 import { listMyRequests, listRequestedLots } from '../features/bid-requests/bidRequestService'
 import { getMonthGridRange, parseMonthKey } from '../features/calendar/calendarDates'
 import { listCatalogues } from '../features/catalogues/catalogueService'
+import { parsePageNumber } from '../services/pagination'
 import { paths, signInPath } from './paths'
 
-function readSaleStatus(request: Request) {
-  return parseSaleStatus(new URL(request.url).searchParams.get('status'))
+/** ?status=upcoming|completed and ?page=, as the auction and catalogue lists use them */
+function readListParams(request: Request) {
+  const searchParams = new URL(request.url).searchParams
+  return { status: parseSaleStatus(searchParams.get('status')), page: parsePageNumber(searchParams.get('page')) }
 }
 
 export function landingLoader() {
@@ -18,8 +27,8 @@ export function landingLoader() {
 }
 
 export function auctionsLoader({ request }: LoaderFunctionArgs) {
-  const status = readSaleStatus(request)
-  return { status, auctions: listAuctions({ status }) }
+  const { status, page } = readListParams(request)
+  return { status, page, auctions: listAuctions({ status, page }) }
 }
 
 export function auctionDetailsLoader({ params }: LoaderFunctionArgs) {
@@ -48,7 +57,7 @@ export async function requestBidLoader({ request }: LoaderFunctionArgs) {
   return {
     auctionId: searchParams.get('auction'),
     catalogueId: searchParams.get('catalogue'),
-    auctions: listAuctions({ status: 'upcoming' }),
+    auctions: listOpenAuctions(),
   }
 }
 
@@ -62,8 +71,8 @@ export async function myRequestsLoader({ request }: LoaderFunctionArgs) {
 }
 
 export function cataloguesLoader({ request }: LoaderFunctionArgs) {
-  const status = readSaleStatus(request)
-  return { status, catalogues: listCatalogues({ status }) }
+  const { status, page } = readListParams(request)
+  return { status, page, catalogues: listCatalogues({ status, page }) }
 }
 
 /** Finds out who is signed in before the first render, so the header never flickers. */
