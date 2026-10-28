@@ -10,7 +10,10 @@ type AccountActionsProps = {
   onNavigate?: () => void
 }
 
-/** Header actions: Sign in + Create account, or My requests + the account link once signed in (DESIGN.md §6.1). */
+/**
+ * Header actions: Sign in + Create account, or My requests (Review requests for administrators) and
+ * the account link once signed in (DESIGN.md §6.1).
+ */
 export function AccountActions({ className, onNavigate }: AccountActionsProps): React.JSX.Element {
   const customer = useCurrentCustomer()
   const actionsClassName = className ? `account-actions ${className}` : 'account-actions'
@@ -18,9 +21,15 @@ export function AccountActions({ className, onNavigate }: AccountActionsProps): 
   if (customer) {
     return (
       <div className={actionsClassName}>
-        <ButtonLink to={paths.myRequests} variant="secondary" onClick={onNavigate}>
-          My requests
-        </ButtonLink>
+        {customer.role === 'administrator' ? (
+          <ButtonLink to={paths.reviewRequests} variant="secondary" onClick={onNavigate}>
+            Review requests
+          </ButtonLink>
+        ) : (
+          <ButtonLink to={paths.myRequests} variant="secondary" onClick={onNavigate}>
+            My requests
+          </ButtonLink>
+        )}
         <NavLink to={paths.account} className="account-link" onClick={onNavigate}>
           <Avatar firstName={customer.firstName} lastName={customer.lastName} />
           <span className="account-link__name">{customer.firstName}</span>

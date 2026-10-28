@@ -22,6 +22,11 @@ const statusDetails: Record<BidRequestStatus, { label: string; Icon: LucideIcon 
   lost: { label: 'Lost', Icon: CircleMinus },
 }
 
+/** "Pending review", "Bid placed"…, as customers and the agent see them */
+export function statusLabel(status: BidRequestStatus): string {
+  return statusDetails[status].label
+}
+
 type StatusBadgeProps = {
   status: BidRequestStatus
 }

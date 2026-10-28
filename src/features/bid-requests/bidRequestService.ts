@@ -24,6 +24,7 @@ const detailFields: Partial<Record<string, BidRequestField>> = {
   'body.lotNumber': 'lotNumber',
   'body.maxBidEur': 'maxBid',
   'body.instructions': 'instructions',
+  'body.acknowledgedCharges': 'acknowledgedCharges',
 }
 
 function toFormErrors(error: ApiError): BidRequestErrors {

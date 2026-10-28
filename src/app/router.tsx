@@ -15,6 +15,7 @@ import { RegisterPage } from '../pages/RegisterPage'
 import { RequestBidPage } from '../pages/RequestBidPage'
 import { RequestedLotsPage } from '../pages/RequestedLotsPage'
 import { ResetPasswordPage } from '../pages/ResetPasswordPage'
+import { ReviewRequestsPage } from '../pages/ReviewRequestsPage'
 import { RouteErrorPage } from '../pages/RouteErrorPage'
 import { SignInPage } from '../pages/SignInPage'
 import { TermsPage } from '../pages/TermsPage'
@@ -30,6 +31,7 @@ import {
   myRequestsLoader,
   requestBidLoader,
   requestedLotsLoader,
+  reviewRequestsLoader,
   rootLoader,
 } from './loaders'
 import { paths } from './paths'
@@ -84,6 +86,12 @@ export const router = createBrowserRouter([
             path: paths.myRequests,
             loader: myRequestsLoader,
             element: <MyRequestsPage />,
+            hydrateFallbackElement: pageLoading,
+          },
+          {
+            path: paths.reviewRequests,
+            loader: reviewRequestsLoader,
+            element: <ReviewRequestsPage />,
             hydrateFallbackElement: pageLoading,
           },
           { path: paths.signIn, loader: guestOnlyLoader, element: <SignInPage />, hydrateFallbackElement: pageLoading },

@@ -24,6 +24,8 @@ export const createBidRequestBody = z.object({
     .trim()
     .max(bidLimits.instructionsMaxLength, `Keep instructions to ${bidLimits.instructionsMaxLength.toLocaleString('en-GB')} characters or fewer.`)
     .default(''),
+  // The customer confirms the maximum is the hammer price only; fees, taxes and shipping come on top.
+  acknowledgedCharges: z.literal(true, { error: 'Confirm that you understand what your maximum bid covers.' }),
 })
 
 export type CreateBidRequestBody = z.infer<typeof createBidRequestBody>

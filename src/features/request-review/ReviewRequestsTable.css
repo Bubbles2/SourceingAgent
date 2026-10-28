@@ -1,0 +1,7 @@
+/* Keep columns readable on small screens; the wrapper scrolls instead (DESIGN.md §5) */
+.review-table { min-width: 1040px; }
+.review-table .badge { white-space: nowrap; }
+.review-table__date { white-space: nowrap; color: var(--ink-soft); }
+
+.review-confirmation:focus { outline: none; }
+.review-confirmation:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: var(--r-md); }

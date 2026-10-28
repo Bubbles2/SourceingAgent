@@ -52,7 +52,14 @@ describe('validateBidRequest', () => {
   it('turns a valid form into the request the API expects', () => {
     expect(validateBidRequest(valid, auctions)).toEqual({
       errors: {},
-      input: { auctionId: 'sale', catalogueId: 'volume-2', lotNumber: 233, maxBidEur: 2500, instructions: 'Only if unrestored.' },
+      input: {
+        auctionId: 'sale',
+        catalogueId: 'volume-2',
+        lotNumber: 233,
+        maxBidEur: 2500,
+        instructions: 'Only if unrestored.',
+        acknowledgedCharges: true,
+      },
     })
   })
 

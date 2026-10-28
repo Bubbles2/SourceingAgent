@@ -1,6 +1,7 @@
 /* Data tables — see DESIGN.md §6.9, §11.6. Wide tables scroll inside .table-wrap rather than squeeze. */
 
-.table-wrap { overflow-x: auto; border: 1px solid var(--cream-line); border-radius: var(--r-md); background: var(--white); }
+/* position: relative keeps absolutely positioned content, such as visually hidden headings, inside the scroll box */
+.table-wrap { position: relative; overflow-x: auto; border: 1px solid var(--cream-line); border-radius: var(--r-md); background: var(--white); }
 .table { width: 100%; border-collapse: collapse; }
 .table th {
   height: 44px; padding: 0 var(--space-4); background: var(--ivory-deep); text-align: left; white-space: nowrap;

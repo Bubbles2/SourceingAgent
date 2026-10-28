@@ -1,6 +1,7 @@
 // Sales an administrator manages through the API reach the public site and the calendar: drafts stay
 // hidden, published sales appear with their catalogue, and cancelled ones disappear again.
-import type { APIRequestContext, APIResponse, Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
+import { expectStatus, parisDate, sendChange as change } from './support/api'
 import { expect, test } from './support/fixtures'
 import { makeAdministrator, testEmail, testId, testPassword } from './support/testData'
 
@@ -9,26 +10,7 @@ const saleId = testId('sale')
 const catalogueId = testId('catalogue')
 const title = `Céramiques ${saleId}`
 
-/** A Paris date this many days from today (YYYY-MM-DD) */
-function parisDate(daysAhead: number): string {
-  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(new Date())
-  const date = new Date(`${today}T00:00:00Z`)
-  date.setUTCDate(date.getUTCDate() + daysAhead)
-  return date.toISOString().slice(0, 10)
-}
-
 const saleDate = parisDate(45)
-
-/** Sends a change with a fresh CSRF token, as the website does */
-async function change(api: APIRequestContext, method: 'POST' | 'PATCH' | 'DELETE', path: string, data?: object): Promise<APIResponse> {
-  const body: unknown = await (await api.get('/api/auth/csrf')).json()
-  const csrfToken = typeof body === 'object' && body !== null && 'csrfToken' in body ? String(body.csrfToken) : ''
-  return api.fetch(path, { method, data, headers: { 'X-CSRF-Token': csrfToken } })
-}
-
-async function expectStatus(response: APIResponse, status: number): Promise<void> {
-  expect(response.status(), await response.text()).toBe(status)
-}
 
 async function openCalendar(page: Page): Promise<void> {
   await page.goto(`/calendar?month=${saleDate.slice(0, 7)}`)

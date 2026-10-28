@@ -9,7 +9,7 @@ vi.mock('../../services/apiClient', async (importOriginal) => ({
 }))
 vi.mock('../auth/sessionStore', () => ({ refreshSession: vi.fn() }))
 
-const input = { auctionId: 'sale', catalogueId: 'cat', lotNumber: 45, maxBidEur: 3000, instructions: '' }
+const input = { auctionId: 'sale', catalogueId: 'cat', lotNumber: 45, maxBidEur: 3000, instructions: '', acknowledgedCharges: true } as const
 
 function failWith(error: ApiError): void {
   vi.mocked(apiRequest).mockRejectedValueOnce(error)

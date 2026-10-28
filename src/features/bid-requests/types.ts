@@ -11,6 +11,8 @@ export type BidRequestInput = {
   lotNumber: number
   maxBidEur: number
   instructions: string
+  /** The customer confirmed the maximum is the hammer price only; the API refuses requests without it. */
+  acknowledgedCharges: true
 }
 
 type CatalogueSummary = Pick<Catalogue, 'id' | 'title'>

@@ -4,7 +4,7 @@ import { contractError, integer, isRecord, list, nested, oneOf, text, type Field
 import { bidRequestStatuses, type MyBidRequest, type RequestedLot } from './types'
 
 /** The API sends amounts as exact decimal strings ("2500.00"); requests are in whole euros. */
-function wholeEuros(record: Fields, key: string): number {
+export function wholeEuros(record: Fields, key: string): number {
   const amount = Number(text(record, key))
   if (!Number.isSafeInteger(amount)) {
     throw contractError()

@@ -177,3 +177,86 @@ export async function summariseCatalogueRequests(
   )
   return rows[0] ?? { count: 0, firstLot: null, lastLot: null }
 }
+
+/** Requests that have been decided and won't change again */
+export const closedStatuses: readonly BidRequestStatus[] = ['rejected', 'cancelled', 'won', 'lost']
+
+/** A request as the agent reviews it: with the customer, the amount and the state of its sale and lot */
+export type ReviewBidRequestRow = CustomerBidRequestRow & {
+  updatedAt: Date
+  customerId: string
+  customerFirstName: string
+  customerLastName: string
+  customerEmail: string
+  customerCompany: string | null
+  customerCountry: string
+  auctionStatus: string
+  /** The sale day hasn't ended (Paris time), so requests can still be accepted */
+  saleOpen: boolean
+  /** The sale has begun, so a result can be recorded */
+  saleStarted: boolean
+  /** Another request already reserves this lot */
+  lotHeldByOther: boolean
+}
+
+const reviewRequestQuery = `
+  SELECT br.id, br.lot_number AS "lotNumber", br.max_bid_eur AS "maxBidEur", br.instructions, br.status,
+    br.submitted_at AS "submittedAt", br.updated_at AS "updatedAt",
+    a.slug AS "auctionSlug", a.title AS "auctionTitle", a.auction_house AS "auctionHouse", a.city AS "auctionCity",
+    ${parisSaleDate} AS "saleDate", ${parisSaleTime} AS "saleTime", a.status AS "auctionStatus",
+    ${saleIsOpen} AS "saleOpen", a.starts_at <= now() AS "saleStarted",
+    c.slug AS "catalogueSlug", c.title AS "catalogueTitle",
+    u.id AS "customerId", u.first_name AS "customerFirstName", u.last_name AS "customerLastName",
+    u.email AS "customerEmail", u.company_name AS "customerCompany", u.country_code AS "customerCountry",
+    EXISTS (
+      SELECT 1 FROM bid_requests other
+      WHERE other.catalogue_id = br.catalogue_id AND other.lot_number = br.lot_number AND other.id <> br.id
+        AND other.status = ANY($1::text[])
+    ) AS "lotHeldByOther"
+  FROM bid_requests br
+  JOIN auctions a ON a.id = br.auction_id
+  JOIN catalogues c ON c.id = br.catalogue_id
+  JOIN users u ON u.id = br.customer_id`
+
+/**
+ * Requests with the given statuses. Open work comes in sale order, soonest sale first, so the
+ * most urgent requests lead; anything including closed requests comes most recently changed first.
+ */
+export async function listReviewBidRequests(
+  statuses: readonly BidRequestStatus[],
+  { limit, offset }: { limit: number; offset: number },
+): Promise<{ requests: ReviewBidRequestRow[]; total: number }> {
+  const onlyOpen = statuses.every((status) => !closedStatuses.includes(status))
+  const order = onlyOpen ? 'a.starts_at, c.slug, br.lot_number, br.submitted_at, br.id' : 'br.updated_at DESC, br.id'
+  const [page, count] = await Promise.all([
+    pool.query<ReviewBidRequestRow>(
+      `${reviewRequestQuery} WHERE br.status = ANY($2::text[]) ORDER BY ${order} LIMIT $3 OFFSET $4`,
+      [reservingStatuses, statuses, limit, offset],
+    ),
+    pool.query<{ total: number }>('SELECT count(*)::int AS total FROM bid_requests WHERE status = ANY($1::text[])', [
+      statuses,
+    ]),
+  ])
+  return { requests: page.rows, total: count.rows[0]?.total ?? 0 }
+}
+
+export async function findReviewBidRequest(id: string, db: Queryable = pool): Promise<ReviewBidRequestRow | null> {
+  const { rows } = await db.query<ReviewBidRequestRow>(`${reviewRequestQuery} WHERE br.id = $2`, [reservingStatuses, id])
+  return rows[0] ?? null
+}
+
+/** Locks a request until the transaction ends, so two decisions about it are made one after the other. */
+export async function lockBidRequest(
+  id: string,
+  db: Queryable,
+): Promise<{ id: string; status: BidRequestStatus; catalogueId: string; lotNumber: number } | null> {
+  const { rows } = await db.query<{ id: string; status: BidRequestStatus; catalogueId: string; lotNumber: number }>(
+    `SELECT id, status, catalogue_id AS "catalogueId", lot_number AS "lotNumber" FROM bid_requests WHERE id = $1 FOR UPDATE`,
+    [id],
+  )
+  return rows[0] ?? null
+}
+
+export async function setBidRequestStatus(id: string, status: BidRequestStatus, db: Queryable): Promise<void> {
+  await db.query('UPDATE bid_requests SET status = $2 WHERE id = $1', [id, status])
+}

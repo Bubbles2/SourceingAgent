@@ -10,9 +10,12 @@ import {
 } from '../features/auctions/auctionService'
 import { parseSaleStatus } from '../features/auctions/saleStatus'
 import { loadSession } from '../features/auth/sessionStore'
+import type { CustomerAccount } from '../features/auth/types'
 import { listMyRequests, listRequestedLots } from '../features/bid-requests/bidRequestService'
 import { getMonthGridRange, parseMonthKey } from '../features/calendar/calendarDates'
 import { listCatalogues } from '../features/catalogues/catalogueService'
+import { parseReviewView } from '../features/request-review/reviewDecisions'
+import { listReviewRequests } from '../features/request-review/reviewService'
 import { parsePageNumber } from '../services/pagination'
 import { paths, signInPath } from './paths'
 
@@ -43,11 +46,13 @@ export function calendarLoader({ request }: LoaderFunctionArgs) {
 }
 
 /** Visitors are sent to sign in, then brought back to the same address (filters included). */
-async function requireSignIn(request: Request): Promise<void> {
-  if (!(await loadSession())) {
+async function requireSignIn(request: Request): Promise<CustomerAccount> {
+  const account = await loadSession()
+  if (!account) {
     const url = new URL(request.url)
     throw redirect(signInPath(`${url.pathname}${url.search}`))
   }
+  return account
 }
 
 /** Only upcoming sales can take requests; ?auction= and ?catalogue= pre-select the form. */
@@ -68,6 +73,15 @@ export function requestedLotsLoader() {
 export async function myRequestsLoader({ request }: LoaderFunctionArgs) {
   await requireSignIn(request)
   return { requests: listMyRequests() }
+}
+
+/** Only administrators get the list; anyone else signed in is told the page isn't for them. */
+export async function reviewRequestsLoader({ request }: LoaderFunctionArgs) {
+  const account = await requireSignIn(request)
+  const searchParams = new URL(request.url).searchParams
+  const view = parseReviewView(searchParams.get('view'))
+  const page = parsePageNumber(searchParams.get('page'))
+  return { view, page, requests: account.role === 'administrator' ? listReviewRequests({ view, page }) : null }
 }
 
 export function cataloguesLoader({ request }: LoaderFunctionArgs) {

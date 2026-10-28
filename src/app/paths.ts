@@ -14,6 +14,7 @@ export const paths = {
   verifyEmail: '/verify-email',
   account: '/account',
   myRequests: '/my-requests',
+  reviewRequests: '/admin/requests',
   terms: '/terms',
   privacy: '/privacy',
 } as const

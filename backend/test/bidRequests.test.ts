@@ -90,7 +90,15 @@ async function newCustomer(label: string, { confirmed }: { confirmed: boolean })
 }
 
 function bid(overrides: Record<string, unknown> = {}): Record<string, unknown> {
-  return { auctionId: slugs.open, catalogueId: slugs.openCatalogue, lotNumber: 10, maxBidEur: 2500, instructions: '', ...overrides }
+  return {
+    auctionId: slugs.open,
+    catalogueId: slugs.openCatalogue,
+    lotNumber: 10,
+    maxBidEur: 2500,
+    instructions: '',
+    acknowledgedCharges: true,
+    ...overrides,
+  }
 }
 
 before(async () => {
@@ -244,6 +252,17 @@ describe('submitting', () => {
     )
     const cents = await verified.post('/api/bid-requests', bid({ maxBidEur: 2500.5 }))
     assert.equal(cents.status, 400)
+  })
+
+  test('the customer must acknowledge that fees and charges come on top', async () => {
+    for (const acknowledgedCharges of [undefined, false, 'yes']) {
+      const response = await verified.post('/api/bid-requests', bid({ lotNumber: 30, acknowledgedCharges }))
+      assert.equal(response.status, 400, String(acknowledgedCharges))
+      assert.deepEqual(
+        errorBody.parse(response.body).error.details?.map((detail) => detail.path),
+        ['body.acknowledgedCharges'],
+      )
+    }
   })
 })
 

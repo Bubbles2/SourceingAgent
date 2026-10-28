@@ -93,6 +93,7 @@ export function validateBidRequest(
       lotNumber,
       maxBidEur,
       instructions: values.instructions.trim(),
+      acknowledgedCharges: true,
     },
   }
 }
