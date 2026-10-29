@@ -1,5 +1,6 @@
 import { use, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
+import { Check } from 'lucide-react'
 import { Link } from 'react-router'
 import { auctionPath } from '../../app/paths'
 import { StatusBadge, statusLabel } from '../../components/ui/Badge'
@@ -28,7 +29,7 @@ type ReviewRequestsTableProps = {
 }
 
 const emptyMessages: Record<ReviewView, { title: string; body: string }> = {
-  pending: { title: 'No requests waiting for review', body: 'New requests from customers appear here.' },
+  pending: { title: 'No outstanding bid requests', body: 'New requests from customers appear here for acceptance or rejection.' },
   accepted: { title: 'No accepted requests', body: 'Requests you accept appear here until you record the bid.' },
   placed: { title: 'No bids awaiting a result', body: 'Bids you record as placed appear here until the result is in.' },
   closed: { title: 'No closed requests yet', body: 'Rejected, cancelled, won and lost requests appear here.' },
@@ -176,11 +177,11 @@ export function ReviewRequestsTable({ requests: requestsPromise, view, page, fil
                 <td>
                   <Button
                     size="sm"
-                    variant="secondary"
-                    aria-label={`Review ${lotName(request.lot.lotNumber).toLowerCase()} for ${request.customer.firstName} ${request.customer.lastName}`}
+                    variant={request.status === 'pending' && view === 'pending' ? 'primary' : 'secondary'}
+                    aria-label={`${request.status === 'pending' && view === 'pending' ? 'Review and accept' : 'Review'} ${lotName(request.lot.lotNumber).toLowerCase()} for ${request.customer.firstName} ${request.customer.lastName}`}
                     onClick={() => handleReview(request)}
                   >
-                    Review
+                    {request.status === 'pending' && view === 'pending' ? <><Check size={16} aria-hidden="true" /> Accept</> : 'Review'}
                   </Button>
                 </td>
               </tr>

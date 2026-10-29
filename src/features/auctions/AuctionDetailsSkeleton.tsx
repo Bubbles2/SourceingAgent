@@ -13,15 +13,11 @@ export function AuctionDetailsSkeleton(): React.JSX.Element {
               <span className="skeleton skeleton--medium" />
             </div>
             <div className="auction-details">
-              <div className="auction-details__aside">
-                <span className="skeleton auction-details-skeleton__panel" />
-              </div>
-              <div className="auction-details__main">
-                <div className="auction-details__section">
-                  <span className="skeleton skeleton--title" />
-                  <span className="skeleton" />
-                  <span className="skeleton skeleton--medium" />
-                </div>
+              <span className="skeleton auction-details-skeleton__panel" />
+              <div className="auction-details__section">
+                <span className="skeleton skeleton--title" />
+                <span className="skeleton" />
+                <span className="skeleton skeleton--medium" />
               </div>
             </div>
           </div>

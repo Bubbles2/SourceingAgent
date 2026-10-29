@@ -1,0 +1,5 @@
+.lot-view-toggle { display: inline-flex; gap: var(--space-1); padding: var(--space-1); background: var(--white); border: 1px solid var(--cream-line); border-radius: var(--r-md); }
+.lot-view-toggle button { min-height: var(--tap); padding: 0 var(--space-5); border: 0; border-radius: var(--r-sm); background: transparent; color: var(--navy); font: 600 var(--text-body) var(--font-sans); cursor: pointer; }
+.lot-view-toggle button:hover { background: var(--blue-tint); }
+.lot-view-toggle button[aria-pressed='true'] { background: var(--navy); color: var(--ivory); }
+.lot-view-toggle button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }

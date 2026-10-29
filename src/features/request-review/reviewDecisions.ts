@@ -19,7 +19,7 @@ export function isDecision(status: BidRequestStatus): status is Decision {
 }
 
 export const reviewViewOptions: readonly { value: ReviewView; label: string }[] = [
-  { value: 'pending', label: 'Pending review' },
+  { value: 'pending', label: 'Outstanding bids' },
   { value: 'accepted', label: 'Accepted' },
   { value: 'placed', label: 'Bid placed' },
   { value: 'closed', label: 'Closed' },

@@ -1,4 +1,4 @@
-import { Suspense, use } from 'react'
+import { Suspense, use, useState } from 'react'
 import { ArrowLeft } from 'lucide-react'
 import { Link, useLoaderData } from 'react-router'
 import type { lotsLoader } from '../app/loaders'
@@ -11,6 +11,7 @@ import type { SaleStatus } from '../features/auctions/saleStatus'
 import type { Auction } from '../features/auctions/types'
 import { LotGridSkeleton } from '../features/lots/LotCardSkeleton'
 import { LotResults } from '../features/lots/LotResults'
+import { LotViewToggle, type LotView } from '../features/lots/LotViewToggle'
 import './LotsPage.css'
 
 function statusSearch(status: SaleStatus, page: number): string {
@@ -23,6 +24,7 @@ function saleSearch(auctionId: string, page: number): string {
 
 export function LotsPage(): React.JSX.Element {
   const { status, page, auctionId, auction, lots } = useLoaderData<typeof lotsLoader>()
+  const [view, setView] = useState<LotView>('tiles')
 
   return (
     <PageContainer
@@ -38,13 +40,16 @@ export function LotsPage(): React.JSX.Element {
       title="Auction lots"
       description="Every lot from the sales we follow, with the auction house's photos and descriptions. Find the ones you want, then ask the agent to bid on them."
     >
-      {auctionId && auction ? (
-        <Suspense fallback={<span className="skeleton skeleton--medium" />}>
-          <SaleHeading auction={auction} />
-        </Suspense>
-      ) : (
-        <SaleStatusFilter value={status} label="Show lots from" />
-      )}
+      <div className="lots-page__controls">
+        {auctionId && auction ? (
+          <Suspense fallback={<span className="skeleton skeleton--medium" />}>
+            <SaleHeading auction={auction} />
+          </Suspense>
+        ) : (
+          <SaleStatusFilter value={status} label="Show lots from" />
+        )}
+        <LotViewToggle view={view} onChange={setView} />
+      </div>
       <Suspense
         key={`${auctionId ?? status}-${page}`}
         fallback={<LotGridSkeleton count={6} label={auctionId ? 'Loading lots' : `Loading lots in ${status} sales`} />}
@@ -56,6 +61,7 @@ export function LotsPage(): React.JSX.Element {
             pageSearch={(target) => saleSearch(auctionId, target)}
             scope="in this sale"
             showAuction={false}
+            view={view}
             empty={
               <EmptyState
                 title="No lots for this sale"
@@ -71,6 +77,7 @@ export function LotsPage(): React.JSX.Element {
             page={page}
             pageSearch={(target) => statusSearch(status, target)}
             scope={`in ${status} sales`}
+            view={view}
             empty={<NoLots status={status} />}
           />
         )}

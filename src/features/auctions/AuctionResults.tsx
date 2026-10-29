@@ -4,6 +4,7 @@ import { EmptyState } from '../../components/ui/EmptyState'
 import { Pagination } from '../../components/ui/Pagination'
 import { countPages, type Page } from '../../services/pagination'
 import { AuctionListingCard } from './AuctionListingCard'
+import { AuctionListingRow } from './AuctionListingRow'
 import type { SaleStatus } from './saleStatus'
 import type { Auction } from './types'
 
@@ -11,13 +12,14 @@ type AuctionResultsProps = {
   auctions: Promise<Page<Auction>>
   status: SaleStatus
   page: number
+  view: 'tiles' | 'details'
 }
 
 function pageSearch(status: SaleStatus, page: number): string {
   return page > 1 ? `?status=${status}&page=${page}` : `?status=${status}`
 }
 
-export function AuctionResults({ auctions: auctionsPromise, status, page }: AuctionResultsProps): React.JSX.Element {
+export function AuctionResults({ auctions: auctionsPromise, status, page, view }: AuctionResultsProps): React.JSX.Element {
   const { items: auctions, total, limit } = use(auctionsPromise)
 
   if (total === 0) {
@@ -45,9 +47,11 @@ export function AuctionResults({ auctions: auctionsPromise, status, page }: Auct
   return (
     <>
       <h2 className="page__results-count">{`${total} ${status} ${total === 1 ? 'auction' : 'auctions'}`}</h2>
-      <div className="auction-grid">
+      <div className={view === 'tiles' ? 'auction-grid' : 'auction-list'}>
         {auctions.map((auction) => (
-          <AuctionListingCard key={auction.id} auction={auction} />
+          view === 'tiles'
+            ? <AuctionListingCard key={auction.id} auction={auction} />
+            : <AuctionListingRow key={auction.id} auction={auction} />
         ))}
       </div>
       <Pagination

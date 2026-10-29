@@ -17,7 +17,7 @@ export function ReviewRequestsPage(): React.JSX.Element {
     <PageContainer
       eyebrow="Administration"
       title="Bid requests"
-      description="Accept or reject new requests, then record the bids placed and their results. Every change is kept in the request's history."
+      description="Review outstanding bid requests, accept or reject them with an optional note, then record bids placed and their results. Every change is kept in the request's history."
     >
       <SegmentedLinks
         label="Show requests"

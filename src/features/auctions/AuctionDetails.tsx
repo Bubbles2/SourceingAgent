@@ -1,15 +1,16 @@
-import { Suspense, use } from 'react'
-import { ArrowLeft, MapPin } from 'lucide-react'
-import { auctionLotsId, paths } from '../../app/paths'
+import { Suspense, use, useState } from 'react'
+import { ArrowLeft } from 'lucide-react'
+import { auctionLotsId, paths, requestBidPath } from '../../app/paths'
 import { PageContainer } from '../../components/layout/PageContainer'
 import { ButtonLink } from '../../components/ui/Button'
 import { EmptyState } from '../../components/ui/EmptyState'
+import { OutboundLink } from '../../components/ui/OutboundLink'
 import type { Page } from '../../services/pagination'
-import { PricingNotice } from '../bid-requests/PricingNotice'
 import { LotGridSkeleton } from '../lots/LotCardSkeleton'
 import { LotResults } from '../lots/LotResults'
+import { LotViewToggle, type LotView } from '../lots/LotViewToggle'
 import type { LotWithAuction } from '../lots/types'
-import { AuctionFacts } from './AuctionFacts'
+import { formatLinkHost, formatLotCount, formatSaleDateLong, formatSaleTime } from './formatAuction'
 import { getSaleStatus, type SaleStatus } from './saleStatus'
 import type { Auction } from './types'
 import './AuctionDetails.css'
@@ -27,6 +28,7 @@ function lotsSearch(page: number): string {
 
 export function AuctionDetails({ auction: auctionPromise, lots, page }: AuctionDetailsProps): React.JSX.Element {
   const auction = use(auctionPromise)
+  const [view, setView] = useState<LotView>('tiles')
 
   if (!auction) {
     return <AuctionNotFound />
@@ -39,26 +41,25 @@ export function AuctionDetails({ auction: auctionPromise, lots, page }: AuctionD
       breadcrumb={<BackToAuctions status={status} />}
       eyebrow="Auction"
       title={auction.title}
-      description={
-        auction.location ? (
-          <span className="auction-details__house">
-            <MapPin size={18} />
-            {auction.location}
-          </span>
-        ) : undefined
-      }
+      description={[
+        auction.auctionDate ? formatSaleDateLong(auction.auctionDate) : 'Date to be announced',
+        auction.startsAt ? `${formatSaleTime(auction.startsAt)}, Paris time` : null,
+        auction.location,
+        auction.lotCount > 0 ? formatLotCount(auction.lotCount) : 'Lots not yet published',
+      ].filter(Boolean).join(' · ')}
     >
       <div className="auction-details">
-        <div className="auction-details__aside">
-          <AuctionFacts auction={auction} status={status} />
-          {status === 'upcoming' ? <PricingNotice /> : null}
+        <div className="auction-details__actions">
+          {auction.catalogueUrl ? <OutboundLink href={auction.catalogueUrl} label={`Catalogue on ${formatLinkHost(auction.catalogueUrl)}`} context={auction.title} /> : null}
+          {status === 'upcoming' ? <ButtonLink to={requestBidPath(auction.id)}>Request a bid</ButtonLink> : null}
         </div>
-
-        <div className="auction-details__main">
-          <section id={auctionLotsId} className="auction-details__section" aria-labelledby="auction-lots-title">
+        <section id={auctionLotsId} className="auction-details__section" aria-labelledby="auction-lots-title">
+          <div className="auction-details__section-head">
             <h2 id="auction-lots-title" className="auction-details__heading">
               Lots
             </h2>
+            <LotViewToggle view={view} onChange={setView} />
+          </div>
             <Suspense key={page} fallback={<LotGridSkeleton count={4} label="Loading the lots" />}>
               <LotResults
                 lots={lots}
@@ -66,6 +67,7 @@ export function AuctionDetails({ auction: auctionPromise, lots, page }: AuctionD
                 pageSearch={lotsSearch}
                 scope="in this sale"
                 showAuction={false}
+                view={view}
                 empty={
                   <EmptyState title="Lots not yet published">
                     The auction house hasn't published the lots for this sale yet. They will appear here as soon as
@@ -74,8 +76,7 @@ export function AuctionDetails({ auction: auctionPromise, lots, page }: AuctionD
                 }
               />
             </Suspense>
-          </section>
-        </div>
+        </section>
       </div>
     </PageContainer>
   )
