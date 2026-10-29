@@ -3,21 +3,14 @@ import { PageLoading } from '../components/layout/PageLoading'
 import { SiteLayout } from '../components/layout/SiteLayout'
 import { AdminLayout } from '../features/admin/AdminLayout'
 import { AccountPage } from '../pages/AccountPage'
-import { AdminAuctionPage } from '../pages/AdminAuctionPage'
-import { AdminAuctionsPage } from '../pages/AdminAuctionsPage'
-import { AdminCataloguesPage } from '../pages/AdminCataloguesPage'
 import { AdminDashboardPage } from '../pages/AdminDashboardPage'
 import { AuctionDetailsPage } from '../pages/AuctionDetailsPage'
 import { AuctionsPage } from '../pages/AuctionsPage'
 import { CalendarPage } from '../pages/CalendarPage'
-import { CataloguesPage } from '../pages/CataloguesPage'
-import { EditAuctionPage } from '../pages/EditAuctionPage'
-import { EditCataloguePage } from '../pages/EditCataloguePage'
 import { ForgotPasswordPage } from '../pages/ForgotPasswordPage'
 import { LandingPage } from '../pages/LandingPage'
+import { LotsPage } from '../pages/LotsPage'
 import { MyRequestsPage } from '../pages/MyRequestsPage'
-import { NewAuctionPage } from '../pages/NewAuctionPage'
-import { NewCataloguePage } from '../pages/NewCataloguePage'
 import { NotFoundPage } from '../pages/NotFoundPage'
 import { PrivacyPage } from '../pages/PrivacyPage'
 import { RegisterPage } from '../pages/RegisterPage'
@@ -31,20 +24,14 @@ import { TermsPage } from '../pages/TermsPage'
 import { VerifyEmailPage } from '../pages/VerifyEmailPage'
 import {
   accountLoader,
-  adminAuctionLoader,
-  adminAuctionsLoader,
-  adminCataloguesLoader,
   adminDashboardLoader,
-  editAuctionLoader,
-  editCatalogueLoader,
-  newAuctionLoader,
-  newCatalogueLoader,
   auctionDetailsLoader,
   auctionsLoader,
   calendarLoader,
-  cataloguesLoader,
+  cataloguesRedirectLoader,
   guestOnlyLoader,
   landingLoader,
+  lotsLoader,
   myRequestsLoader,
   requestBidLoader,
   requestedLotsLoader,
@@ -75,12 +62,8 @@ export const router = createBrowserRouter([
             element: <AuctionDetailsPage />,
             hydrateFallbackElement: pageLoading,
           },
-          {
-            path: paths.catalogues,
-            loader: cataloguesLoader,
-            element: <CataloguesPage />,
-            hydrateFallbackElement: pageLoading,
-          },
+          { path: paths.lots, loader: lotsLoader, element: <LotsPage />, hydrateFallbackElement: pageLoading },
+          { path: paths.catalogues, loader: cataloguesRedirectLoader },
           {
             path: paths.calendar,
             loader: calendarLoader,
@@ -111,38 +94,6 @@ export const router = createBrowserRouter([
             element: <AdminLayout />,
             children: [
               { index: true, loader: adminDashboardLoader, element: <AdminDashboardPage />, hydrateFallbackElement: pageLoading },
-              { path: 'auctions', loader: adminAuctionsLoader, element: <AdminAuctionsPage />, hydrateFallbackElement: pageLoading },
-              { path: 'auctions/new', loader: newAuctionLoader, element: <NewAuctionPage />, hydrateFallbackElement: pageLoading },
-              {
-                path: 'auctions/:auctionId',
-                loader: adminAuctionLoader,
-                element: <AdminAuctionPage />,
-                hydrateFallbackElement: pageLoading,
-              },
-              {
-                path: 'auctions/:auctionId/edit',
-                loader: editAuctionLoader,
-                element: <EditAuctionPage />,
-                hydrateFallbackElement: pageLoading,
-              },
-              {
-                path: 'catalogues',
-                loader: adminCataloguesLoader,
-                element: <AdminCataloguesPage />,
-                hydrateFallbackElement: pageLoading,
-              },
-              {
-                path: 'catalogues/new',
-                loader: newCatalogueLoader,
-                element: <NewCataloguePage />,
-                hydrateFallbackElement: pageLoading,
-              },
-              {
-                path: 'catalogues/:catalogueId/edit',
-                loader: editCatalogueLoader,
-                element: <EditCataloguePage />,
-                hydrateFallbackElement: pageLoading,
-              },
               { path: 'requests', loader: reviewRequestsLoader, element: <ReviewRequestsPage />, hydrateFallbackElement: pageLoading },
             ],
           },

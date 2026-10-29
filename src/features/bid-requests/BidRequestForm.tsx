@@ -4,11 +4,12 @@ import { CheckboxField } from '../../components/form/CheckboxField'
 import { ErrorSummary, type FormError } from '../../components/form/ErrorSummary'
 import { SelectField, type SelectOption } from '../../components/form/SelectField'
 import { TextAreaField } from '../../components/form/TextAreaField'
-import { TextField } from '../../components/form/TextField'
 import { Button } from '../../components/ui/Button'
 import { formatEur } from '../../utils/money'
-import { formatSaleDateShort } from '../auctions/formatAuction'
-import type { AuctionWithCatalogues } from '../auctions/types'
+import { formatSaleLine } from '../auctions/formatAuction'
+import type { Auction } from '../auctions/types'
+import type { AuctionLotsResult } from '../lots/lotService'
+import { lotOptionLabel } from '../lots/lotText'
 import { BidRequestConfirmation } from './BidRequestConfirmation'
 import { bidLimits } from './bidRequestRules'
 import { bidRequestFields, type BidRequestField } from './bidRequestValidation'
@@ -19,8 +20,7 @@ import './BidRequestForm.css'
 
 const fieldIds: Record<BidRequestField, string> = {
   auctionId: 'bid-auction',
-  catalogueId: 'bid-catalogue',
-  lotNumber: 'bid-lot',
+  lotId: 'bid-lot',
   maxBid: 'bid-max',
   instructions: 'bid-instructions',
   acknowledgedCharges: 'bid-acknowledge',
@@ -29,14 +29,15 @@ const pricingNoticeId = 'bid-pricing-notice'
 
 type BidRequestFormProps = {
   /** Sales open for requests */
-  auctions: readonly AuctionWithCatalogues[]
+  auctions: readonly Auction[]
   initialAuctionId: string | null
-  initialCatalogueId: string | null
+  initialLotId: string | null
+  initialLots: Promise<AuctionLotsResult> | null
 }
 
-export function BidRequestForm({ auctions, initialAuctionId, initialCatalogueId }: BidRequestFormProps): React.JSX.Element {
-  const form = useBidRequestForm({ auctions, initialAuctionId, initialCatalogueId })
-  const { values, errors, selectedAuction, selectedCatalogue, setField } = form
+export function BidRequestForm({ auctions, initialAuctionId, initialLotId, initialLots }: BidRequestFormProps): React.JSX.Element {
+  const form = useBidRequestForm({ auctions, initialAuctionId, initialLotId, initialLots })
+  const { values, errors, selectedAuction, selectedLot, lots, setField } = form
 
   if (form.submittedRequest) {
     return <BidRequestConfirmation request={form.submittedRequest} onRequestAnother={form.startAnother} />
@@ -44,19 +45,27 @@ export function BidRequestForm({ auctions, initialAuctionId, initialCatalogueId 
 
   const auctionOptions: SelectOption[] = auctions.map((auction) => ({
     value: auction.id,
-    label: `${formatSaleDateShort(auction.saleDate)} · ${auction.title} · ${auction.house}${
-      auction.catalogues.length === 0 ? ' (catalogue not yet published)' : ''
-    }`,
+    label: `${formatSaleLine(auction)} · ${auction.title}${auction.lotCount === 0 ? ' (lots not yet published)' : ''}`,
   }))
-  const catalogueOptions: SelectOption[] = (selectedAuction?.catalogues ?? []).map((catalogue) => ({
-    value: catalogue.id,
-    label: `${catalogue.title} (lots ${catalogue.lots.first}–${catalogue.lots.last})`,
-  }))
+  const lotOptions: SelectOption[] = (lots ?? []).map((lot) => ({ value: lot.id, label: lotOptionLabel(lot) }))
   const fieldErrors: FormError[] = bidRequestFields.flatMap((field) => {
     const message = errors[field]
     return message ? [{ fieldId: fieldIds[field], message }] : []
   })
   const summaryErrors: FormError[] = errors.form ? [{ message: errors.form }, ...fieldErrors] : fieldErrors
+
+  function lotPlaceholder(): string {
+    if (!selectedAuction) {
+      return 'Choose an auction first'
+    }
+    if (form.lotsLoading) {
+      return 'Loading the lots…'
+    }
+    if (lots?.length === 0) {
+      return 'No lots published yet'
+    }
+    return 'Choose a lot'
+  }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>): void {
     event.preventDefault()
@@ -67,12 +76,8 @@ export function BidRequestForm({ auctions, initialAuctionId, initialCatalogueId 
     setField('auctionId', value)
   }
 
-  function handleCatalogueChange(value: string): void {
-    setField('catalogueId', value)
-  }
-
   function handleLotChange(value: string): void {
-    setField('lotNumber', value)
+    setField('lotId', value)
   }
 
   function handleMaxBidChange(value: string): void {
@@ -105,37 +110,30 @@ export function BidRequestForm({ auctions, initialAuctionId, initialCatalogueId 
             onChange={handleAuctionChange}
           />
           <SelectField
-            id={fieldIds.catalogueId}
-            label="Catalogue"
+            id={fieldIds.lotId}
+            label="Lot"
             required
-            placeholder={selectedAuction ? 'Choose a catalogue' : 'Choose an auction first'}
-            value={values.catalogueId}
-            options={catalogueOptions}
-            disabled={catalogueOptions.length === 0}
+            placeholder={lotPlaceholder()}
+            value={values.lotId}
+            options={lotOptions}
+            disabled={form.lotsLoading || lotOptions.length === 0}
             hint={
-              selectedAuction && catalogueOptions.length === 0
-                ? "This sale's catalogue isn't published yet, so requests open once it is."
-                : undefined
+              selectedAuction && lots?.length === 0
+                ? "This sale's lots aren't published yet, so requests open once they are."
+                : 'Lot number and title, as the auction house lists them.'
             }
-            error={errors.catalogueId}
-            onChange={handleCatalogueChange}
+            error={errors.lotId}
+            onChange={handleLotChange}
           />
-          <div className="form-row">
-            <TextField
-              id={fieldIds.lotNumber}
-              label="Lot number"
-              required
-              inputMode="numeric"
-              className="bid-form__lot"
-              value={values.lotNumber}
-              hint={
-                selectedCatalogue
-                  ? `This catalogue lists lots ${selectedCatalogue.lots.first}–${selectedCatalogue.lots.last}.`
-                  : 'As printed in the catalogue.'
-              }
-              error={errors.lotNumber}
-              onChange={handleLotChange}
-            />
+          {form.lotsError ? (
+            <p className="bid-form__lots-error" role="alert">
+              {`We couldn't load this sale's lots. ${form.lotsError}`}
+              <Button variant="link" onClick={form.retryLots}>
+                Try again
+              </Button>
+            </p>
+          ) : null}
+          <div className="bid-form__amount">
             <AmountField
               id={fieldIds.maxBid}
               label="Maximum bid (EUR)"
@@ -182,7 +180,7 @@ export function BidRequestForm({ auctions, initialAuctionId, initialCatalogueId 
         </div>
       </form>
 
-      <SelectedSaleSummary auction={selectedAuction} catalogue={selectedCatalogue} />
+      <SelectedSaleSummary auction={selectedAuction} lot={selectedLot} />
     </div>
   )
 }

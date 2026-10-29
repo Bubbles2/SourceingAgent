@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import { useLoaderData } from 'react-router'
 import type { adminDashboardLoader } from '../app/loaders'
-import { newAuctionPath, newCataloguePath, paths } from '../app/paths'
+import { paths, reviewRequestsPath } from '../app/paths'
 import { PageContainer } from '../components/layout/PageContainer'
 import { ButtonLink } from '../components/ui/Button'
 import { SummaryCards, SummaryCardsSkeleton } from '../features/admin/SummaryCards'
@@ -13,15 +13,12 @@ export function AdminDashboardPage(): React.JSX.Element {
     <PageContainer
       eyebrow="Administration"
       title="Dashboard"
-      description="Sales, catalogues and bid requests at a glance. Select a figure to open the list behind it."
+      description="Sales, lots and bid requests at a glance. Sales and lots come from the auction monitor; select a figure to open the list behind it."
     >
       <div className="admin-actions">
-        <ButtonLink to={newAuctionPath()}>New auction</ButtonLink>
-        <ButtonLink to={newCataloguePath()} variant="secondary">
-          Add catalogue
-        </ButtonLink>
+        <ButtonLink to={reviewRequestsPath({ view: 'pending' })}>Review bid requests</ButtonLink>
         <ButtonLink to={paths.calendar} variant="secondary">
-          Plan on the calendar
+          Open the calendar
         </ButtonLink>
       </div>
       <Suspense fallback={<SummaryCardsSkeleton />}>

@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { pageQuery, slugField } from '../../lib/validationFields.ts'
+import { databaseIdField, pageQuery } from '../../lib/validationFields.ts'
 import { bidRequestStatuses } from '../../repositories/bidRequestsRepository.ts'
 
 export const listUsersQuery = z.object({
@@ -21,7 +21,7 @@ export const listBidRequestsQuery = z.object({
     .default('pending')
     .transform((value) => (value === 'all' ? [...bidRequestStatuses] : value.split(',')))
     .pipe(z.array(z.enum(bidRequestStatuses, { error: statusMessage })).min(1, statusMessage)),
-  auction: slugField('auction must be the id of a sale.').optional(),
+  auction: databaseIdField('auction must be the id of a sale.').optional(),
   customer: z
     .string({ error: 'customer must be text.' })
     .trim()

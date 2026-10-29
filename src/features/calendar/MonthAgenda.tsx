@@ -1,4 +1,4 @@
-import { formatSaleDateShort } from '../auctions/formatAuction'
+import { formatAuctionMeta, formatSaleDateShort } from '../auctions/formatAuction'
 import type { Auction } from '../auctions/types'
 import { formatMonthTitle, type MonthKey } from './calendarDates'
 import './Calendar.css'
@@ -52,9 +52,9 @@ function AgendaEventButton({ auction, onSelect }: AgendaEventButtonProps): React
 
   return (
     <button type="button" className="cal-agenda__event" aria-haspopup="dialog" onClick={handleClick}>
-      <span className="cal-agenda__meta">{`${auction.saleTime} · ${auction.category}`}</span>
+      <span className="cal-agenda__meta">{formatAuctionMeta(auction)}</span>
       <span className="cal-agenda__title">{auction.title}</span>
-      <span className="cal-agenda__house">{`${auction.house} · ${auction.city}`}</span>
+      {auction.location ? <span className="cal-agenda__house">{auction.location}</span> : null}
     </button>
   )
 }

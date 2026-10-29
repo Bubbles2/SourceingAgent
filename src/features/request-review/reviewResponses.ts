@@ -1,38 +1,20 @@
 // Checks the review API's responses (backend src/api/admin) against the contract.
 import type { Page } from '../../services/pagination'
-import { integer, isRecord, list, matching, nested, oneOf, record, text, boolean, type Fields } from '../../services/responseFields'
-import { wholeEuros } from '../bid-requests/bidRequestResponses'
+import { boolean, integer, isRecord, list, nested, nullableText, oneOf, record, text } from '../../services/responseFields'
+import { parseRequestSaleAndLot, wholeEuros } from '../bid-requests/bidRequestResponses'
 import { bidRequestStatuses } from '../bid-requests/types'
 import type { ReviewBidRequest, ReviewDetail, StatusChange } from './types'
 
-const isoDate = /^\d{4}-\d{2}-\d{2}$/
-const time = /^\d{2}:\d{2}$/
-
-function nullableText(fields: Fields, key: string): string | null {
-  return fields[key] === null ? null : text(fields, key)
-}
-
 export function parseReviewBidRequest(value: unknown): ReviewBidRequest {
   const fields = record(value)
-  const auction = nested(fields, 'auction')
-  const catalogue = nested(fields, 'catalogue')
   const customer = nested(fields, 'customer')
   return {
     id: text(fields, 'id'),
-    lotNumber: integer(fields, 'lotNumber'),
     maxBidEur: wholeEuros(fields, 'maxBidEur'),
     instructions: text(fields, 'instructions'),
     status: oneOf(fields, 'status', bidRequestStatuses),
     submittedAt: text(fields, 'submittedAt'),
-    auction: {
-      id: text(auction, 'id'),
-      title: text(auction, 'title'),
-      house: text(auction, 'house'),
-      city: text(auction, 'city'),
-      saleDate: matching(auction, 'saleDate', isoDate),
-      saleTime: matching(auction, 'saleTime', time),
-    },
-    catalogue: { id: text(catalogue, 'id'), title: text(catalogue, 'title') },
+    ...parseRequestSaleAndLot(fields),
     customer: {
       firstName: text(customer, 'firstName'),
       lastName: text(customer, 'lastName'),

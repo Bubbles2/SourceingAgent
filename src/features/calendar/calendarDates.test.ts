@@ -69,9 +69,10 @@ describe('labels and grouping', () => {
 
   it('groups sales by date, keeping their order', () => {
     const groups = groupBySaleDate([
-      { id: 'a', saleDate: '2026-11-26' },
-      { id: 'b', saleDate: '2026-11-14' },
-      { id: 'c', saleDate: '2026-11-26' },
+      { id: 'a', auctionDate: '2026-11-26' },
+      { id: 'b', auctionDate: '2026-11-14' },
+      { id: 'c', auctionDate: '2026-11-26' },
+      { id: 'd', auctionDate: null },
     ])
     expect([...groups.keys()]).toEqual(['2026-11-26', '2026-11-14'])
     expect(groups.get('2026-11-26')?.map((sale) => sale.id)).toEqual(['a', 'c'])

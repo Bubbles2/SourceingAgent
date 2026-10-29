@@ -9,8 +9,8 @@ export function Hero(): React.JSX.Element {
           <p className="eyebrow hero__eyebrow">Paris-based bidding agent · International buyers</p>
           <h1 id="hero-title">Bid at Parisien auctions, without leaving home.</h1>
           <p className="lead">
-            Discover upcoming sales across Paris, browse the catalogues, and ask our Paris-based agent to bid on the
-            lots you want — on your behalf, up to your maximum price.
+            Discover upcoming sales across Paris, browse their lots, and ask our Paris-based agent to bid on the
+            ones you want — on your behalf, up to your maximum price.
           </p>
           <div className="hero__actions">
             <ButtonLink href="#auctions" size="lg">

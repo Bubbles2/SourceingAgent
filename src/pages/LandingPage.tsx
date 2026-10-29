@@ -19,7 +19,7 @@ export function LandingPage(): React.JSX.Element {
       <WhyAgent />
       <CtaBand
         title="Ready for your first Parisien auction?"
-        lead="Create a free account to submit bid requests, follow their status and keep every catalogue in one place."
+        lead="Create a free account to submit bid requests, follow their status and keep every lot you want in one place."
       >
         <ButtonLink to={paths.register} variant="gold" size="lg">
           Create account

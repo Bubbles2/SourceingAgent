@@ -1,15 +1,14 @@
 // The agent reviews a customer's bid request on the website: accepts it, records the bid and the
 // result. The lot shows as reserved to the public meanwhile, and the customer sees each status but
 // never the agent's notes.
-import { expectStatus, parisDate, sendChange } from './support/api'
+import { expectStatus, sendChange } from './support/api'
 import { expect, test } from './support/fixtures'
-import { latestEmailLink, makeAdministrator, testEmail, testId, testPassword } from './support/testData'
+import { addTestSale, latestEmailLink, makeAdministrator, testEmail, testId, testPassword } from './support/testData'
 
 const adminEmail = testEmail('reviewer')
 const customerEmail = testEmail('bidder')
 const saleId = testId('review-sale')
-const catalogueId = testId('review-catalogue')
-const saleTitle = `Faïences ${saleId}`
+const saleTitle = `Test sale ${saleId}`
 const note = 'Condition report checked with the house.'
 
 test('the agent accepts a request, records the bid and the result, and the customer follows along', async ({
@@ -19,7 +18,10 @@ test('the agent accepts a request, records the bid and the result, and the custo
 }) => {
   const customerApi = await playwright.request.newContext({ baseURL: 'http://localhost:3000' })
 
-  await test.step('an administrator publishes a sale taking place today', async () => {
+  // Earlier today, so the sale is still open for requests and a result can already be recorded.
+  const sale = addTestSale(saleId, { daysAhead: 0, lotCount: 10, time: '00:01' })
+
+  await test.step('an administrator signs up', async () => {
     await expectStatus(
       await sendChange(adminApi, 'POST', '/api/auth/register', {
         firstName: 'Agnès',
@@ -31,31 +33,6 @@ test('the agent accepts a request, records the bid and the result, and the custo
       201,
     )
     makeAdministrator(adminEmail)
-    // Earlier today, so the sale is still open for requests and a result can already be recorded.
-    await expectStatus(
-      await sendChange(adminApi, 'POST', '/api/auctions', {
-        id: saleId,
-        title: saleTitle,
-        category: 'Ceramics',
-        house: 'Maison Test',
-        city: 'Paris 6e',
-        saleDate: parisDate(0),
-        saleTime: '00:01',
-        description: 'Faience and porcelain.',
-        status: 'published',
-      }),
-      201,
-    )
-    await expectStatus(
-      await sendChange(adminApi, 'POST', '/api/catalogues', {
-        id: catalogueId,
-        auctionId: saleId,
-        title: 'Faïences & porcelaines',
-        lots: { first: 1, last: 50 },
-        pdfUrl: 'https://example.com/catalogues/review.pdf',
-      }),
-      201,
-    )
   })
 
   await test.step('a customer with a confirmed email requests bids on lots 7 and 8', async () => {
@@ -72,14 +49,13 @@ test('the agent accepts a request, records the bid and the result, and the custo
     const token = latestEmailLink(customerEmail, 'verify-email').split('#token=')[1]
     await expectStatus(await sendChange(customerApi, 'POST', '/api/auth/email-verification', { token }), 200)
     for (const [lotNumber, maxBidEur] of [
-      [7, 1200],
-      [8, 450],
-    ]) {
+      ['7', 1200],
+      ['8', 450],
+    ] as const) {
       await expectStatus(
         await sendChange(customerApi, 'POST', '/api/bid-requests', {
-          auctionId: saleId,
-          catalogueId,
-          lotNumber,
+          auctionId: sale.auctionId,
+          lotId: sale.lots.find((lot) => lot.lotNumber === lotNumber)?.id,
           maxBidEur,
           instructions: '',
           acknowledgedCharges: true,
@@ -124,7 +100,7 @@ test('the agent accepts a request, records the bid and the result, and the custo
   await test.step('only the accepted lot shows as reserved on the public list', async () => {
     await page.goto('/requested-lots')
     const saleRows = page.getByRole('row').filter({ hasText: saleTitle })
-    const row = saleRows.filter({ has: page.getByRole('cell', { name: '7', exact: true }) })
+    const row = saleRows.filter({ has: page.getByRole('cell', { name: /^Lot 7\b/ }) })
     await expect(row).toContainText('Reserved')
     await expect(saleRows).toHaveCount(1)
     await expect(page.getByRole('main')).not.toContainText('Lefèvre')

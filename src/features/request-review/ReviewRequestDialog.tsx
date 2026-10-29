@@ -6,7 +6,8 @@ import { Button } from '../../components/ui/Button'
 import { Dialog } from '../../components/ui/Dialog'
 import { Notice } from '../../components/ui/Notice'
 import { formatEur } from '../../utils/money'
-import { formatSaleDateShort } from '../auctions/formatAuction'
+import { formatSaleMoment } from '../auctions/formatAuction'
+import { lotName, lotTitle } from '../lots/lotText'
 import { decisionButtons, formatChangeTime, isDecision, type Decision } from './reviewDecisions'
 import { changeRequestStatus, type DetailResult } from './reviewService'
 import type { ReviewBidRequest, StatusChange } from './types'
@@ -35,7 +36,7 @@ export function ReviewRequestDialog({ request, detail, onClose, onDecided, onRel
       <div className="review-dialog__body">
         <div className="review-dialog__heading">
           <div>
-            <p className="review-dialog__eyebrow">{`Lot ${request.lotNumber} · ${request.catalogue.title}`}</p>
+            <p className="review-dialog__eyebrow">{lotName(request.lot.lotNumber)}</p>
             <h2 id={titleId} className="review-dialog__title">
               {request.auction.title}
             </h2>
@@ -106,8 +107,12 @@ function ReviewDetails({ detail: detailPromise, onDecided, onReload, onError }: 
           </dd>
         </div>
         <div>
+          <dt>Lot</dt>
+          <dd>{lotTitle(request.lot)}</dd>
+        </div>
+        <div>
           <dt>Sale</dt>
-          <dd>{`${formatSaleDateShort(auction.saleDate)} at ${auction.saleTime} · ${auction.house}`}</dd>
+          <dd>{[formatSaleMoment(auction), auction.location].filter(Boolean).join(' · ')}</dd>
         </div>
         <div>
           <dt>Maximum bid</dt>

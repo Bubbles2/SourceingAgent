@@ -10,7 +10,7 @@ export function testEmail(label: string): string {
   return `e2e-${run}-${label}@example.com`
 }
 
-/** A sale or catalogue id; removed with the test accounts afterwards */
+/** A test sale's id; removed with the test accounts afterwards */
 export function testId(label: string): string {
   return `e2e-${run}-${label}`
 }
@@ -37,6 +37,25 @@ export function latestEmailLink(email: string, page: 'verify-email' | 'reset-pas
     throw new Error(`No ${page} email found for ${email}`)
   }
   return link
+}
+
+export type TestSale = {
+  auctionId: string
+  lots: { id: string; lotNumber: string }[]
+}
+
+/**
+ * Sales come from the auction monitor, not the API, so tests add theirs from the command line: a
+ * sale `daysAhead` days from today at `time` in Paris, with lots numbered 1 to `lotCount`, titled
+ * "Test sale <id>" with lots "Test object <n>".
+ */
+export function addTestSale(id: string, { daysAhead, lotCount = 3, time = '14:00' }: { daysAhead: number; lotCount?: number; time?: string }): TestSale {
+  const output = backendScript('src/cli/addTestSale.ts', [id, String(daysAhead), String(lotCount), time])
+  const sale: unknown = JSON.parse(output)
+  if (typeof sale !== 'object' || sale === null || !('auctionId' in sale) || !('lots' in sale)) {
+    throw new Error(`Unexpected test sale: ${output}`)
+  }
+  return sale as TestSale
 }
 
 /** Administrators are only made from the command line, never through the API. */

@@ -5,10 +5,10 @@ import { Pagination } from '../../components/ui/Pagination'
 import { countPages, type Page } from '../../services/pagination'
 import { AuctionListingCard } from './AuctionListingCard'
 import type { SaleStatus } from './saleStatus'
-import type { AuctionWithCatalogues } from './types'
+import type { Auction } from './types'
 
 type AuctionResultsProps = {
-  auctions: Promise<Page<AuctionWithCatalogues>>
+  auctions: Promise<Page<Auction>>
   status: SaleStatus
   page: number
 }

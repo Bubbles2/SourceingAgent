@@ -3,7 +3,7 @@ import { ChevronDown } from 'lucide-react'
 import { Form } from 'react-router'
 import { Button, ButtonLink } from '../../components/ui/Button'
 import { formatDayMonthYear } from '../auctions/formatAuction'
-import type { AuctionWithCatalogues } from '../auctions/types'
+import type { Auction } from '../auctions/types'
 import type { ReviewView } from './types'
 import '../../components/form/Form.css'
 import './ReviewFilters.css'
@@ -12,7 +12,7 @@ type ReviewFiltersProps = {
   view: ReviewView
   auction: string
   customer: string
-  auctions: Promise<AuctionWithCatalogues[]>
+  auctions: Promise<Auction[]>
 }
 
 /** Narrows the list to one sale and/or a customer. A GET form, so the filters live in the address. */
@@ -34,7 +34,7 @@ export function ReviewFilters({ view, auction, customer, auctions }: ReviewFilte
             <option value="">All sales</option>
             {sales.map((sale) => (
               <option key={sale.id} value={sale.id}>
-                {`${formatDayMonthYear(sale.saleDate)} · ${sale.title}`}
+                {sale.auctionDate ? `${formatDayMonthYear(sale.auctionDate)} · ${sale.title}` : sale.title}
               </option>
             ))}
           </select>

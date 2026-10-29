@@ -1,5 +1,5 @@
 // Bid request calls to the API. The server checks every rule again (sign-in, a confirmed email,
-// open sale, lot range, one request per lot) and enforces the per-lot rules in the database.
+// open sale, a lot from that sale, one request per lot) and enforces the per-lot rules in the database.
 import { ApiError, apiRequest } from '../../services/apiClient'
 import { refreshSession } from '../auth/sessionStore'
 import { parseCreatedBidRequest, parseMyBidRequests, parseRequestedLots } from './bidRequestResponses'
@@ -11,17 +11,15 @@ export type SubmitBidRequestResult = { ok: true; request: MyBidRequest } | { ok:
 // Rule failures the API reports for one field
 const codeFields: Partial<Record<string, BidRequestField>> = {
   sale_closed: 'auctionId',
-  catalogue_mismatch: 'catalogueId',
-  lot_out_of_range: 'lotNumber',
-  lot_reserved: 'lotNumber',
-  already_requested: 'lotNumber',
+  lot_mismatch: 'lotId',
+  lot_reserved: 'lotId',
+  already_requested: 'lotId',
 }
 
 // Validation problems arrive as "body.<field>"
 const detailFields: Partial<Record<string, BidRequestField>> = {
   'body.auctionId': 'auctionId',
-  'body.catalogueId': 'catalogueId',
-  'body.lotNumber': 'lotNumber',
+  'body.lotId': 'lotId',
   'body.maxBidEur': 'maxBid',
   'body.instructions': 'instructions',
   'body.acknowledgedCharges': 'acknowledgedCharges',

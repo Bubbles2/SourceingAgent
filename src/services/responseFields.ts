@@ -81,3 +81,17 @@ export function list(data: unknown, key: string): unknown[] {
   }
   return value
 }
+
+export function nullableText(fields: Fields, key: string): string | null {
+  return fields[key] === null ? null : text(fields, key)
+}
+
+/** Nullable text that must match a pattern when present */
+export function nullableMatching(fields: Fields, key: string, pattern: RegExp): string | null {
+  return fields[key] === null ? null : matching(fields, key, pattern)
+}
+
+/** A list of strings */
+export function textList(fields: Fields, key: string): string[] {
+  return list(fields, key).map((value) => text({ value }, 'value'))
+}

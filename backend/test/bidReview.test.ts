@@ -6,6 +6,7 @@ import { randomUUID } from 'node:crypto'
 import { after, before, describe, test } from 'node:test'
 import { z } from 'zod'
 import { createApp } from '../src/app.ts'
+import { deleteTestData, insertTestSale, type TestSale } from '../src/cli/testSales.ts'
 import { closePool, pool, withTransaction } from '../src/db/pool.ts'
 import { BrowserClient, type ApiResponse } from './browserClient.ts'
 import { startTestServer, type TestServer } from './httpServer.ts'
@@ -16,7 +17,6 @@ const statuses = ['pending', 'accepted', 'rejected', 'cancelled', 'placed', 'won
 
 const reviewRequest = z.strictObject({
   id: z.uuid(),
-  lotNumber: z.number(),
   maxBidEur: z.string(),
   instructions: z.string(),
   status: z.enum(statuses),
@@ -25,13 +25,11 @@ const reviewRequest = z.strictObject({
   auction: z.strictObject({
     id: z.string(),
     title: z.string(),
-    house: z.string(),
-    city: z.string(),
-    saleDate: z.iso.date(),
-    saleTime: z.string(),
-    status: z.string(),
+    startsAt: z.iso.datetime().nullable(),
+    auctionDate: z.iso.date().nullable(),
+    location: z.string().nullable(),
   }),
-  catalogue: z.strictObject({ id: z.string(), title: z.string() }),
+  lot: z.strictObject({ id: z.string(), lotNumber: z.string().nullable(), title: z.string().nullable(), titleUk: z.string().nullable() }),
   customer: z.strictObject({
     id: z.uuid(),
     firstName: z.string(),
@@ -68,24 +66,17 @@ let alice: BrowserClient
 let bob: BrowserClient
 let aliceId: string
 
-const sales = {
-  open: { auction: `${prefix}-open`, catalogue: `${prefix}-open-cat` },
-  results: { auction: `${prefix}-results`, catalogue: `${prefix}-results-cat` },
-  closed: { auction: `${prefix}-closed`, catalogue: `${prefix}-closed-cat` },
+const sales: Record<'open' | 'results' | 'closed', TestSale> = {
+  open: { auctionId: '', lots: [] },
+  results: { auctionId: '', lots: [] },
+  closed: { auctionId: '', lots: [] },
 }
 
-async function createSale({ auction, catalogue }: { auction: string; catalogue: string }, startsIn: string): Promise<void> {
-  const { rows } = await pool.query<{ id: string }>(
-    `INSERT INTO auctions (slug, title, category, auction_house, city, starts_at, description, status)
-     VALUES ($1, 'Review test sale', 'Fine art', 'Maison Test', 'Paris', now() + $2::interval, 'A test sale.', 'published')
-     RETURNING id`,
-    [auction, startsIn],
-  )
-  await pool.query(
-    `INSERT INTO catalogues (slug, auction_id, title, description, first_lot, last_lot, pdf_url)
-     VALUES ($1, $2, 'Review test catalogue', '', 1, 100, 'https://example.com/test.pdf')`,
-    [catalogue, rows[0]?.id],
-  )
+/** The id of a lot, by its number in the sale */
+function lotId(sale: TestSale, lotNumber: number): string {
+  const lot = sale.lots.find((candidate) => candidate.lotNumber === String(lotNumber))
+  assert.ok(lot, `no lot ${lotNumber}`)
+  return lot.id
 }
 
 async function register(label: string, role: 'customer' | 'administrator'): Promise<{ client: BrowserClient; id: string }> {
@@ -106,9 +97,8 @@ async function register(label: string, role: 'customer' | 'administrator'): Prom
 /** Submits a request as a customer and returns its id */
 async function submit(customer: BrowserClient, lotNumber: number, sale = sales.open): Promise<string> {
   const response = await customer.post('/api/bid-requests', {
-    auctionId: sale.auction,
-    catalogueId: sale.catalogue,
-    lotNumber,
+    auctionId: sale.auctionId,
+    lotId: lotId(sale, lotNumber),
     maxBidEur: 2500,
     instructions: 'Only if the frame is original.',
     acknowledgedCharges: true,
@@ -134,11 +124,10 @@ async function detail(id: string) {
   return reviewDetail.parse(response.body)
 }
 
-async function acceptedCount(catalogue: string, lotNumber: number): Promise<number> {
+async function acceptedCount(sale: TestSale, lotNumber: number): Promise<number> {
   const { rows } = await pool.query<{ count: number }>(
-    `SELECT count(*)::int AS count FROM bid_requests br JOIN catalogues c ON c.id = br.catalogue_id
-     WHERE c.slug = $1 AND br.lot_number = $2 AND br.status = 'accepted'`,
-    [catalogue, lotNumber],
+    "SELECT count(*)::int AS count FROM bid_requests WHERE lot_id = $1 AND status = 'accepted'",
+    [lotId(sale, lotNumber)],
   )
   return rows[0]?.count ?? 0
 }
@@ -150,29 +139,14 @@ before(async () => {
   alice = signedIn.client
   aliceId = signedIn.id
   bob = (await register('bob', 'customer')).client
-  await createSale(sales.open, '30 days')
-  await createSale(sales.results, '30 days')
-  await createSale(sales.closed, '-10 days')
+  sales.open = await insertTestSale(`${prefix}-open`, { daysAhead: 30, lotCount: 40 }, pool)
+  sales.results = await insertTestSale(`${prefix}-results`, { daysAhead: 30, lotCount: 10 }, pool)
+  sales.closed = await insertTestSale(`${prefix}-closed`, { daysAhead: -10, lotCount: 20 }, pool)
 })
 
 after(async () => {
   await server.close()
-  await withTransaction(async (client) => {
-    await client.query('ALTER TABLE request_status_history DISABLE TRIGGER request_status_history_append_only')
-    await client.query(
-      `DELETE FROM request_status_history WHERE bid_request_id IN (
-         SELECT br.id FROM bid_requests br JOIN auctions a ON a.id = br.auction_id WHERE a.slug LIKE $1)`,
-      [`${prefix}-%`],
-    )
-    await client.query('ALTER TABLE request_status_history ENABLE TRIGGER request_status_history_append_only')
-    await client.query('DELETE FROM bid_requests WHERE auction_id IN (SELECT id FROM auctions WHERE slug LIKE $1)', [
-      `${prefix}-%`,
-    ])
-    await client.query('DELETE FROM catalogues WHERE slug LIKE $1', [`${prefix}-%`])
-    await client.query('DELETE FROM auctions WHERE slug LIKE $1', [`${prefix}-%`])
-    await client.query('DELETE FROM email_outbox WHERE to_address LIKE $1', [`${prefix}-%`])
-    await client.query('DELETE FROM users WHERE email LIKE $1', [`${prefix}-%`])
-  })
+  await withTransaction((client) => deleteTestData(prefix, client))
   await closePool()
 })
 
@@ -243,7 +217,7 @@ describe('status transitions', () => {
     assert.equal(early.status, 409)
     assert.equal(errorCode(early), 'sale_not_started')
 
-    await pool.query("UPDATE auctions SET starts_at = now() - interval '1 minute' WHERE slug = $1", [sales.results.auction])
+    await pool.query("UPDATE auctions SET starts_at = now() - interval '1 minute' WHERE id = $1", [sales.results.auctionId])
     const won = await moveTo(id, 'placed', 'won', 'Hammer at 2,200 €.')
     assert.deepEqual(won.nextStatuses, [])
 
@@ -303,23 +277,22 @@ describe('status transitions', () => {
     assert.equal((await change('not-a-uuid', 'pending', 'accepted')).status, 404)
   })
 
-  test('requests for a sale that is over or cancelled cannot be accepted', async () => {
+  test('requests for a sale that is over, or that the monitor moves into the past, cannot be accepted', async () => {
     // Requests can't be submitted for a past sale, so this one is written straight to the database.
     const { rows } = await pool.query<{ id: string }>(
-      `INSERT INTO bid_requests (customer_id, auction_id, catalogue_id, lot_number, max_bid_eur)
-       SELECT $1, c.auction_id, c.id, 13, 500 FROM catalogues c WHERE c.slug = $2 RETURNING id`,
-      [aliceId, sales.closed.catalogue],
+      'INSERT INTO bid_requests (customer_id, auction_id, lot_id, max_bid_eur) VALUES ($1, $2, $3, 500) RETURNING id',
+      [aliceId, sales.closed.auctionId, lotId(sales.closed, 13)],
     )
     const closedId = rows[0]?.id ?? ''
     assert.deepEqual((await detail(closedId)).request.nextStatuses, ['rejected', 'cancelled'])
     assert.equal(errorCode(await change(closedId, 'pending', 'accepted')), 'sale_closed')
 
     const id = await submit(alice, 14)
-    await pool.query("UPDATE auctions SET status = 'cancelled' WHERE slug = $1", [sales.open.auction])
+    await pool.query("UPDATE auctions SET starts_at = starts_at - interval '40 days' WHERE id = $1", [sales.open.auctionId])
     try {
       assert.equal(errorCode(await change(id, 'pending', 'accepted')), 'sale_closed')
     } finally {
-      await pool.query("UPDATE auctions SET status = 'published' WHERE slug = $1", [sales.open.auction])
+      await pool.query("UPDATE auctions SET starts_at = starts_at + interval '40 days' WHERE id = $1", [sales.open.auctionId])
     }
   })
 })
@@ -339,7 +312,7 @@ describe('lot reservations', () => {
 
     const response = await new BrowserClient(server.baseUrl).get('/api/requested-lots')
     const text = JSON.stringify(response.body)
-    assert.ok(text.includes(`"catalogue":{"id":"${sales.open.catalogue}"`))
+    assert.ok(text.includes(`"auction":{"id":"${sales.open.auctionId}"`))
     assert.ok(!text.includes('2500') && !text.includes(aliceId) && !text.includes('alice'))
   })
 
@@ -354,7 +327,7 @@ describe('lot reservations', () => {
       )
       const refused = responses.find((response) => response.status === 409)
       assert.ok(refused && errorCode(refused) === 'lot_reserved')
-      assert.equal(await acceptedCount(sales.open.catalogue, lot), 1, `lot ${lot}`)
+      assert.equal(await acceptedCount(sales.open, lot), 1, `lot ${lot}`)
     }
   })
 
@@ -381,7 +354,7 @@ describe('lot reservations', () => {
       one.release()
       two.release()
     }
-    assert.equal(await acceptedCount(sales.open.catalogue, 26), 1)
+    assert.equal(await acceptedCount(sales.open, 26), 1)
   })
 
   test('two decisions on the same request at once: the first applies, the second is refused', async () => {
@@ -397,9 +370,8 @@ describe('lot reservations', () => {
     const aliceRequest = await submit(alice, 25)
     await moveTo(aliceRequest, 'pending', 'accepted')
     assert.equal(errorCode(await bob.post('/api/bid-requests', {
-      auctionId: sales.open.auction,
-      catalogueId: sales.open.catalogue,
-      lotNumber: 25,
+      auctionId: sales.open.auctionId,
+      lotId: lotId(sales.open, 25),
       maxBidEur: 900,
       instructions: '',
       acknowledgedCharges: true,

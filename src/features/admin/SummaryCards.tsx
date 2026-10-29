@@ -23,14 +23,14 @@ function cardsFor(summary: AdminSummary): Card[] {
     {
       label: 'Upcoming auctions',
       value: summary.upcomingAuctions,
-      note: summary.draftAuctions > 0 ? `Plus ${plural(summary.draftAuctions, 'draft', 'drafts')}` : null,
-      to: `${paths.adminAuctions}?view=upcoming`,
+      note: null,
+      to: `${paths.auctions}?status=upcoming`,
     },
     {
-      label: 'Published catalogues',
-      value: summary.publishedCatalogues,
+      label: 'Lots in upcoming sales',
+      value: summary.upcomingLots,
       note: null,
-      to: paths.adminCatalogues,
+      to: `${paths.lots}?status=upcoming`,
     },
     {
       label: 'Pending bid requests',
@@ -48,7 +48,7 @@ function cardsFor(summary: AdminSummary): Card[] {
       label: 'Completed auctions',
       value: summary.completedAuctions,
       note: null,
-      to: `${paths.adminAuctions}?view=completed`,
+      to: `${paths.auctions}?status=completed`,
     },
   ]
 }

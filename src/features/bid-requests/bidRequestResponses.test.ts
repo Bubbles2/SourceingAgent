@@ -1,29 +1,31 @@
 import { describe, expect, it } from 'vitest'
 import { parseCreatedBidRequest, parseMyBidRequests, parseRequestedLots } from './bidRequestResponses'
 
+const auction = {
+  id: '1',
+  title: 'Debaveye Fine Arts & Antiques Auction',
+  startsAt: '2026-11-14T13:00:00.000Z',
+  auctionDate: '2026-11-14',
+  location: null,
+}
+const lot = { id: '2', lotNumber: '302', title: '302 - Buda sentado de bronce', titleUk: 'Bronze Seated Buddha' }
+
 const apiRequest = {
   id: '1b3f9c1e-0000-4000-8000-000000000001',
-  lotNumber: 10,
   maxBidEur: '2500.00',
   instructions: '',
   status: 'pending',
   submittedAt: '2026-10-28T09:00:00.000Z',
-  auction: {
-    id: 'vauclair-tableaux-anciens-2026-11',
-    title: 'Tableaux anciens & dessins',
-    house: 'Maison Vauclair',
-    city: 'Paris 9e',
-    saleDate: '2026-11-14',
-    saleTime: '14:00',
-  },
-  catalogue: { id: 'vauclair-tableaux-anciens', title: 'Collection' },
+  auction,
+  lot,
 }
 
 describe('parseMyBidRequests', () => {
-  it('reads exact decimal amounts as whole euros', () => {
+  it('reads exact decimal amounts as whole euros, with the sale and lot', () => {
     const [request] = parseMyBidRequests({ requests: [apiRequest] })
     expect(request?.maxBidEur).toBe(2500)
-    expect(request?.auction.saleTime).toBe('14:00')
+    expect(request?.auction).toEqual(auction)
+    expect(request?.lot).toEqual(lot)
     expect(parseCreatedBidRequest({ request: apiRequest }).id).toBe(apiRequest.id)
   })
 
@@ -32,7 +34,8 @@ describe('parseMyBidRequests', () => {
     ['an amount with cents', { ...apiRequest, maxBidEur: '2500.50' }],
     ['an amount sent as a number', { ...apiRequest, maxBidEur: 2500 }],
     ['a missing sale', { ...apiRequest, auction: undefined }],
-    ['a fractional lot number', { ...apiRequest, lotNumber: 10.5 }],
+    ['a missing lot', { ...apiRequest, lot: undefined }],
+    ['a lot number sent as a number', { ...apiRequest, lot: { ...lot, lotNumber: 302 } }],
   ])('rejects a response with %s', (_case, request) => {
     expect(() => parseMyBidRequests({ requests: [request] })).toThrow(expect.objectContaining({ code: 'unexpected_response' }))
   })
@@ -43,23 +46,18 @@ describe('parseMyBidRequests', () => {
 })
 
 describe('parseRequestedLots', () => {
-  const lot = {
-    auction: { id: 'a', title: 'Sale', house: 'House', saleDate: '2026-11-14' },
-    catalogue: { id: 'c', title: 'Catalogue' },
-    lotNumber: 45,
-    availability: 'reserved',
-  }
+  const requestedLot = { auction, lot, availability: 'reserved' }
 
   it('reads the public list', () => {
-    expect(parseRequestedLots({ lots: [lot] })).toEqual([lot])
+    expect(parseRequestedLots({ lots: [requestedLot] })).toEqual([requestedLot])
   })
 
   it('drops anything the public list should never carry', () => {
-    const [parsed] = parseRequestedLots({ lots: [{ ...lot, customerId: 'secret', maxBidEur: '9999.00' }] })
-    expect(parsed).toEqual(lot)
+    const [parsed] = parseRequestedLots({ lots: [{ ...requestedLot, customerId: 'secret', maxBidEur: '9999.00' }] })
+    expect(parsed).toEqual(requestedLot)
   })
 
   it('rejects unknown availability values', () => {
-    expect(() => parseRequestedLots({ lots: [{ ...lot, availability: 'sold' }] })).toThrow()
+    expect(() => parseRequestedLots({ lots: [{ ...requestedLot, availability: 'sold' }] })).toThrow()
   })
 })

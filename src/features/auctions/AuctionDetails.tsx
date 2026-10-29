@@ -1,39 +1,51 @@
-import { use } from 'react'
+import { Suspense, use } from 'react'
 import { ArrowLeft, MapPin } from 'lucide-react'
-import { auctionCataloguesId, paths } from '../../app/paths'
+import { auctionLotsId, paths } from '../../app/paths'
 import { PageContainer } from '../../components/layout/PageContainer'
 import { ButtonLink } from '../../components/ui/Button'
 import { EmptyState } from '../../components/ui/EmptyState'
+import type { Page } from '../../services/pagination'
 import { PricingNotice } from '../bid-requests/PricingNotice'
-import { CatalogueCard } from '../catalogues/CatalogueCard'
+import { LotGridSkeleton } from '../lots/LotCardSkeleton'
+import { LotResults } from '../lots/LotResults'
+import type { LotWithAuction } from '../lots/types'
 import { AuctionFacts } from './AuctionFacts'
 import { getSaleStatus, type SaleStatus } from './saleStatus'
-import type { AuctionWithCatalogues } from './types'
+import type { Auction } from './types'
 import './AuctionDetails.css'
 
 type AuctionDetailsProps = {
-  auction: Promise<AuctionWithCatalogues | null>
+  auction: Promise<Auction | null>
+  lots: Promise<Page<LotWithAuction>>
+  /** Page of the sale's lots */
+  page: number
 }
 
-export function AuctionDetails({ auction: auctionPromise }: AuctionDetailsProps): React.JSX.Element {
+function lotsSearch(page: number): string {
+  return page > 1 ? `?page=${page}` : '?'
+}
+
+export function AuctionDetails({ auction: auctionPromise, lots, page }: AuctionDetailsProps): React.JSX.Element {
   const auction = use(auctionPromise)
 
   if (!auction) {
     return <AuctionNotFound />
   }
 
-  const status = getSaleStatus(auction.saleDate)
+  const status = getSaleStatus(auction.auctionDate)
 
   return (
     <PageContainer
       breadcrumb={<BackToAuctions status={status} />}
-      eyebrow={auction.category}
+      eyebrow="Auction"
       title={auction.title}
       description={
-        <span className="auction-details__house">
-          <MapPin size={18} />
-          {`${auction.house} · ${auction.city}`}
-        </span>
+        auction.location ? (
+          <span className="auction-details__house">
+            <MapPin size={18} />
+            {auction.location}
+          </span>
+        ) : undefined
       }
     >
       <div className="auction-details">
@@ -43,33 +55,25 @@ export function AuctionDetails({ auction: auctionPromise }: AuctionDetailsProps)
         </div>
 
         <div className="auction-details__main">
-          {auction.image ? (
-            <img className="auction-details__image" src={auction.image.src} alt={auction.image.alt} />
-          ) : null}
-
-          <section className="auction-details__section" aria-labelledby="auction-about-title">
-            <h2 id="auction-about-title" className="auction-details__heading">
-              About the sale
+          <section id={auctionLotsId} className="auction-details__section" aria-labelledby="auction-lots-title">
+            <h2 id="auction-lots-title" className="auction-details__heading">
+              Lots
             </h2>
-            <p className="auction-details__about">{auction.description}</p>
-          </section>
-
-          <section id={auctionCataloguesId} className="auction-details__section" aria-labelledby="auction-catalogues-title">
-            <h2 id="auction-catalogues-title" className="auction-details__heading">
-              {auction.catalogues.length > 1 ? 'Catalogues' : 'Catalogue'}
-            </h2>
-            {auction.catalogues.length > 0 ? (
-              <div className="catalogue-grid">
-                {auction.catalogues.map((catalogue) => (
-                  <CatalogueCard key={catalogue.id} catalogue={catalogue} auction={auction} showAuction={false} />
-                ))}
-              </div>
-            ) : (
-              <EmptyState title="Catalogue not yet published">
-                The auction house hasn't published the catalogue for this sale yet. It will appear here as soon as it
-                is available.
-              </EmptyState>
-            )}
+            <Suspense key={page} fallback={<LotGridSkeleton count={4} label="Loading the lots" />}>
+              <LotResults
+                lots={lots}
+                page={page}
+                pageSearch={lotsSearch}
+                scope="in this sale"
+                showAuction={false}
+                empty={
+                  <EmptyState title="Lots not yet published">
+                    The auction house hasn't published the lots for this sale yet. They will appear here as soon as
+                    they are available.
+                  </EmptyState>
+                }
+              />
+            </Suspense>
           </section>
         </div>
       </div>

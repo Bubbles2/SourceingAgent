@@ -1,4 +1,4 @@
-import type { Auction, Catalogue } from './types'
+import type { Auction, AuctionSummary } from './types'
 
 // Dates are calendar days, so format in UTC to avoid shifting them by the viewer's time zone.
 // Month and weekday names come from en-US so September stays "Sep" (en-GB writes "Sept").
@@ -14,11 +14,12 @@ const longDateFormatter = new Intl.DateTimeFormat('en-GB', {
   year: 'numeric',
   timeZone: 'UTC',
 })
-const frenchDateFormatter = new Intl.DateTimeFormat('fr-FR', {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-  timeZone: 'UTC',
+// Sale times are instants, shown as the clock reads in Paris
+const parisTimeFormatter = new Intl.DateTimeFormat('en-GB', {
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+  timeZone: 'Europe/Paris',
 })
 const countFormatter = new Intl.NumberFormat('en-GB')
 
@@ -53,27 +54,23 @@ export function formatSaleDateLong(isoDate: string): string {
   return longDateFormatter.format(parseIsoDate(isoDate))
 }
 
-/** "14 novembre 2026", as printed on French catalogue covers */
-export function formatSaleDateFrench(isoDate: string): string {
-  return frenchDateFormatter.format(parseIsoDate(isoDate))
+/** "14:00", Paris time, for an ISO date-time */
+export function formatSaleTime(startsAt: string): string {
+  return parisTimeFormatter.format(new Date(startsAt))
 }
 
-/** "12–13 Nov", or "30 Sep – 1 Oct" across months */
-export function formatViewingRange({ start, end }: NonNullable<Auction['viewing']>): string {
-  const startDate = parseIsoDate(start)
-  const endDate = parseIsoDate(end)
-  const startDay = dayNumberFormatter.format(startDate)
-  const endDay = dayNumberFormatter.format(endDate)
-  const startMonth = monthFormatter.format(startDate)
-  const endMonth = monthFormatter.format(endDate)
+/** "Saturday, 14 November 2026 at 14:00", leaving out what the auction house hasn't published */
+export function formatSaleMoment({ auctionDate, startsAt }: Pick<AuctionSummary, 'auctionDate' | 'startsAt'>): string {
+  if (!auctionDate) {
+    return 'Date to be announced'
+  }
+  const date = formatSaleDateLong(auctionDate)
+  return startsAt ? `${date} at ${formatSaleTime(startsAt)}` : date
+}
 
-  if (start === end) {
-    return `${startDay} ${startMonth}`
-  }
-  if (startMonth === endMonth) {
-    return `${startDay}–${endDay} ${endMonth}`
-  }
-  return `${startDay} ${startMonth} – ${endDay} ${endMonth}`
+/** "Sat 14 Nov 2026 · Paris 9e", leaving out what isn't known */
+export function formatSaleLine({ auctionDate, location }: Pick<AuctionSummary, 'auctionDate' | 'location'>): string {
+  return [auctionDate ? formatSaleDateShort(auctionDate) : 'Date to be announced', location].filter(Boolean).join(' · ')
 }
 
 /** "212 lots" */
@@ -81,19 +78,14 @@ export function formatLotCount(lotCount: number): string {
   return `${countFormatter.format(lotCount)} ${lotCount === 1 ? 'lot' : 'lots'}`
 }
 
-/** "212 lots · Sale at 14:00 · Viewing 12–13 Nov", leaving out what isn't known yet */
-export function formatAuctionMeta({ lotCount, saleTime, viewing }: Pick<Auction, 'lotCount' | 'saleTime' | 'viewing'>): string {
-  return [
-    lotCount === null ? null : formatLotCount(lotCount),
-    `Sale at ${saleTime}`,
-    viewing ? `Viewing ${formatViewingRange(viewing)}` : null,
-  ]
+/** "212 lots · Sale at 14:00", leaving out what isn't known yet */
+export function formatAuctionMeta({ lotCount, startsAt }: Pick<Auction, 'lotCount' | 'startsAt'>): string {
+  return [lotCount > 0 ? formatLotCount(lotCount) : 'Lots not yet published', startsAt ? `Sale at ${formatSaleTime(startsAt)}` : null]
     .filter((part) => part !== null)
     .join(' · ')
 }
 
-/** "Lots 1–212 · 168 pages", or "Lots 1–212" when the page count isn't known */
-export function formatCatalogueMeta({ lots, pageCount }: Pick<Catalogue, 'lots' | 'pageCount'>): string {
-  const lotRange = `Lots ${lots.first}–${lots.last}`
-  return pageCount === null ? lotRange : `${lotRange} · ${countFormatter.format(pageCount)} pages`
+/** "drouot.com", to name the website a link leads to */
+export function formatLinkHost(url: string): string {
+  return new URL(url).hostname.replace(/^www\./, '')
 }

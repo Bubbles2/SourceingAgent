@@ -1,7 +1,4 @@
-import { Plus } from 'lucide-react'
-import { Link } from 'react-router'
-import { newAuctionPath } from '../../app/paths'
-import { formatSaleDateLong } from '../auctions/formatAuction'
+import { formatSaleDateLong, formatSaleTime } from '../auctions/formatAuction'
 import type { Auction } from '../auctions/types'
 import { formatDayAndMonth, getMonthWeeks, weekdays, type CalendarDay, type MonthKey } from './calendarDates'
 import './Calendar.css'
@@ -13,8 +10,6 @@ type MonthGridProps = {
   today: string
   labelledBy: string
   onSelectAuction?: (auctionId: string) => void
-  /** Administrators get a link on each day from today on, to create a sale on that date */
-  canAddAuctions?: boolean
 }
 
 /** Desktop and tablet month view (DESIGN.md §6.10). Below 640 px MonthAgenda takes over. */
@@ -24,7 +19,6 @@ export function MonthGrid({
   today,
   labelledBy,
   onSelectAuction,
-  canAddAuctions = false,
 }: MonthGridProps): React.JSX.Element {
   return (
     <table className="cal" aria-labelledby={labelledBy}>
@@ -48,7 +42,6 @@ export function MonthGrid({
                 isToday={day.date === today}
                 auctions={auctionsByDate.get(day.date) ?? []}
                 onSelectAuction={onSelectAuction}
-                canAddAuction={canAddAuctions && day.date >= today}
               />
             ))}
           </tr>
@@ -63,10 +56,9 @@ type DayCellProps = {
   isToday: boolean
   auctions: readonly Auction[]
   onSelectAuction?: (auctionId: string) => void
-  canAddAuction: boolean
 }
 
-function DayCell({ day, isToday, auctions, onSelectAuction, canAddAuction }: DayCellProps): React.JSX.Element {
+function DayCell({ day, isToday, auctions, onSelectAuction }: DayCellProps): React.JSX.Element {
   const className = [
     'cal__cell',
     day.isWeekend && 'cal__cell--weekend',
@@ -83,11 +75,6 @@ function DayCell({ day, isToday, auctions, onSelectAuction, canAddAuction }: Day
           {day.dayOfMonth === 1 ? formatDayAndMonth(day.date) : day.dayOfMonth}
         </time>
         {isToday ? <span className="visually-hidden">, today</span> : null}
-        {canAddAuction ? (
-          <Link className="cal__add" to={newAuctionPath(day.date)} aria-label={`Add an auction on ${formatSaleDateLong(day.date)}`}>
-            <Plus size={16} />
-          </Link>
-        ) : null}
       </div>
       {auctions.length > 0 ? (
         <ul className="cal__events">
@@ -114,8 +101,8 @@ function GridEventButton({ auction, onSelect }: GridEventButtonProps): React.JSX
 
   return (
     <button type="button" className="cal__event" aria-haspopup="dialog" title={auction.title} onClick={handleClick}>
-      <span className="cal__event-time">{auction.saleTime}</span> {auction.title}
-      <span className="visually-hidden">{`, ${formatSaleDateLong(auction.saleDate)}, ${auction.house}`}</span>
+      {auction.startsAt ? <span className="cal__event-time">{formatSaleTime(auction.startsAt)}</span> : null} {auction.title}
+      {auction.auctionDate ? <span className="visually-hidden">{`, ${formatSaleDateLong(auction.auctionDate)}`}</span> : null}
     </button>
   )
 }

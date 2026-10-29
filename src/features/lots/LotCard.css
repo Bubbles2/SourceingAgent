@@ -1,0 +1,52 @@
+/* Lot card — same chrome as the auction card (DESIGN.md §6.3), led by the lot photo (§7) */
+
+.lot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: var(--space-6); }
+
+.lot-card {
+  display: flex; flex-direction: column;
+  background: var(--white); border: 1px solid var(--cream-line); border-radius: var(--r-lg); overflow: hidden;
+  transition: box-shadow var(--ease);
+}
+.lot-card:hover { box-shadow: var(--shadow-card-hover); }
+
+/* Lot photos come in every shape, so the whole object shows inside the 4:3 box */
+.lot-card__image {
+  display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: contain;
+  background: var(--ivory); border-bottom: 1px solid var(--cream-line);
+}
+
+.lot-card__body { display: flex; flex-direction: column; gap: var(--space-3); padding: var(--space-5); flex: 1 1 auto; }
+.lot-card__meta {
+  font-size: var(--text-eyebrow); font-weight: 600; line-height: normal; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--gold-text);
+}
+.lot-card__title {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden;
+  font-family: var(--font-display); font-size: var(--text-card); line-height: 1.25;
+}
+.lot-card__details { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-5); margin: 0; font-size: var(--text-meta); }
+.lot-card__details > div { display: flex; gap: var(--space-2); }
+.lot-card__details dt { font-weight: 600; color: var(--navy); }
+.lot-card__details dd { margin: 0; color: var(--ink-soft); }
+.lot-card__facts {
+  display: flex; flex-direction: column; gap: var(--space-2);
+  margin: 0; padding: 0; list-style: none;
+  font-size: var(--text-meta); line-height: 1.45; color: var(--ink-soft);
+}
+.lot-card__facts li { display: flex; align-items: flex-start; gap: var(--space-2); }
+.lot-card__facts svg { flex: none; margin-top: 2px; color: var(--ink-muted); }
+.lot-card__description {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; overflow: hidden;
+  color: var(--ink-soft);
+}
+
+.lot-card__foot {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+  padding: var(--space-4) var(--space-5); border-top: 1px solid var(--cream-line);
+}
+.lot-card__foot .btn { font-size: 14px; }
+.lot-card__foot .lot-card__action { padding: 0 var(--space-4); }
+.lot-card__ended { font-size: var(--text-meta); font-weight: 500; color: var(--ink-muted); }
+
+/* Loading skeleton */
+.lot-card-skeleton__image { width: 100%; height: auto; aspect-ratio: 4 / 3; border-radius: 0; }

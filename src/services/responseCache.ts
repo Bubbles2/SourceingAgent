@@ -1,7 +1,7 @@
-// A short memory of public GET responses (auctions and catalogues). Visitors move back and forth
+// A short memory of public GET responses (auctions and lots). Visitors move back and forth
 // between the same pages and calendar months, so a recent answer is reused instead of fetched again,
 // and simultaneous requests for the same address share one fetch. The session store clears it when
-// someone signs in or out, because administrators can see sales that others can't.
+// someone signs in or out, so each session starts from fresh answers.
 import { apiRequest } from './apiClient'
 
 export const cacheMaxAgeMs = 60_000

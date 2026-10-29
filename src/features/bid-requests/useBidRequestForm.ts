@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import type { AuctionWithCatalogues } from '../auctions/types'
+import { use, useState, useTransition } from 'react'
+import type { Auction } from '../auctions/types'
+import { loadAuctionLots, type AuctionLotsResult } from '../lots/lotService'
 import { submitBidRequest } from './bidRequestService'
 import {
   validateBidRequest,
@@ -10,43 +11,41 @@ import {
 import type { MyBidRequest } from './types'
 
 type UseBidRequestFormOptions = {
-  auctions: readonly AuctionWithCatalogues[]
+  auctions: readonly Auction[]
   initialAuctionId: string | null
-  initialCatalogueId: string | null
+  initialLotId: string | null
+  /** The pre-selected sale's lots, already requested by the route loader */
+  initialLots: Promise<AuctionLotsResult> | null
+}
+
+/** The lots of one sale, as they load */
+type LotsRequest = {
+  auctionId: string
+  result: Promise<AuctionLotsResult> | null
 }
 
 const emptyValues: BidRequestFormValues = {
   auctionId: '',
-  catalogueId: '',
-  lotNumber: '',
+  lotId: '',
   maxBid: '',
   instructions: '',
   acknowledgedCharges: false,
 }
 
-/** A sale with a single catalogue gets it pre-selected. */
-function defaultCatalogueId(auction: AuctionWithCatalogues | undefined, preferredId: string | null): string {
-  if (!auction) {
-    return ''
-  }
-  if (preferredId && auction.catalogues.some((catalogue) => catalogue.id === preferredId)) {
-    return preferredId
-  }
-  return auction.catalogues.length === 1 ? auction.catalogues[0].id : ''
-}
-
-function initialValues({ auctions, initialAuctionId, initialCatalogueId }: UseBidRequestFormOptions): BidRequestFormValues {
+function initialValues({ auctions, initialAuctionId, initialLotId }: UseBidRequestFormOptions): BidRequestFormValues {
   const auction = auctions.find((candidate) => candidate.id === initialAuctionId)
-  return {
-    ...emptyValues,
-    auctionId: auction?.id ?? '',
-    catalogueId: defaultCatalogueId(auction, initialCatalogueId),
-  }
+  return { ...emptyValues, auctionId: auction?.id ?? '', lotId: auction ? (initialLotId ?? '') : '' }
 }
 
 export function useBidRequestForm(options: UseBidRequestFormOptions) {
   const { auctions } = options
   const [values, setValues] = useState(() => initialValues(options))
+  const [lotsRequest, setLotsRequest] = useState<LotsRequest>(() => ({
+    auctionId: options.initialAuctionId ?? '',
+    result: options.initialLots,
+  }))
+  // A new sale's lots load in a transition, so the form stays on screen while they arrive.
+  const [isLoadingLots, startLoadingLots] = useTransition()
   const [errors, setErrors] = useState<BidRequestErrors>({})
   // Errors only appear after the first submit; from then on they update as the customer edits.
   const [failedSubmits, setFailedSubmits] = useState(0)
@@ -54,30 +53,38 @@ export function useBidRequestForm(options: UseBidRequestFormOptions) {
   const [submittedRequest, setSubmittedRequest] = useState<MyBidRequest | null>(null)
 
   const selectedAuction = auctions.find((auction) => auction.id === values.auctionId)
-  const selectedCatalogue = selectedAuction?.catalogues.find((catalogue) => catalogue.id === values.catalogueId)
+  const lotsAreCurrent = selectedAuction !== undefined && lotsRequest.auctionId === values.auctionId
+  const lotsResult = lotsAreCurrent && lotsRequest.result ? use(lotsRequest.result) : null
+  const lots = lotsResult?.ok ? lotsResult.lots : null
+  // A pre-selected lot that isn't in the sale is dropped once the sale's lots are known.
+  const lotId = lots && !lots.some((lot) => lot.id === values.lotId) ? '' : values.lotId
+  const selectedLot = lots?.find((lot) => lot.id === lotId)
+  const currentValues = { ...values, lotId }
+
+  function loadLots(auctionId: string): void {
+    startLoadingLots(() => {
+      setLotsRequest({ auctionId, result: auctionId ? loadAuctionLots(auctionId) : null })
+    })
+  }
 
   function updateValues(next: BidRequestFormValues): void {
     setValues(next)
     if (failedSubmits > 0) {
-      setErrors(validateBidRequest(next, auctions).errors)
+      setErrors(validateBidRequest(next, auctions, next.auctionId === values.auctionId ? lots : null).errors)
     }
   }
 
   function setField<Field extends BidRequestField>(field: Field, value: BidRequestFormValues[Field]): void {
     if (field === 'auctionId') {
-      const auction = auctions.find((candidate) => candidate.id === value)
-      updateValues({ ...values, auctionId: String(value), catalogueId: defaultCatalogueId(auction, null), lotNumber: '' })
+      updateValues({ ...currentValues, auctionId: String(value), lotId: '' })
+      loadLots(String(value))
       return
     }
-    if (field === 'catalogueId') {
-      updateValues({ ...values, catalogueId: String(value), lotNumber: '' })
-      return
-    }
-    updateValues({ ...values, [field]: value })
+    updateValues({ ...currentValues, [field]: value })
   }
 
   async function submit(): Promise<void> {
-    const { errors: validationErrors, input } = validateBidRequest(values, auctions)
+    const { errors: validationErrors, input } = validateBidRequest(currentValues, auctions, lots)
     if (!input) {
       setErrors(validationErrors)
       setFailedSubmits((count) => count + 1)
@@ -105,22 +112,27 @@ export function useBidRequestForm(options: UseBidRequestFormOptions) {
     setSubmittedRequest(result.request)
   }
 
-  /** Start another request for the same sale and catalogue. */
+  /** Start another request for the same sale. */
   function startAnother(): void {
-    setValues({ ...emptyValues, auctionId: values.auctionId, catalogueId: values.catalogueId })
+    setValues({ ...emptyValues, auctionId: values.auctionId })
     setErrors({})
     setFailedSubmits(0)
     setSubmittedRequest(null)
   }
 
   return {
-    values,
+    values: currentValues,
     errors,
     failedSubmits,
     isSubmitting,
     submittedRequest,
     selectedAuction,
-    selectedCatalogue,
+    selectedLot,
+    /** The chosen sale's lots; null until they have loaded */
+    lots,
+    lotsLoading: isLoadingLots || (selectedAuction !== undefined && !lotsAreCurrent),
+    lotsError: lotsResult && !lotsResult.ok ? lotsResult.message : null,
+    retryLots: () => loadLots(values.auctionId),
     setField,
     submit,
     startAnother,

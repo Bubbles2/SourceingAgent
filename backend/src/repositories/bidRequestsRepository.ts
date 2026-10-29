@@ -1,5 +1,6 @@
 import { pool, type Queryable } from '../db/pool.ts'
-import { parisSaleDate, parisSaleTime, saleIsOpen } from './saleTimes.ts'
+import { lotOrder } from './lotsRepository.ts'
+import { parisSaleDate, saleHasStarted, saleIsOpen, saleStartsAt } from './saleTimes.ts'
 
 export const bidRequestStatuses = ['pending', 'accepted', 'rejected', 'cancelled', 'placed', 'won', 'lost'] as const
 export type BidRequestStatus = (typeof bidRequestStatuses)[number]
@@ -12,57 +13,43 @@ export const openStatuses: readonly BidRequestStatus[] = ['pending', 'accepted',
 export type RequestTarget = {
   auctionId: string
   saleOpen: boolean
-  catalogue: {
-    id: string
-    auctionId: string
-    firstLot: number
-    lastLot: number
-  } | null
+  lot: { id: string; auctionId: string; lotNumber: string | null } | null
 }
 
 /**
- * The published sale and catalogue a request names, by their public slugs. The catalogue row is
- * locked until the transaction ends, so two requests for the same catalogue are checked one after
- * the other. Draft and cancelled sales take no requests.
+ * The sale and lot a request names, by their database ids. The lot's row is locked until the
+ * transaction ends, so two requests for the same lot are checked one after the other.
  */
-export async function findRequestTarget(auctionSlug: string, catalogueSlug: string, db: Queryable): Promise<RequestTarget | null> {
+export async function findRequestTarget(auctionId: string, lotId: string, db: Queryable): Promise<RequestTarget | null> {
   const auctions = await db.query<{ id: string; saleOpen: boolean }>(
-    `SELECT a.id, ${saleIsOpen} AS "saleOpen" FROM auctions a WHERE a.slug = $1 AND a.status = 'published'`,
-    [auctionSlug],
+    `SELECT a.id, ${saleIsOpen} AS "saleOpen" FROM auctions a WHERE a.id = $1`,
+    [auctionId],
   )
   const auction = auctions.rows[0]
   if (!auction) {
     return null
   }
-  const catalogues = await db.query<{ id: string; auctionId: string; firstLot: number; lastLot: number }>(
-    `SELECT id, auction_id AS "auctionId", first_lot AS "firstLot", last_lot AS "lastLot"
-     FROM catalogues WHERE slug = $1 FOR UPDATE`,
-    [catalogueSlug],
+  const lots = await db.query<{ id: string; auctionId: string; lotNumber: string | null }>(
+    'SELECT id, auction_id AS "auctionId", lot_number AS "lotNumber" FROM lots WHERE id = $1 FOR UPDATE',
+    [lotId],
   )
-  return { auctionId: auction.id, saleOpen: auction.saleOpen, catalogue: catalogues.rows[0] ?? null }
+  return { auctionId: auction.id, saleOpen: auction.saleOpen, lot: lots.rows[0] ?? null }
 }
 
 /** The customer's open request on a lot, if any */
-export async function findOpenRequestStatus(
-  customerId: string,
-  catalogueId: string,
-  lotNumber: number,
-  db: Queryable,
-): Promise<BidRequestStatus | null> {
+export async function findOpenRequestStatus(customerId: string, lotId: string, db: Queryable): Promise<BidRequestStatus | null> {
   const { rows } = await db.query<{ status: BidRequestStatus }>(
-    `SELECT status FROM bid_requests
-     WHERE customer_id = $1 AND catalogue_id = $2 AND lot_number = $3 AND status = ANY($4::text[])
-     LIMIT 1`,
-    [customerId, catalogueId, lotNumber, openStatuses],
+    'SELECT status FROM bid_requests WHERE customer_id = $1 AND lot_id = $2 AND status = ANY($3::text[]) LIMIT 1',
+    [customerId, lotId, openStatuses],
   )
   return rows[0]?.status ?? null
 }
 
-export async function isLotReserved(catalogueId: string, lotNumber: number, db: Queryable): Promise<boolean> {
-  const { rows } = await db.query(
-    'SELECT 1 FROM bid_requests WHERE catalogue_id = $1 AND lot_number = $2 AND status = ANY($3::text[]) LIMIT 1',
-    [catalogueId, lotNumber, reservingStatuses],
-  )
+export async function isLotReserved(lotId: string, db: Queryable): Promise<boolean> {
+  const { rows } = await db.query('SELECT 1 FROM bid_requests WHERE lot_id = $1 AND status = ANY($2::text[]) LIMIT 1', [
+    lotId,
+    reservingStatuses,
+  ])
   return rows.length > 0
 }
 
@@ -70,17 +57,16 @@ export async function insertBidRequest(
   request: {
     customerId: string
     auctionId: string
-    catalogueId: string
-    lotNumber: number
+    lotId: string
     maxBidEur: number
     instructions: string
   },
   db: Queryable,
 ): Promise<string> {
   const { rows } = await db.query<{ id: string }>(
-    `INSERT INTO bid_requests (customer_id, auction_id, catalogue_id, lot_number, max_bid_eur, instructions)
-     VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
-    [request.customerId, request.auctionId, request.catalogueId, request.lotNumber, request.maxBidEur, request.instructions],
+    `INSERT INTO bid_requests (customer_id, auction_id, lot_id, max_bid_eur, instructions)
+     VALUES ($1, $2, $3, $4, $5) RETURNING id`,
+    [request.customerId, request.auctionId, request.lotId, request.maxBidEur, request.instructions],
   )
   const id = rows[0]?.id
   if (!id) {
@@ -89,33 +75,38 @@ export async function insertBidRequest(
   return id
 }
 
-/** A customer's own request with its sale and catalogue. Amounts arrive as exact decimal strings. */
-export type CustomerBidRequestRow = {
+/** The sale and lot a request names, as the requests below show them */
+export type RequestSaleAndLotRow = {
+  auctionId: string
+  auctionTitle: string
+  auctionStartsAt: Date | null
+  auctionDate: string | null
+  auctionLocation: string | null
+  lotId: string
+  lotNumber: string | null
+  lotTitle: string | null
+  lotTitleUk: string | null
+}
+
+const saleAndLotColumns = `a.id AS "auctionId", a.title AS "auctionTitle", a.starts_at AS "auctionStartsAt",
+  ${parisSaleDate} AS "auctionDate", a.location AS "auctionLocation",
+  l.id AS "lotId", l.lot_number AS "lotNumber", l.title AS "lotTitle", l.titleuk AS "lotTitleUk"`
+
+/** A customer's own request with its sale and lot. Amounts arrive as exact decimal strings. */
+export type CustomerBidRequestRow = RequestSaleAndLotRow & {
   id: string
-  lotNumber: number
   maxBidEur: string
   instructions: string
   status: BidRequestStatus
   submittedAt: Date
-  auctionSlug: string
-  auctionTitle: string
-  auctionHouse: string
-  auctionCity: string
-  saleDate: string
-  saleTime: string
-  catalogueSlug: string
-  catalogueTitle: string
 }
 
 const customerRequestQuery = `
-  SELECT br.id, br.lot_number AS "lotNumber", br.max_bid_eur AS "maxBidEur", br.instructions, br.status,
-    br.submitted_at AS "submittedAt",
-    a.slug AS "auctionSlug", a.title AS "auctionTitle", a.auction_house AS "auctionHouse", a.city AS "auctionCity",
-    ${parisSaleDate} AS "saleDate", ${parisSaleTime} AS "saleTime",
-    c.slug AS "catalogueSlug", c.title AS "catalogueTitle"
+  SELECT br.id, br.max_bid_eur AS "maxBidEur", br.instructions, br.status, br.submitted_at AS "submittedAt",
+    ${saleAndLotColumns}
   FROM bid_requests br
   JOIN auctions a ON a.id = br.auction_id
-  JOIN catalogues c ON c.id = br.catalogue_id`
+  JOIN lots l ON l.id = br.lot_id`
 
 /** Only ever the given customer's requests, newest first */
 export async function listCustomerBidRequests(customerId: string): Promise<CustomerBidRequestRow[]> {
@@ -138,44 +129,22 @@ export async function findCustomerBidRequest(
   return rows[0] ?? null
 }
 
-/** The public view of reserved lots in published sales. Selects no customer, amount or request id. */
-export type ReservedLotRow = {
-  auctionSlug: string
-  auctionTitle: string
-  auctionHouse: string
-  saleDate: string
-  catalogueSlug: string
-  catalogueTitle: string
-  lotNumber: number
+/** The public view of reserved lots. Selects no customer, amount or request id. */
+export type ReservedLotRow = RequestSaleAndLotRow & {
   saleEnded: boolean
 }
 
 export async function listReservedLots(): Promise<ReservedLotRow[]> {
   const { rows } = await pool.query<ReservedLotRow>(
-    `SELECT a.slug AS "auctionSlug", a.title AS "auctionTitle", a.auction_house AS "auctionHouse",
-       ${parisSaleDate} AS "saleDate", c.slug AS "catalogueSlug", c.title AS "catalogueTitle",
-       br.lot_number AS "lotNumber", NOT (${saleIsOpen}) AS "saleEnded"
+    `SELECT ${saleAndLotColumns}, NOT ${saleIsOpen} AS "saleEnded"
      FROM bid_requests br
      JOIN auctions a ON a.id = br.auction_id
-     JOIN catalogues c ON c.id = br.catalogue_id
-     WHERE br.status = ANY($1::text[]) AND a.status = 'published'
-     ORDER BY "saleEnded", a.starts_at, c.title, br.lot_number`,
+     JOIN lots l ON l.id = br.lot_id
+     WHERE br.status = ANY($1::text[])
+     ORDER BY "saleEnded", ${saleStartsAt} NULLS LAST, a.id, ${lotOrder}`,
     [reservingStatuses],
   )
   return rows
-}
-
-/** How many requests name a catalogue, and the lowest and highest lot they ask for */
-export async function summariseCatalogueRequests(
-  catalogueId: string,
-  db: Queryable,
-): Promise<{ count: number; firstLot: number | null; lastLot: number | null }> {
-  const { rows } = await db.query<{ count: number; firstLot: number | null; lastLot: number | null }>(
-    `SELECT count(*)::int AS count, min(lot_number) AS "firstLot", max(lot_number) AS "lastLot"
-     FROM bid_requests WHERE catalogue_id = $1`,
-    [catalogueId],
-  )
-  return rows[0] ?? { count: 0, firstLot: null, lastLot: null }
 }
 
 /** Requests that have been decided and won't change again */
@@ -190,7 +159,6 @@ export type ReviewBidRequestRow = CustomerBidRequestRow & {
   customerEmail: string
   customerCompany: string | null
   customerCountry: string
-  auctionStatus: string
   /** The sale day hasn't ended (Paris time), so requests can still be accepted */
   saleOpen: boolean
   /** The sale has begun, so a result can be recorded */
@@ -200,28 +168,25 @@ export type ReviewBidRequestRow = CustomerBidRequestRow & {
 }
 
 const reviewRequestQuery = `
-  SELECT br.id, br.lot_number AS "lotNumber", br.max_bid_eur AS "maxBidEur", br.instructions, br.status,
+  SELECT br.id, br.max_bid_eur AS "maxBidEur", br.instructions, br.status,
     br.submitted_at AS "submittedAt", br.updated_at AS "updatedAt",
-    a.slug AS "auctionSlug", a.title AS "auctionTitle", a.auction_house AS "auctionHouse", a.city AS "auctionCity",
-    ${parisSaleDate} AS "saleDate", ${parisSaleTime} AS "saleTime", a.status AS "auctionStatus",
-    ${saleIsOpen} AS "saleOpen", a.starts_at <= now() AS "saleStarted",
-    c.slug AS "catalogueSlug", c.title AS "catalogueTitle",
+    ${saleAndLotColumns},
+    ${saleIsOpen} AS "saleOpen", ${saleHasStarted} AS "saleStarted",
     u.id AS "customerId", u.first_name AS "customerFirstName", u.last_name AS "customerLastName",
     u.email AS "customerEmail", u.company_name AS "customerCompany", u.country_code AS "customerCountry",
     EXISTS (
       SELECT 1 FROM bid_requests other
-      WHERE other.catalogue_id = br.catalogue_id AND other.lot_number = br.lot_number AND other.id <> br.id
-        AND other.status = ANY($1::text[])
+      WHERE other.lot_id = br.lot_id AND other.id <> br.id AND other.status = ANY($1::text[])
     ) AS "lotHeldByOther"
   FROM bid_requests br
   JOIN auctions a ON a.id = br.auction_id
-  JOIN catalogues c ON c.id = br.catalogue_id
+  JOIN lots l ON l.id = br.lot_id
   JOIN users u ON u.id = br.customer_id`
 
 export type ReviewFilters = {
   statuses: readonly BidRequestStatus[]
-  /** Only requests for this sale (its public id) */
-  auctionSlug?: string
+  /** Only requests for this sale (a database id) */
+  auctionId?: string
   /** Only customers whose name, email address or company contains this text */
   customer?: string
 }
@@ -242,9 +207,9 @@ export async function listReviewBidRequests(
   // $1 is used by the query's "lot held by another request" check; filters follow from $2.
   const values: unknown[] = [reservingStatuses, filters.statuses]
   const conditions = ['br.status = ANY($2::text[])']
-  if (filters.auctionSlug) {
-    values.push(filters.auctionSlug)
-    conditions.push(`a.slug = $${values.length}`)
+  if (filters.auctionId) {
+    values.push(filters.auctionId)
+    conditions.push(`br.auction_id = $${values.length}`)
   }
   if (filters.customer) {
     values.push(containsPattern(filters.customer))
@@ -255,7 +220,9 @@ export async function listReviewBidRequests(
   }
   const where = conditions.join(' AND ')
   const onlyOpen = filters.statuses.every((status) => !closedStatuses.includes(status))
-  const order = onlyOpen ? 'a.starts_at, c.slug, br.lot_number, br.submitted_at, br.id' : 'br.updated_at DESC, br.id'
+  const order = onlyOpen
+    ? `${saleStartsAt} NULLS LAST, a.id, ${lotOrder}, br.submitted_at, br.id`
+    : 'br.updated_at DESC, br.id'
 
   const [page, count] = await Promise.all([
     pool.query<ReviewBidRequestRow>(
@@ -265,7 +232,6 @@ export async function listReviewBidRequests(
     // The same filters; $1 stays in the list (unused here) so the placeholders keep their numbers.
     pool.query<{ total: number }>(
       `SELECT count(*)::int AS total FROM bid_requests br
-       JOIN auctions a ON a.id = br.auction_id
        JOIN users u ON u.id = br.customer_id
        WHERE $1::text[] IS NOT NULL AND ${where}`,
       values,
@@ -280,12 +246,9 @@ export async function findReviewBidRequest(id: string, db: Queryable = pool): Pr
 }
 
 /** Locks a request until the transaction ends, so two decisions about it are made one after the other. */
-export async function lockBidRequest(
-  id: string,
-  db: Queryable,
-): Promise<{ id: string; status: BidRequestStatus; catalogueId: string; lotNumber: number } | null> {
-  const { rows } = await db.query<{ id: string; status: BidRequestStatus; catalogueId: string; lotNumber: number }>(
-    `SELECT id, status, catalogue_id AS "catalogueId", lot_number AS "lotNumber" FROM bid_requests WHERE id = $1 FOR UPDATE`,
+export async function lockBidRequest(id: string, db: Queryable): Promise<{ id: string; status: BidRequestStatus; lotId: string } | null> {
+  const { rows } = await db.query<{ id: string; status: BidRequestStatus; lotId: string }>(
+    'SELECT id, status, lot_id AS "lotId" FROM bid_requests WHERE id = $1 FOR UPDATE',
     [id],
   )
   return rows[0] ?? null

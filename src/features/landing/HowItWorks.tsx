@@ -8,12 +8,12 @@ const steps = [
     text: 'Browse upcoming sales by date, auction house and location, or open the monthly calendar.',
   },
   {
-    title: 'Read the catalogue',
-    text: "Each auction links to the house's official PDF catalogue so you can study every lot.",
+    title: 'Browse the lots',
+    text: "Every sale's lots, with the auction house's photos and descriptions, so you can study each one.",
   },
   {
     title: 'Request a bid',
-    text: 'Pick the auction and catalogue, enter the lot number and your maximum bid in EUR, add instructions.',
+    text: 'Pick the auction and the lot, enter your maximum bid in EUR and add any instructions.',
   },
   {
     title: 'The agent bids for you',
@@ -25,7 +25,7 @@ export function HowItWorks(): React.JSX.Element {
   return (
     <section id="how" className="section section--white" aria-labelledby="how-title">
       <div className="container landing-stack">
-        <SectionHeading id="how-title" eyebrow="How it works" title="Four steps from catalogue to hammer" />
+        <SectionHeading id="how-title" eyebrow="How it works" title="Four steps from lot to hammer" />
         <ol className="grid grid--steps landing-list">
           {steps.map((step, index) => (
             <StepTile key={step.title} step={index + 1} title={step.title}>

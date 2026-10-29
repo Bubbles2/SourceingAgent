@@ -7,8 +7,8 @@ import { createAdminRouter } from './admin/index.ts'
 import { createAuctionsRouter } from './auctions/index.ts'
 import { createAuthRouter } from './auth/index.ts'
 import { createBidRequestsRouter } from './bid-requests/index.ts'
-import { createCataloguesRouter } from './catalogues/index.ts'
 import { healthRouter } from './health/index.ts'
+import { createLotsRouter } from './lots/index.ts'
 import { requestedLotsRouter } from './requested-lots/index.ts'
 
 export function createApiRouter(): Router {
@@ -23,7 +23,7 @@ export function createApiRouter(): Router {
 
   router.use('/auth', createAuthRouter())
   router.use('/auctions', createAuctionsRouter())
-  router.use('/catalogues', createCataloguesRouter())
+  router.use('/lots', createLotsRouter())
   router.use('/bid-requests', createBidRequestsRouter())
   router.use('/requested-lots', requestedLotsRouter)
   router.use('/admin', requireRole('administrator'), createAdminRouter())

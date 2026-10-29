@@ -1,8 +1,9 @@
 import { useId } from 'react'
 import { requestBidPath } from '../../app/paths'
 import { ButtonLink } from '../../components/ui/Button'
+import { OutboundLink } from '../../components/ui/OutboundLink'
 import { AuctionDateStrip } from './AuctionDateStrip'
-import { formatLotCount, formatSaleDateLong, formatViewingRange } from './formatAuction'
+import { formatLinkHost, formatLotCount, formatSaleDateLong, formatSaleTime } from './formatAuction'
 import type { SaleStatus } from './saleStatus'
 import type { Auction } from './types'
 import './AuctionFacts.css'
@@ -17,7 +18,7 @@ export function AuctionFacts({ auction, status }: AuctionFactsProps): React.JSX.
 
   return (
     <aside className="auction-facts" aria-labelledby={headingId}>
-      <AuctionDateStrip saleDate={auction.saleDate} category={auction.category} />
+      <AuctionDateStrip saleDate={auction.auctionDate} />
       <div className="auction-facts__body">
         <h2 id={headingId} className="visually-hidden">
           Sale details
@@ -25,33 +26,32 @@ export function AuctionFacts({ auction, status }: AuctionFactsProps): React.JSX.
         <dl className="auction-facts__list">
           <div>
             <dt>Date</dt>
-            <dd>{formatSaleDateLong(auction.saleDate)}</dd>
+            <dd>{auction.auctionDate ? formatSaleDateLong(auction.auctionDate) : 'To be announced'}</dd>
           </div>
-          <div>
-            <dt>Sale time</dt>
-            <dd>{`${auction.saleTime}, Paris time`}</dd>
-          </div>
-          {auction.viewing ? (
+          {auction.startsAt ? (
             <div>
-              <dt>Viewing</dt>
-              <dd>{formatViewingRange(auction.viewing)}</dd>
+              <dt>Sale time</dt>
+              <dd>{`${formatSaleTime(auction.startsAt)}, Paris time`}</dd>
+            </div>
+          ) : null}
+          {auction.location ? (
+            <div>
+              <dt>Location</dt>
+              <dd>{auction.location}</dd>
             </div>
           ) : null}
           <div>
-            <dt>Location</dt>
-            <dd>
-              {auction.house}
-              <br />
-              {auction.city}
-            </dd>
+            <dt>Lots</dt>
+            <dd>{auction.lotCount > 0 ? formatLotCount(auction.lotCount) : 'Not yet published'}</dd>
           </div>
-          {auction.lotCount === null ? null : (
-            <div>
-              <dt>Lots</dt>
-              <dd>{formatLotCount(auction.lotCount)}</dd>
-            </div>
-          )}
         </dl>
+        {auction.catalogueUrl ? (
+          <OutboundLink
+            href={auction.catalogueUrl}
+            label={`Catalogue on ${formatLinkHost(auction.catalogueUrl)}`}
+            context={auction.title}
+          />
+        ) : null}
         {status === 'upcoming' ? (
           <ButtonLink to={requestBidPath(auction.id)} size="lg" className="auction-facts__cta">
             Request a bid

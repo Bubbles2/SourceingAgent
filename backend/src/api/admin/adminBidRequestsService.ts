@@ -16,6 +16,7 @@ import {
 } from '../../repositories/bidRequestsRepository.ts'
 import { listStatusChanges, recordStatusChange, type StatusChangeRow } from '../../repositories/requestStatusHistoryRepository.ts'
 import type { UserRecord } from '../../repositories/usersRepository.ts'
+import { toRequestSaleAndLot, type RequestSaleAndLot } from '../bid-requests/requestSaleAndLot.ts'
 import type { ListBidRequestsQuery, StatusChangeBody } from './adminValidation.ts'
 
 /** What can follow each status. Rejected, cancelled, won and lost are final. */
@@ -40,16 +41,13 @@ const statusLabels: Record<BidRequestStatus, string> = {
 }
 
 /** A request with everything the agent needs to decide on it. maxBidEur is an exact decimal string. */
-export type ReviewBidRequest = {
+export type ReviewBidRequest = RequestSaleAndLot & {
   id: string
-  lotNumber: number
   maxBidEur: string
   instructions: string
   status: BidRequestStatus
   submittedAt: string
   updatedAt: string
-  auction: { id: string; title: string; house: string; city: string; saleDate: string; saleTime: string; status: string }
-  catalogue: { id: string; title: string }
   customer: { id: string; firstName: string; lastName: string; email: string; companyName: string | null; countryCode: string }
   /** Another request already reserves this lot */
   lotHeldByOther: boolean
@@ -85,7 +83,7 @@ const lotReserved = new HttpError(
 function availableStatuses(row: ReviewBidRequestRow): BidRequestStatus[] {
   return statusTransitions[row.status].filter((status) => {
     if (status === 'accepted') {
-      return row.auctionStatus === 'published' && row.saleOpen && !row.lotHeldByOther
+      return row.saleOpen && !row.lotHeldByOther
     }
     if (status === 'won' || status === 'lost') {
       return row.saleStarted
@@ -97,22 +95,12 @@ function availableStatuses(row: ReviewBidRequestRow): BidRequestStatus[] {
 function toReviewBidRequest(row: ReviewBidRequestRow): ReviewBidRequest {
   return {
     id: row.id,
-    lotNumber: row.lotNumber,
     maxBidEur: row.maxBidEur,
     instructions: row.instructions,
     status: row.status,
     submittedAt: row.submittedAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
-    auction: {
-      id: row.auctionSlug,
-      title: row.auctionTitle,
-      house: row.auctionHouse,
-      city: row.auctionCity,
-      saleDate: row.saleDate,
-      saleTime: row.saleTime,
-      status: row.auctionStatus,
-    },
-    catalogue: { id: row.catalogueSlug, title: row.catalogueTitle },
+    ...toRequestSaleAndLot(row),
     customer: {
       id: row.customerId,
       firstName: row.customerFirstName,
@@ -151,8 +139,8 @@ function checkChange(current: ReviewBidRequestRow, { from, to }: StatusChangeBod
   if (!statusTransitions[from].includes(to)) {
     throw new HttpError(409, 'invalid_status_change', `A request that is ${statusLabels[from]} can't be marked ${statusLabels[to]}.`)
   }
-  if (to === 'accepted' && (current.auctionStatus !== 'published' || !current.saleOpen)) {
-    throw new HttpError(409, 'sale_closed', 'This sale is over or no longer published, so the request cannot be accepted.')
+  if (to === 'accepted' && !current.saleOpen) {
+    throw new HttpError(409, 'sale_closed', 'This sale is over, so the request cannot be accepted.')
   }
   if (to === 'accepted' && current.lotHeldByOther) {
     throw lotReserved
@@ -163,7 +151,7 @@ function checkChange(current: ReviewBidRequestRow, { from, to }: StatusChangeBod
 }
 
 export async function getReviewPage({ status, auction, customer, limit, offset }: ListBidRequestsQuery): Promise<ReviewPage> {
-  const { requests, total } = await listReviewBidRequests({ statuses: status, auctionSlug: auction, customer }, { limit, offset })
+  const { requests, total } = await listReviewBidRequests({ statuses: status, auctionId: auction, customer }, { limit, offset })
   return { requests: requests.map(toReviewBidRequest), total, limit, offset }
 }
 

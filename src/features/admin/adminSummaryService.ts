@@ -3,13 +3,12 @@ import { integer, nested, record } from '../../services/responseFields'
 
 /** Counts for the dashboard (GET /api/admin/summary) */
 export type AdminSummary = {
-  /** Published sales whose sale day hasn't ended */
+  /** Sales whose sale day hasn't ended */
   upcomingAuctions: number
-  draftAuctions: number
-  /** Published sales whose sale day has ended */
+  /** Sales whose sale day has ended */
   completedAuctions: number
-  /** Catalogues of published sales */
-  publishedCatalogues: number
+  /** Lots in upcoming sales */
+  upcomingLots: number
   pendingRequests: number
   acceptedRequests: number
   placedBids: number
@@ -19,9 +18,8 @@ export function parseAdminSummary(data: unknown): AdminSummary {
   const fields = nested(record(data), 'summary')
   return {
     upcomingAuctions: integer(fields, 'upcomingAuctions'),
-    draftAuctions: integer(fields, 'draftAuctions'),
     completedAuctions: integer(fields, 'completedAuctions'),
-    publishedCatalogues: integer(fields, 'publishedCatalogues'),
+    upcomingLots: integer(fields, 'upcomingLots'),
     pendingRequests: integer(fields, 'pendingRequests'),
     acceptedRequests: integer(fields, 'acceptedRequests'),
     placedBids: integer(fields, 'placedBids'),

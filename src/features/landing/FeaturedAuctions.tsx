@@ -2,15 +2,16 @@ import { Suspense, use } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { featuredAuctionsId, feesNoticeId, paths } from '../../app/paths'
 import { ButtonLink } from '../../components/ui/Button'
+import { EmptyState } from '../../components/ui/EmptyState'
 import { AuctionGridSkeleton } from '../auctions/AuctionCardSkeleton'
-import type { AuctionWithCatalogues } from '../auctions/types'
+import type { Auction } from '../auctions/types'
 import { FeesNotice } from '../bid-requests/FeesNotice'
 import { FeaturedAuctionCard } from './FeaturedAuctionCard'
 import { SectionHeading } from './SectionHeading'
 import './FeaturedAuctions.css'
 
 type FeaturedAuctionsProps = {
-  auctions: Promise<readonly AuctionWithCatalogues[]>
+  auctions: Promise<readonly Auction[]>
 }
 
 export function FeaturedAuctions({ auctions }: FeaturedAuctionsProps): React.JSX.Element {
@@ -37,6 +38,21 @@ export function FeaturedAuctions({ auctions }: FeaturedAuctionsProps): React.JSX
 
 function FeaturedAuctionGrid({ auctions: auctionsPromise }: FeaturedAuctionsProps): React.JSX.Element {
   const auctions = use(auctionsPromise)
+
+  if (auctions.length === 0) {
+    return (
+      <EmptyState
+        title="No upcoming sales right now"
+        actions={
+          <ButtonLink to={{ pathname: paths.auctions, search: '?status=completed' }} variant="secondary">
+            See completed auctions
+          </ButtonLink>
+        }
+      >
+        New sales are added as auction houses publish their calendars. Check back soon.
+      </EmptyState>
+    )
+  }
 
   return (
     <div className="grid">

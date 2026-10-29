@@ -5,8 +5,9 @@ import { StatusBadge } from '../../components/ui/Badge'
 import { ButtonLink } from '../../components/ui/Button'
 import { EmptyState } from '../../components/ui/EmptyState'
 import { formatEur } from '../../utils/money'
-import { formatDayMonthYear, formatSaleDateShort } from '../auctions/formatAuction'
+import { formatDayMonthYear, formatSaleLine } from '../auctions/formatAuction'
 import { toParisDate } from '../auctions/saleStatus'
+import { lotName, lotTitle } from '../lots/lotText'
 import type { MyBidRequest } from './types'
 import '../../components/ui/Table.css'
 import './MyRequestsTable.css'
@@ -35,10 +36,7 @@ export function MyRequestsTable({ requests: requestsPromise }: MyRequestsTablePr
           <thead>
             <tr>
               <th scope="col">Auction</th>
-              <th scope="col">Catalogue</th>
-              <th scope="col" className="num">
-                Lot
-              </th>
+              <th scope="col">Lot</th>
               <th scope="col" className="amount">
                 Maximum bid
               </th>
@@ -53,12 +51,12 @@ export function MyRequestsTable({ requests: requestsPromise }: MyRequestsTablePr
                   <Link className="table__primary" to={auctionPath(request.auction.id)}>
                     {request.auction.title}
                   </Link>
-                  <span className="table__secondary">
-                    {`${formatSaleDateShort(request.auction.saleDate)} · ${request.auction.house}`}
-                  </span>
+                  <span className="table__secondary">{formatSaleLine(request.auction)}</span>
                 </td>
-                <td>{request.catalogue.title}</td>
-                <td className="num">{request.lotNumber}</td>
+                <td>
+                  <span className="table__primary">{lotName(request.lot.lotNumber)}</span>
+                  <span className="table__secondary">{lotTitle(request.lot)}</span>
+                </td>
                 <td className="amount">{formatEur(request.maxBidEur)}</td>
                 <td>
                   <StatusBadge status={request.status} />

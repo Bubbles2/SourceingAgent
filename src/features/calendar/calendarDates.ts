@@ -106,10 +106,13 @@ export function formatDayAndMonth(isoDate: string): string {
   return `${Number(isoDate.slice(8))} ${shortMonthFormatter.format(parseIsoDate(isoDate))}`
 }
 
-export function groupBySaleDate<T extends { saleDate: string }>(items: readonly T[]): Map<string, T[]> {
+/** Sales by their sale day, in the order given. Sales without a date have no day to show on. */
+export function groupBySaleDate<T extends { auctionDate: string | null }>(items: readonly T[]): Map<string, T[]> {
   const groups = new Map<string, T[]>()
   for (const item of items) {
-    groups.set(item.saleDate, [...(groups.get(item.saleDate) ?? []), item])
+    if (item.auctionDate) {
+      groups.set(item.auctionDate, [...(groups.get(item.auctionDate) ?? []), item])
+    }
   }
   return groups
 }

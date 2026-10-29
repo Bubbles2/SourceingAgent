@@ -1,50 +1,41 @@
 // Bid requests and the public Requested lots list, against the real app and local database.
-// Everything here uses bidtest-<run>-… slugs and emails and is removed afterwards.
+// Everything here uses bidtest-<run>-… sale ids and emails and is removed afterwards.
 import assert from 'node:assert/strict'
 import { randomUUID } from 'node:crypto'
 import { after, before, describe, test } from 'node:test'
 import { z } from 'zod'
 import { createApp } from '../src/app.ts'
+import { deleteTestData, insertTestSale, type TestSale } from '../src/cli/testSales.ts'
 import { closePool, pool, withTransaction } from '../src/db/pool.ts'
 import { BrowserClient, type ApiResponse } from './browserClient.ts'
 import { startTestServer, type TestServer } from './httpServer.ts'
 
 const run = randomUUID().slice(0, 8)
 const prefix = `bidtest-${run}`
-const slugs = {
-  open: `${prefix}-open`,
-  openCatalogue: `${prefix}-open-cat`,
-  other: `${prefix}-other`,
-  otherCatalogue: `${prefix}-other-cat`,
-  closed: `${prefix}-closed`,
-  closedCatalogue: `${prefix}-closed-cat`,
-  draft: `${prefix}-draft`,
-  draftCatalogue: `${prefix}-draft-cat`,
-  cancelled: `${prefix}-cancelled`,
-  cancelledCatalogue: `${prefix}-cancelled-cat`,
-}
 
+const saleBody = z.strictObject({
+  id: z.string(),
+  title: z.string(),
+  startsAt: z.iso.datetime().nullable(),
+  auctionDate: z.iso.date().nullable(),
+  location: z.string().nullable(),
+})
+const lotBody = z.strictObject({ id: z.string(), lotNumber: z.string().nullable(), title: z.string().nullable(), titleUk: z.string().nullable() })
 const requestBody = z.object({
-  request: z.object({
+  request: z.strictObject({
     id: z.uuid(),
-    lotNumber: z.number(),
     maxBidEur: z.string(),
     instructions: z.string(),
     status: z.string(),
-    auction: z.object({ id: z.string(), saleDate: z.iso.date(), saleTime: z.string() }).loose(),
-    catalogue: z.object({ id: z.string(), title: z.string() }),
+    submittedAt: z.iso.datetime(),
+    auction: saleBody,
+    lot: lotBody,
   }),
 })
 const listBody = z.object({ requests: z.array(requestBody.shape.request) })
 const lotsBody = z.object({
-  lots: z.array(
-    z.strictObject({
-      auction: z.strictObject({ id: z.string(), title: z.string(), house: z.string(), saleDate: z.string() }),
-      catalogue: z.strictObject({ id: z.string(), title: z.string() }),
-      lotNumber: z.number(),
-      availability: z.enum(['reserved', 'sale-ended']),
-    }),
-  ),
+  // strictObject: any extra field (customer, amount, request id) fails the parse
+  lots: z.array(z.strictObject({ auction: saleBody, lot: lotBody, availability: z.enum(['reserved', 'sale-ended']) })),
 })
 const errorBody = z.object({ error: z.object({ code: z.string(), details: z.array(z.object({ path: z.string() })).optional() }) })
 
@@ -56,18 +47,18 @@ let server: TestServer
 let verified: BrowserClient
 let verifiedUserId: string
 let otherCustomerId: string
+const sales: Record<'open' | 'other' | 'closed' | 'undated', TestSale> = {
+  open: { auctionId: '', lots: [] },
+  other: { auctionId: '', lots: [] },
+  closed: { auctionId: '', lots: [] },
+  undated: { auctionId: '', lots: [] },
+}
 
-async function createSale(slug: string, catalogueSlug: string, startsIn: string, status = 'published'): Promise<void> {
-  const { rows } = await pool.query<{ id: string }>(
-    `INSERT INTO auctions (slug, title, category, auction_house, city, starts_at, description, status)
-     VALUES ($1, 'Test sale', 'Fine art', 'Maison Test', 'Paris', now() + $2::interval, 'A test sale.', $3) RETURNING id`,
-    [slug, startsIn, status],
-  )
-  await pool.query(
-    `INSERT INTO catalogues (slug, auction_id, title, description, first_lot, last_lot, pdf_url)
-     VALUES ($1, $2, 'Test catalogue', '', 1, 100, 'https://example.com/test.pdf')`,
-    [catalogueSlug, rows[0]?.id],
-  )
+/** The id of a lot, by its number in the sale */
+function lot(sale: TestSale, lotNumber: number): string {
+  const found = sale.lots.find((candidate) => candidate.lotNumber === String(lotNumber))
+  assert.ok(found, `no lot ${lotNumber}`)
+  return found.id
 }
 
 /** Registers through the API; optionally marks the email as confirmed. */
@@ -91,9 +82,8 @@ async function newCustomer(label: string, { confirmed }: { confirmed: boolean })
 
 function bid(overrides: Record<string, unknown> = {}): Record<string, unknown> {
   return {
-    auctionId: slugs.open,
-    catalogueId: slugs.openCatalogue,
-    lotNumber: 10,
+    auctionId: sales.open.auctionId,
+    lotId: lot(sales.open, 10),
     maxBidEur: 2500,
     instructions: '',
     acknowledgedCharges: true,
@@ -101,54 +91,35 @@ function bid(overrides: Record<string, unknown> = {}): Record<string, unknown> {
   }
 }
 
+async function insertAcceptedRequest(customerId: string, sale: TestSale, lotNumber: number): Promise<void> {
+  await pool.query(
+    "INSERT INTO bid_requests (customer_id, auction_id, lot_id, max_bid_eur, status) VALUES ($1, $2, $3, 98765, 'accepted')",
+    [customerId, sale.auctionId, lot(sale, lotNumber)],
+  )
+}
+
 before(async () => {
   server = await startTestServer(createApp())
-  await createSale(slugs.open, slugs.openCatalogue, '30 days')
-  await createSale(slugs.other, slugs.otherCatalogue, '40 days')
-  await createSale(slugs.closed, slugs.closedCatalogue, '-10 days')
-  await createSale(slugs.draft, slugs.draftCatalogue, '30 days', 'draft')
-  await createSale(slugs.cancelled, slugs.cancelledCatalogue, '30 days', 'cancelled')
+  sales.open = await insertTestSale(`${prefix}-open`, { daysAhead: 30, lotCount: 50 }, pool)
+  sales.other = await insertTestSale(`${prefix}-other`, { daysAhead: 40 }, pool)
+  sales.closed = await insertTestSale(`${prefix}-closed`, { daysAhead: -10 }, pool)
+  sales.undated = await insertTestSale(`${prefix}-undated`, { daysAhead: 30 }, pool)
+  await pool.query('UPDATE auctions SET starts_at = NULL, auction_date = NULL WHERE id = $1', [sales.undated.auctionId])
 
   const customer = await newCustomer('verified', { confirmed: true })
   verified = customer.client
   verifiedUserId = customer.id
 
-  // Another customer's accepted request reserves lot 45 of the open sale.
+  // Another customer's accepted requests reserve lot 45 of the open sale, and lot 2 of the closed one.
   const other = await newCustomer('other', { confirmed: true })
   otherCustomerId = other.id
-  await pool.query(
-    `INSERT INTO bid_requests (customer_id, auction_id, catalogue_id, lot_number, max_bid_eur, status)
-     SELECT $1, c.auction_id, c.id, 45, 98765, 'accepted' FROM catalogues c WHERE c.slug = $2`,
-    [otherCustomerId, slugs.openCatalogue],
-  )
-  // An accepted request made before its sale was cancelled
-  await pool.query(
-    `INSERT INTO bid_requests (customer_id, auction_id, catalogue_id, lot_number, max_bid_eur, status)
-     SELECT $1, c.auction_id, c.id, 7, 500, 'accepted' FROM catalogues c WHERE c.slug = $2`,
-    [otherCustomerId, slugs.cancelledCatalogue],
-  )
+  await insertAcceptedRequest(otherCustomerId, sales.open, 45)
+  await insertAcceptedRequest(otherCustomerId, sales.closed, 2)
 })
 
 after(async () => {
   await server.close()
-  // The audit trail refuses deletes; lift that for these test rows only, inside one transaction.
-  await withTransaction(async (client) => {
-    await client.query('ALTER TABLE request_status_history DISABLE TRIGGER request_status_history_append_only')
-    await client.query(
-      `DELETE FROM request_status_history WHERE bid_request_id IN (
-         SELECT br.id FROM bid_requests br JOIN auctions a ON a.id = br.auction_id WHERE a.slug LIKE $1)`,
-      [`${prefix}-%`],
-    )
-    await client.query('ALTER TABLE request_status_history ENABLE TRIGGER request_status_history_append_only')
-    await client.query(
-      'DELETE FROM bid_requests WHERE auction_id IN (SELECT id FROM auctions WHERE slug LIKE $1)',
-      [`${prefix}-%`],
-    )
-    await client.query('DELETE FROM catalogues WHERE slug LIKE $1', [`${prefix}-%`])
-    await client.query('DELETE FROM auctions WHERE slug LIKE $1', [`${prefix}-%`])
-    await client.query('DELETE FROM email_outbox WHERE to_address LIKE $1', [`${prefix}-%`])
-    await client.query('DELETE FROM users WHERE email LIKE $1', [`${prefix}-%`])
-  })
+  await withTransaction((client) => deleteTestData(prefix, client))
   await closePool()
 })
 
@@ -188,8 +159,9 @@ describe('submitting', () => {
     assert.equal(request.status, 'pending')
     assert.equal(request.maxBidEur, '2500.00')
     assert.equal(request.instructions, 'Only if unrestored.')
-    assert.equal(request.auction.id, slugs.open)
-    assert.equal(request.catalogue.id, slugs.openCatalogue)
+    assert.equal(request.auction.id, sales.open.auctionId)
+    assert.equal(request.auction.title, `Test sale ${prefix}-open`)
+    assert.deepEqual(request.lot, { id: lot(sales.open, 10), lotNumber: '10', title: '10 - Objet 10', titleUk: 'Test object 10' })
 
     const { rows } = await pool.query<{ customerId: string; fromStatus: string | null; toStatus: string; changedBy: string }>(
       `SELECT br.customer_id AS "customerId", h.from_status AS "fromStatus", h.to_status AS "toStatus", h.changed_by AS "changedBy"
@@ -200,63 +172,63 @@ describe('submitting', () => {
   })
 
   test('the same customer cannot request the same lot twice', async () => {
-    await verified.post('/api/bid-requests', bid({ lotNumber: 20 }))
-    const again = await verified.post('/api/bid-requests', bid({ lotNumber: 20, maxBidEur: 3000 }))
+    await verified.post('/api/bid-requests', bid({ lotId: lot(sales.open, 20) }))
+    const again = await verified.post('/api/bid-requests', bid({ lotId: lot(sales.open, 20), maxBidEur: 3000 }))
     assert.equal(again.status, 409)
     assert.equal(errorCode(again), 'already_requested')
   })
 
   test("a lot reserved by another customer's accepted request is refused", async () => {
-    const response = await verified.post('/api/bid-requests', bid({ lotNumber: 45 }))
+    const response = await verified.post('/api/bid-requests', bid({ lotId: lot(sales.open, 45) }))
     assert.equal(response.status, 409)
     assert.equal(errorCode(response), 'lot_reserved')
   })
 
   test("another customer's pending request does not reserve the lot", async () => {
     const { client } = await newCustomer('second', { confirmed: true })
-    await client.post('/api/bid-requests', bid({ lotNumber: 30 }))
-    const response = await verified.post('/api/bid-requests', bid({ lotNumber: 30 }))
+    await client.post('/api/bid-requests', bid({ lotId: lot(sales.open, 30) }))
+    const response = await verified.post('/api/bid-requests', bid({ lotId: lot(sales.open, 30) }))
     assert.equal(response.status, 201)
   })
 
-  test('the sale, catalogue and lot must match and be open', async () => {
-    const outOfRange = await verified.post('/api/bid-requests', bid({ lotNumber: 101 }))
-    assert.equal(errorCode(outOfRange), 'lot_out_of_range')
+  test('the lot must belong to the sale, and the sale must be open', async () => {
+    const mismatch = await verified.post('/api/bid-requests', bid({ lotId: lot(sales.other, 1) }))
+    assert.equal(mismatch.status, 400)
+    assert.equal(errorCode(mismatch), 'lot_mismatch')
 
-    const mismatch = await verified.post('/api/bid-requests', bid({ catalogueId: slugs.otherCatalogue }))
-    assert.equal(errorCode(mismatch), 'catalogue_mismatch')
+    const unknownLot = await verified.post('/api/bid-requests', bid({ lotId: '999999999999' }))
+    assert.equal(errorCode(unknownLot), 'lot_mismatch')
 
-    const closed = await verified.post('/api/bid-requests', bid({ auctionId: slugs.closed, catalogueId: slugs.closedCatalogue }))
+    const closed = await verified.post('/api/bid-requests', bid({ auctionId: sales.closed.auctionId, lotId: lot(sales.closed, 1) }))
     assert.equal(closed.status, 409)
     assert.equal(errorCode(closed), 'sale_closed')
 
-    const unknown = await verified.post('/api/bid-requests', bid({ auctionId: `${prefix}-missing` }))
-    assert.equal(errorCode(unknown), 'sale_closed')
+    const unknownSale = await verified.post('/api/bid-requests', bid({ auctionId: '999999999999' }))
+    assert.equal(errorCode(unknownSale), 'sale_closed')
 
-    // Draft and cancelled sales take no requests, even by their ids.
-    for (const [auctionId, catalogueId] of [
-      [slugs.draft, slugs.draftCatalogue],
-      [slugs.cancelled, slugs.cancelledCatalogue],
-    ]) {
-      const response = await verified.post('/api/bid-requests', bid({ auctionId, catalogueId }))
-      assert.equal(errorCode(response), 'sale_closed', auctionId)
-    }
+    // Without a date nobody could say when to bid, so the sale takes no requests.
+    const undated = await verified.post('/api/bid-requests', bid({ auctionId: sales.undated.auctionId, lotId: lot(sales.undated, 1) }))
+    assert.equal(errorCode(undated), 'sale_closed')
   })
 
-  test('amounts are whole euros within the limits', async () => {
-    const response = await verified.post('/api/bid-requests', bid({ maxBidEur: 10, lotNumber: 1.5 }))
+  test('ids are database ids, and amounts are whole euros within the limits', async () => {
+    const response = await verified.post('/api/bid-requests', bid({ maxBidEur: 10, lotId: '12abc' }))
     assert.equal(response.status, 400)
-    assert.deepEqual(
-      errorBody.parse(response.body).error.details?.map((detail) => detail.path).sort(),
-      ['body.lotNumber', 'body.maxBidEur'],
-    )
+    assert.deepEqual(errorBody.parse(response.body).error.details?.map((detail) => detail.path).sort(), [
+      'body.lotId',
+      'body.maxBidEur',
+    ])
+    for (const auctionId of [1, '0', '-1', '1234567890123456']) {
+      const badSale = await verified.post('/api/bid-requests', bid({ auctionId }))
+      assert.equal(badSale.status, 400, String(auctionId))
+    }
     const cents = await verified.post('/api/bid-requests', bid({ maxBidEur: 2500.5 }))
     assert.equal(cents.status, 400)
   })
 
   test('the customer must acknowledge that fees and charges come on top', async () => {
     for (const acknowledgedCharges of [undefined, false, 'yes']) {
-      const response = await verified.post('/api/bid-requests', bid({ lotNumber: 30, acknowledgedCharges }))
+      const response = await verified.post('/api/bid-requests', bid({ lotId: lot(sales.open, 31), acknowledgedCharges }))
       assert.equal(response.status, 400, String(acknowledgedCharges))
       assert.deepEqual(
         errorBody.parse(response.body).error.details?.map((detail) => detail.path),
@@ -270,7 +242,7 @@ describe('My requests', () => {
   test("lists only the signed-in customer's own requests", async () => {
     const { requests } = listBody.parse((await verified.get('/api/bid-requests')).body)
     assert.ok(requests.length >= 3)
-    assert.ok(requests.every((request) => request.lotNumber !== 45), "the other customer's request is not listed")
+    assert.ok(requests.every((request) => request.lot.lotNumber !== '45'), "the other customer's request is not listed")
 
     const { rows } = await pool.query<{ count: number }>(
       'SELECT count(*)::int AS count FROM bid_requests WHERE customer_id = $1',
@@ -284,17 +256,15 @@ describe('Requested lots', () => {
   test('anyone can see reserved lots, without customers or amounts', async () => {
     const response = await new BrowserClient(server.baseUrl).get('/api/requested-lots')
     assert.equal(response.status, 200)
-    // strictObject: any extra field (customer, amount, request id) fails the parse
     const { lots } = lotsBody.parse(response.body)
-    const ours = lots.filter((lot) => lot.catalogue.id === slugs.openCatalogue)
+    const ours = lots.filter((reserved) => [sales.open.auctionId, sales.closed.auctionId].includes(reserved.auction.id))
     assert.deepEqual(
-      ours.map((lot) => [lot.lotNumber, lot.availability]),
-      [[45, 'reserved']],
-      'only the accepted request is listed, not pending ones',
-    )
-    assert.ok(
-      lots.every((lot) => lot.catalogue.id !== slugs.cancelledCatalogue),
-      'lots of a cancelled sale are not listed',
+      ours.map((reserved) => [reserved.auction.id, reserved.lot.lotNumber, reserved.availability]),
+      [
+        [sales.open.auctionId, '45', 'reserved'],
+        [sales.closed.auctionId, '2', 'sale-ended'],
+      ],
+      'only accepted requests are listed, open sales first',
     )
     const text = JSON.stringify(response.body)
     assert.ok(!text.includes('98765'))

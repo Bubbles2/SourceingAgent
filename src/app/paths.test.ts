@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { auctionPath, requestBidPath, safeRedirectPath, signInPath } from './paths'
+import { auctionLotsPath, auctionPath, requestBidPath, safeRedirectPath, signInPath } from './paths'
 
 describe('safeRedirectPath', () => {
-  it.each(['/account', '/request-bid?auction=a&catalogue=b', '/my-requests'])('keeps paths on this site: %s', (path) => {
+  it.each(['/account', '/request-bid?auction=1&lot=2', '/my-requests'])('keeps paths on this site: %s', (path) => {
     expect(safeRedirectPath(path)).toBe(path)
   })
 
@@ -16,19 +16,20 @@ describe('safeRedirectPath', () => {
 
 describe('signInPath', () => {
   it('carries the return address, query included, as one encoded parameter', () => {
-    const path = signInPath('/request-bid?auction=a&catalogue=b')
-    expect(path).toBe('/sign-in?redirectTo=%2Frequest-bid%3Fauction%3Da%26catalogue%3Db')
-    expect(new URLSearchParams(path.split('?')[1]).get('redirectTo')).toBe('/request-bid?auction=a&catalogue=b')
+    const path = signInPath('/request-bid?auction=1&lot=2')
+    expect(path).toBe('/sign-in?redirectTo=%2Frequest-bid%3Fauction%3D1%26lot%3D2')
+    expect(new URLSearchParams(path.split('?')[1]).get('redirectTo')).toBe('/request-bid?auction=1&lot=2')
   })
 })
 
 describe('links', () => {
-  it('pre-selects the sale and catalogue on Request a bid', () => {
-    expect(requestBidPath('vauclair-2026-11', 'vauclair-cat')).toEqual({
-      pathname: '/request-bid',
-      search: '?auction=vauclair-2026-11&catalogue=vauclair-cat',
-    })
-    expect(requestBidPath('vauclair-2026-11')).toEqual({ pathname: '/request-bid', search: '?auction=vauclair-2026-11' })
+  it('pre-selects the sale and lot on Request a bid', () => {
+    expect(requestBidPath('1', '302')).toEqual({ pathname: '/request-bid', search: '?auction=1&lot=302' })
+    expect(requestBidPath('1')).toEqual({ pathname: '/request-bid', search: '?auction=1' })
+  })
+
+  it("links to one sale's lots", () => {
+    expect(auctionLotsPath('1')).toBe('/lots?auction=1')
   })
 
   it('encodes auction ids in paths', () => {

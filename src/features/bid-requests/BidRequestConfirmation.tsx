@@ -5,7 +5,8 @@ import { Button, ButtonLink } from '../../components/ui/Button'
 import { StatusBadge } from '../../components/ui/Badge'
 import { focusOnMount } from '../../utils/dom'
 import { formatEur } from '../../utils/money'
-import { formatSaleDateLong } from '../auctions/formatAuction'
+import { formatSaleMoment } from '../auctions/formatAuction'
+import { lotName, lotTitle } from '../lots/lotText'
 import type { MyBidRequest } from './types'
 import './BidRequestForm.css'
 
@@ -17,7 +18,7 @@ type BidRequestConfirmationProps = {
 /** Replaces the form after a successful submission and takes focus so the result is announced. */
 export function BidRequestConfirmation({ request, onRequestAnother }: BidRequestConfirmationProps): React.JSX.Element {
   const titleId = useId()
-  const { auction, catalogue } = request
+  const { auction, lot } = request
 
   return (
     <section ref={focusOnMount} className="bid-confirmation" tabIndex={-1} aria-labelledby={titleId}>
@@ -36,16 +37,17 @@ export function BidRequestConfirmation({ request, onRequestAnother }: BidRequest
           <dt>Auction</dt>
           <dd>
             {auction.title}
-            <span className="bid-confirmation__sub">{`${formatSaleDateLong(auction.saleDate)} at ${auction.saleTime} · ${auction.house}`}</span>
+            <span className="bid-confirmation__sub">
+              {[formatSaleMoment(auction), auction.location].filter(Boolean).join(' · ')}
+            </span>
           </dd>
         </div>
         <div>
-          <dt>Catalogue</dt>
-          <dd>{catalogue.title}</dd>
-        </div>
-        <div>
           <dt>Lot</dt>
-          <dd>{request.lotNumber}</dd>
+          <dd>
+            {lotName(lot.lotNumber)}
+            <span className="bid-confirmation__sub">{lotTitle(lot)}</span>
+          </dd>
         </div>
         <div>
           <dt>Maximum bid</dt>

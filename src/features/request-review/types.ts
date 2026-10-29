@@ -1,18 +1,14 @@
-import type { AuctionSummary } from '../auctions/types'
-import type { BidRequestStatus } from '../bid-requests/types'
+import type { BidRequestStatus, RequestSaleAndLot } from '../bid-requests/types'
 
 /** A bid request as the agent reviews it, with the customer and the amount */
-export type ReviewBidRequest = {
+export type ReviewBidRequest = RequestSaleAndLot & {
   id: string
-  lotNumber: number
   /** Whole euros */
   maxBidEur: number
   instructions: string
   status: BidRequestStatus
   /** ISO date-time */
   submittedAt: string
-  auction: AuctionSummary
-  catalogue: { id: string; title: string }
   customer: { firstName: string; lastName: string; email: string; companyName: string | null }
   /** Another request already reserves this lot */
   lotHeldByOther: boolean

@@ -4,6 +4,8 @@ import { hasControlCharacters } from '../utils/links'
 export const paths = {
   home: '/',
   auctions: '/auctions',
+  lots: '/lots',
+  /** The old catalogues page; it now leads to the lots */
   catalogues: '/catalogues',
   calendar: '/calendar',
   requestedLots: '/requested-lots',
@@ -16,8 +18,6 @@ export const paths = {
   account: '/account',
   myRequests: '/my-requests',
   admin: '/admin',
-  adminAuctions: '/admin/auctions',
-  adminCatalogues: '/admin/catalogues',
   reviewRequests: '/admin/requests',
   terms: '/terms',
   privacy: '/privacy',
@@ -26,40 +26,23 @@ export const paths = {
 // In-page anchors
 export const featuredAuctionsId = 'auctions'
 export const feesNoticeId = 'fees-notice'
-export const auctionCataloguesId = 'catalogues'
+export const auctionLotsId = 'lots'
 
 export function auctionPath(auctionId: string): string {
   return `${paths.auctions}/${encodeURIComponent(auctionId)}`
 }
 
-export function requestBidPath(auctionId: string, catalogueId?: string): To {
+/** The lots page, showing one sale's lots */
+export function auctionLotsPath(auctionId: string): string {
+  return `${paths.lots}?${new URLSearchParams({ auction: auctionId }).toString()}`
+}
+
+export function requestBidPath(auctionId: string, lotId?: string): To {
   const search = new URLSearchParams({ auction: auctionId })
-  if (catalogueId) {
-    search.set('catalogue', catalogueId)
+  if (lotId) {
+    search.set('lot', lotId)
   }
   return { pathname: paths.requestBid, search: `?${search.toString()}` }
-}
-
-export function adminAuctionPath(auctionId: string): string {
-  return `${paths.adminAuctions}/${encodeURIComponent(auctionId)}`
-}
-
-export function editAuctionPath(auctionId: string): string {
-  return `${adminAuctionPath(auctionId)}/edit`
-}
-
-/** The new-auction form, with the sale date filled in when it was chosen on the calendar */
-export function newAuctionPath(saleDate?: string): string {
-  return saleDate ? `${paths.adminAuctions}/new?${new URLSearchParams({ date: saleDate }).toString()}` : `${paths.adminAuctions}/new`
-}
-
-export function editCataloguePath(catalogueId: string): string {
-  return `${paths.adminCatalogues}/${encodeURIComponent(catalogueId)}/edit`
-}
-
-/** The new-catalogue form, with its sale chosen when opened from that sale */
-export function newCataloguePath(auctionId?: string): string {
-  return auctionId ? `${paths.adminCatalogues}/new?${new URLSearchParams({ auction: auctionId }).toString()}` : `${paths.adminCatalogues}/new`
 }
 
 /** The bid request review page, filtered */

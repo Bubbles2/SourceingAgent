@@ -13,12 +13,12 @@ export function AuctionsPage(): React.JSX.Element {
     <PageContainer
       eyebrow="Auctions"
       title="Auctions"
-      description="Browse upcoming sales in Paris and the regions, or look back at completed ones. Open any auction for its details and catalogue."
+      description="Browse upcoming sales in Paris and the regions, or look back at completed ones. Open any auction for its details and lots."
     >
       <SaleStatusFilter value={status} label="Show auctions" />
       <Suspense
         key={`${status}-${page}`}
-        fallback={<AuctionGridSkeleton count={6} label={`Loading ${status} auctions`} showDescription />}
+        fallback={<AuctionGridSkeleton count={6} label={`Loading ${status} auctions`} />}
       >
         <AuctionResults auctions={auctions} status={status} page={page} />
       </Suspense>

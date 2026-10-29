@@ -1,6 +1,6 @@
 import { use, useState } from 'react'
 import { todayInParis } from '../auctions/saleStatus'
-import type { AuctionWithCatalogues } from '../auctions/types'
+import type { Auction } from '../auctions/types'
 import { AuctionDialog } from './AuctionDialog'
 import { formatMonthTitle, groupBySaleDate, type MonthKey } from './calendarDates'
 import { MonthAgenda } from './MonthAgenda'
@@ -9,23 +9,16 @@ import { MonthGrid } from './MonthGrid'
 type AuctionCalendarProps = {
   month: MonthKey
   /** Sales across the whole visible grid, including the padding days of neighbouring months */
-  auctions: Promise<readonly AuctionWithCatalogues[]>
+  auctions: Promise<readonly Auction[]>
   labelledBy: string
-  /** Administrators can create a sale from a day of the grid */
-  canAddAuctions?: boolean
 }
 
-export function AuctionCalendar({
-  month,
-  auctions: auctionsPromise,
-  labelledBy,
-  canAddAuctions = false,
-}: AuctionCalendarProps): React.JSX.Element {
+export function AuctionCalendar({ month, auctions: auctionsPromise, labelledBy }: AuctionCalendarProps): React.JSX.Element {
   const auctions = use(auctionsPromise)
   const [selectedAuctionId, setSelectedAuctionId] = useState<string | null>(null)
 
   const auctionsByDate = groupBySaleDate(auctions)
-  const hasSalesThisMonth = auctions.some((auction) => auction.saleDate.startsWith(month))
+  const hasSalesThisMonth = auctions.some((auction) => auction.auctionDate?.startsWith(month))
   const selectedAuction = auctions.find((auction) => auction.id === selectedAuctionId)
   const today = todayInParis()
 
@@ -41,7 +34,6 @@ export function AuctionCalendar({
         today={today}
         labelledBy={labelledBy}
         onSelectAuction={setSelectedAuctionId}
-        canAddAuctions={canAddAuctions}
       />
       <MonthAgenda month={month} auctionsByDate={auctionsByDate} today={today} onSelectAuction={setSelectedAuctionId} />
       {hasSalesThisMonth ? null : <p className="cal-empty">{`No auctions are scheduled in ${formatMonthTitle(month)}.`}</p>}

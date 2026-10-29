@@ -1,12 +1,12 @@
-// Auctions and catalogues: public reads, administrator changes and the rules that tie sales,
-// catalogues and bid requests together, against the real app and local database.
-// Everything here uses saletest-<run>-… ids and emails, dated four years ahead (or in the past)
-// where no other sale is, and is removed afterwards.
+// Auctions and lots, as the auction monitor collected them: public reads only, against the real app
+// and local database. Everything here uses saletest-<run>-… ids, dated four years ahead (or in the
+// past) where no collected sale is, and is removed afterwards.
 import assert from 'node:assert/strict'
 import { randomUUID } from 'node:crypto'
 import { after, before, describe, test } from 'node:test'
 import { z } from 'zod'
 import { createApp } from '../src/app.ts'
+import { deleteTestData, insertTestSale, type TestSale } from '../src/cli/testSales.ts'
 import { closePool, pool, withTransaction } from '../src/db/pool.ts'
 import { todayInParis } from '../src/lib/parisDate.ts'
 import { BrowserClient, type ApiResponse } from './browserClient.ts'
@@ -15,61 +15,57 @@ import { startTestServer, type TestServer } from './httpServer.ts'
 const run = randomUUID().slice(0, 8)
 const prefix = `saletest-${run}`
 
-const catalogueBody = z.strictObject({
-  id: z.string(),
-  auctionId: z.string(),
-  title: z.string(),
-  description: z.string(),
-  lots: z.strictObject({ first: z.number(), last: z.number() }),
-  pageCount: z.number().nullable(),
-  pdfUrl: z.string(),
-  cover: z.strictObject({ src: z.string(), alt: z.string() }).nullable(),
-})
-// strictObject throughout: any extra field, such as a database id, fails the parse.
+// strictObject throughout: any extra field, such as the raw collected data, fails the parse.
 const auctionBody = z.strictObject({
-  id: z.string(),
+  id: z.string().regex(/^\d+$/),
+  externalId: z.string(),
   title: z.string(),
-  category: z.string(),
-  house: z.string(),
-  city: z.string(),
-  saleDate: z.iso.date(),
-  saleTime: z.string().regex(/^\d{2}:\d{2}$/),
-  lotCount: z.number().nullable(),
-  viewing: z.strictObject({ start: z.iso.date(), end: z.iso.date() }).nullable(),
-  description: z.string(),
-  image: z.strictObject({ src: z.string(), alt: z.string() }).nullable(),
-  featured: z.boolean(),
-  status: z.enum(['draft', 'published', 'cancelled']),
-  catalogues: z.array(catalogueBody),
+  startsAt: z.iso.datetime().nullable(),
+  endsAt: z.iso.datetime().nullable(),
+  auctionDate: z.iso.date().nullable(),
+  location: z.string().nullable(),
+  catalogueUrl: z.string().nullable(),
+  sourceUrl: z.string().nullable(),
+  status: z.string().nullable(),
+  lotCount: z.number(),
 })
-const catalogueWithAuctionBody = catalogueBody.extend({
+const lotBody = z.strictObject({
+  id: z.string().regex(/^\d+$/),
+  auctionId: z.string(),
+  externalId: z.string(),
+  lotNumber: z.string().nullable(),
+  title: z.string().nullable(),
+  description: z.string().nullable(),
+  category: z.string().nullable(),
+  maker: z.string().nullable(),
+  materials: z.array(z.string()),
+  estimateLow: z.string().nullable(),
+  estimateHigh: z.string().nullable(),
+  currency: z.string().nullable(),
+  imageUrl: z.string().nullable(),
+  sourceUrl: z.string().nullable(),
+  titleUk: z.string().nullable(),
+  descriptionUk: z.string().nullable(),
+  aiCategory: z.string().nullable(),
+  aiSummary: z.string().nullable(),
   auction: z.strictObject({
     id: z.string(),
     title: z.string(),
-    house: z.string(),
-    city: z.string(),
-    saleDate: z.iso.date(),
-    saleTime: z.string(),
-    status: z.enum(['draft', 'published', 'cancelled']),
+    startsAt: z.iso.datetime().nullable(),
+    auctionDate: z.iso.date().nullable(),
+    location: z.string().nullable(),
   }),
 })
 const page = { total: z.number(), limit: z.number(), offset: z.number() }
 const auctionPage = z.strictObject({ auctions: z.array(auctionBody), ...page })
-const cataloguePage = z.strictObject({ catalogues: z.array(catalogueWithAuctionBody), ...page })
-const errorBody = z.object({
-  error: z.object({ code: z.string(), details: z.array(z.object({ path: z.string(), message: z.string() })).optional() }),
+const lotPage = z.strictObject({ lots: z.array(lotBody), ...page })
+const lotSummaries = z.strictObject({
+  lots: z.array(z.strictObject({ id: z.string(), lotNumber: z.string().nullable(), title: z.string().nullable(), titleUk: z.string().nullable() })),
 })
+const errorBody = z.object({ error: z.object({ code: z.string() }) })
 
 function errorCode(response: ApiResponse): string {
   return errorBody.parse(response.body).error.code
-}
-
-function errorPaths(response: ApiResponse): string[] {
-  return (errorBody.parse(response.body).error.details ?? []).map((detail) => detail.path)
-}
-
-function auctionOf(response: ApiResponse): z.infer<typeof auctionBody> {
-  return z.object({ auction: auctionBody }).parse(response.body).auction
 }
 
 /** A Paris date this many days from today */
@@ -79,197 +75,137 @@ function day(offset: number): string {
   return date.toISOString().slice(0, 10)
 }
 
-// Test sales sit about four years ahead, inside the five-year limit and away from sample data.
+// Test sales sit about four years ahead, away from collected sales.
 const ahead = 1460
 const window = `from=${day(ahead)}&to=${day(ahead + 30)}`
 
-/** A sale `saleDay` days into the test window, with viewing on the two days before */
-function newAuction(id: string, overrides: Record<string, unknown> = {}, saleDay = 10): Record<string, unknown> {
-  return {
-    id: `${prefix}-${id}`,
-    title: 'Test sale',
-    category: 'Fine art',
-    house: 'Maison Test',
-    city: 'Paris 9e',
-    saleDate: day(ahead + saleDay),
-    saleTime: '14:00',
-    lotCount: 200,
-    viewing: { start: day(ahead + saleDay - 2), end: day(ahead + saleDay - 1) },
-    description: 'A test sale.',
-    ...overrides,
-  }
-}
-
-function newCatalogue(id: string, auction: string, overrides: Record<string, unknown> = {}): Record<string, unknown> {
-  return {
-    id: `${prefix}-${id}`,
-    auctionId: `${prefix}-${auction}`,
-    title: `Catalogue ${id}`,
-    lots: { first: 1, last: 100 },
-    pdfUrl: 'https://example.com/catalogues/test.pdf',
-    ...overrides,
-  }
-}
-
 let server: TestServer
 let visitor: BrowserClient
-let customer: BrowserClient
-let customerId: string
-let admin: BrowserClient
+const sales = new Map<string, TestSale>()
 
-async function register(label: string, role: 'customer' | 'administrator'): Promise<{ client: BrowserClient; id: string }> {
-  const client = new BrowserClient(server.baseUrl)
-  const response = await client.post('/api/auth/register', {
-    firstName: 'Test',
-    lastName: label,
-    email: `${prefix}-${label}@example.com`,
-    password: 'correct horse battery staple',
-    countryCode: 'FR',
-  })
-  assert.equal(response.status, 201, JSON.stringify(response.body))
-  const id = z.object({ user: z.object({ id: z.string() }).loose() }).parse(response.body).user.id
-  await pool.query('UPDATE users SET role = $2, email_verified_at = now() WHERE id = $1', [id, role])
-  return { client, id }
+async function createSale(label: string, daysAhead: number, lotCount = 3): Promise<TestSale> {
+  const sale = await insertTestSale(`${prefix}-${label}`, { daysAhead, lotCount, title: `Sale ${label}` }, pool)
+  sales.set(label, sale)
+  return sale
 }
 
-/** Creates a sale as the administrator and returns it */
-async function createAuction(id: string, overrides: Record<string, unknown> = {}, saleDay = 10) {
-  const response = await admin.post('/api/auctions', newAuction(id, overrides, saleDay))
-  assert.equal(response.status, 201, JSON.stringify(response.body))
-  return auctionOf(response)
-}
-
-async function createCatalogue(id: string, auction: string, overrides: Record<string, unknown> = {}): Promise<void> {
-  const response = await admin.post('/api/catalogues', newCatalogue(id, auction, overrides))
-  assert.equal(response.status, 201, JSON.stringify(response.body))
-}
-
-/** A completed sale, which the API can't create, straight into the database */
-async function insertPastSale(id: string, daysAgo: number): Promise<void> {
-  await pool.query(
-    `INSERT INTO auctions (slug, title, category, auction_house, city, starts_at, description, status)
-     VALUES ($1, 'Past sale', 'Fine art', 'Maison Test', 'Paris', now() - $2::int * interval '1 day', 'A past sale.', 'published')`,
-    [`${prefix}-${id}`, daysAgo],
-  )
+function saleId(label: string): string {
+  const sale = sales.get(label)
+  assert.ok(sale, `no sale ${label}`)
+  return sale.auctionId
 }
 
 before(async () => {
   server = await startTestServer(createApp())
   visitor = new BrowserClient(server.baseUrl)
-  admin = (await register('admin', 'administrator')).client
-  const signedIn = await register('customer', 'customer')
-  customer = signedIn.client
-  customerId = signedIn.id
 
-  // Published (with a catalogue), draft and cancelled sales, on different days
-  await createAuction('published', { status: 'published', featured: true }, 3)
-  await createCatalogue('published-cat', 'published')
-  await createAuction('draft', {}, 4)
-  await createCatalogue('draft-cat', 'draft')
-  await createAuction('cancelled', { status: 'published' }, 5)
-  const cancelled = await admin.patch(`/api/auctions/${prefix}-cancelled`, { status: 'cancelled' })
-  assert.equal(cancelled.status, 200)
+  // A sale as the monitor collects it from a page: entities in its text, and one link that isn't safe.
+  const collected = await createSale('collected', ahead + 3, 2)
+  await pool.query(
+    `UPDATE auctions SET title = 'Fine Arts &amp; Antiques &#8212; Day&nbsp;1', location = 'Drouot &quot;Richelieu&quot;',
+       catalogue_url = 'javascript:alert(1)', source_url = 'https://drouot.com/fr/v/1', raw_data = '{"secret": true}'
+     WHERE id = $1`,
+    [collected.auctionId],
+  )
+  await pool.query(
+    `UPDATE lots SET titleuk = 'Bronze &amp; Marble Buddha', image_url = 'http://insecure.example/a.jpg',
+       estimate_low = 1500, estimate_high = 2000, materials = '{bronze,marble}'
+     WHERE id = $1`,
+    [collected.lots[0]?.id],
+  )
+  await createSale('later', ahead + 5)
 })
 
 after(async () => {
   await server.close()
-  await withTransaction(async (client) => {
-    await client.query('ALTER TABLE request_status_history DISABLE TRIGGER request_status_history_append_only')
-    await client.query(
-      `DELETE FROM request_status_history WHERE bid_request_id IN (
-         SELECT br.id FROM bid_requests br JOIN auctions a ON a.id = br.auction_id WHERE a.slug LIKE $1)`,
-      [`${prefix}-%`],
-    )
-    await client.query('ALTER TABLE request_status_history ENABLE TRIGGER request_status_history_append_only')
-    await client.query('DELETE FROM bid_requests WHERE auction_id IN (SELECT id FROM auctions WHERE slug LIKE $1)', [
-      `${prefix}-%`,
-    ])
-    await client.query('DELETE FROM catalogues WHERE slug LIKE $1', [`${prefix}-%`])
-    await client.query('DELETE FROM auctions WHERE slug LIKE $1', [`${prefix}-%`])
-    await client.query('DELETE FROM email_outbox WHERE to_address LIKE $1', [`${prefix}-%`])
-    await client.query('DELETE FROM users WHERE email LIKE $1', [`${prefix}-%`])
-  })
+  await withTransaction((client) => deleteTestData(prefix, client))
   await closePool()
 })
 
 describe('reading sales', () => {
-  test('visitors see published sales only, each with its catalogues and no database ids', async () => {
+  test('anyone can list sales, named after the monitor’s columns, with their lot counts', async () => {
     const response = await visitor.get(`/api/auctions?${window}`)
     assert.equal(response.status, 200)
-    assert.match(response.headers.get('cache-control') ?? '', /private/)
+    assert.equal(response.headers.get('cache-control'), 'no-cache')
     const { auctions, total } = auctionPage.parse(response.body)
     assert.deepEqual(
-      auctions.map((auction) => auction.id),
-      [`${prefix}-published`],
+      auctions.map((auction) => [auction.id, auction.title, auction.lotCount]),
+      [
+        [saleId('collected'), 'Fine Arts & Antiques — Day 1', 2],
+        [saleId('later'), 'Sale later', 3],
+      ],
     )
-    assert.equal(total, 1)
-    assert.deepEqual(auctions[0]?.catalogues.map((catalogue) => catalogue.id), [`${prefix}-published-cat`])
-    assert.doesNotMatch(JSON.stringify(response.body), /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-/)
+    assert.equal(total, 2)
+    const later = auctions[1]
+    assert.equal(later?.auctionDate, day(ahead + 5))
+    assert.equal(later?.externalId, `${prefix}-later`)
+    // 14:00 in Paris
+    assert.equal(
+      new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Paris', hour: '2-digit', minute: '2-digit' }).format(
+        new Date(later?.startsAt ?? ''),
+      ),
+      '14:00',
+    )
+  })
 
-    assert.equal((await visitor.get(`/api/auctions/${prefix}-published`)).status, 200)
-    for (const hidden of ['draft', 'cancelled', 'missing']) {
-      const detail = await visitor.get(`/api/auctions/${prefix}-${hidden}`)
-      assert.equal(detail.status, 404, hidden)
-      assert.equal(errorCode(detail), 'auction_not_found')
+  test('collected text is decoded, and only public https:// links are passed on', async () => {
+    const response = await visitor.get(`/api/auctions/${saleId('collected')}`)
+    const { auction } = z.object({ auction: auctionBody }).parse(response.body)
+    assert.equal(auction.location, 'Drouot "Richelieu"')
+    assert.equal(auction.catalogueUrl, null)
+    assert.equal(auction.sourceUrl, 'https://drouot.com/fr/v/1')
+    assert.doesNotMatch(JSON.stringify(response.body), /secret/)
+  })
+
+  test('unknown or malformed sale ids are not found', async () => {
+    for (const id of ['999999999999', 'abc', '0', '1.5', `${prefix}-later`]) {
+      const response = await visitor.get(`/api/auctions/${id}`)
+      assert.equal(response.status, 404, id)
+      assert.equal(errorCode(response), 'auction_not_found', id)
+      assert.equal((await visitor.get(`/api/auctions/${id}/lots`)).status, 404, `${id}/lots`)
     }
   })
 
-  test('administrators can ask for drafts and cancelled sales; nobody else can', async () => {
-    const all = auctionPage.parse((await admin.get(`/api/auctions?${window}&status=all`)).body)
-    assert.deepEqual(
-      all.auctions.map((auction) => [auction.id, auction.status]),
-      [
-        [`${prefix}-published`, 'published'],
-        [`${prefix}-draft`, 'draft'],
-        [`${prefix}-cancelled`, 'cancelled'],
-      ],
-    )
-    const drafts = auctionPage.parse((await admin.get(`/api/auctions?${window}&status=draft`)).body)
-    assert.deepEqual(
-      drafts.auctions.map((auction) => auction.id),
-      [`${prefix}-draft`],
-    )
-    assert.equal(auctionOf(await admin.get(`/api/auctions/${prefix}-draft`)).status, 'draft')
-
-    assert.equal((await visitor.get(`/api/auctions?${window}&status=draft`)).status, 401)
-    assert.equal((await customer.get(`/api/auctions?${window}&status=all`)).status, 403)
-    assert.equal((await customer.get(`/api/auctions/${prefix}-draft`)).status, 404)
-  })
-
   test('lists are paged, in sale order: upcoming soonest first, completed latest first', async () => {
-    await createAuction('page-1', { status: 'published' }, 20)
-    await createAuction('page-2', { status: 'published' }, 21)
+    await createSale('page-1', ahead + 20)
+    await createSale('page-2', ahead + 21)
     const range = `from=${day(ahead + 20)}&to=${day(ahead + 21)}`
 
     const first = auctionPage.parse((await visitor.get(`/api/auctions?${range}&limit=1`)).body)
     assert.deepEqual([first.total, first.limit, first.offset], [2, 1, 0])
-    assert.deepEqual(first.auctions.map((auction) => auction.id), [`${prefix}-page-1`])
+    assert.deepEqual(first.auctions.map((auction) => auction.id), [saleId('page-1')])
     const second = auctionPage.parse((await visitor.get(`/api/auctions?${range}&limit=1&offset=1`)).body)
-    assert.deepEqual(second.auctions.map((auction) => auction.id), [`${prefix}-page-2`])
+    assert.deepEqual(second.auctions.map((auction) => auction.id), [saleId('page-2')])
     const beyond = auctionPage.parse((await visitor.get(`/api/auctions?${range}&offset=5`)).body)
     assert.deepEqual([beyond.auctions.length, beyond.total], [0, 2])
 
-    await insertPastSale('past-older', 401)
-    await insertPastSale('past-newer', 400)
+    await createSale('past-older', -401)
+    await createSale('past-newer', -400)
     const completed = auctionPage.parse(
       (await visitor.get(`/api/auctions?period=completed&from=${day(-402)}&to=${day(-399)}`)).body,
     )
-    assert.deepEqual(
-      completed.auctions.map((auction) => auction.id),
-      [`${prefix}-past-newer`, `${prefix}-past-older`],
-    )
+    assert.deepEqual(completed.auctions.map((auction) => auction.id), [saleId('past-newer'), saleId('past-older')])
     const upcoming = auctionPage.parse((await visitor.get(`/api/auctions?period=upcoming&from=${day(-402)}&to=${day(-399)}`)).body)
     assert.equal(upcoming.total, 0)
   })
 
-  test('featured sales can be listed on their own', async () => {
-    const featured = auctionPage.parse((await visitor.get(`/api/auctions?${window}&featured=true`)).body)
-    assert.ok(featured.auctions.length > 0)
-    assert.ok(featured.auctions.every((auction) => auction.featured))
+  test('a sale with only a sale day is placed on that day; one with no date is never upcoming', async () => {
+    const dayOnly = await createSale('day-only', ahead + 25)
+    await pool.query('UPDATE auctions SET starts_at = NULL WHERE id = $1', [dayOnly.auctionId])
+    const undated = await createSale('undated', ahead + 26)
+    await pool.query('UPDATE auctions SET starts_at = NULL, auction_date = NULL WHERE id = $1', [undated.auctionId])
+
+    const listed = auctionPage.parse((await visitor.get(`/api/auctions?period=upcoming&from=${day(ahead + 25)}&to=${day(ahead + 26)}`)).body)
+    assert.deepEqual(
+      listed.auctions.map((auction) => [auction.id, auction.startsAt, auction.auctionDate]),
+      [[dayOnly.auctionId, null, day(ahead + 25)]],
+    )
+    const upcoming = auctionPage.parse((await visitor.get('/api/auctions?period=upcoming&limit=100')).body)
+    assert.ok(upcoming.auctions.every((auction) => auction.id !== undated.auctionId))
   })
 
   test('list parameters are checked', async () => {
-    for (const query of ['limit=0', 'limit=101', 'offset=-1', 'from=2027-02-30', `from=${day(5)}&to=${day(4)}`, 'period=soon', 'featured=yes']) {
+    for (const query of ['limit=0', 'limit=101', 'offset=-1', 'from=2027-02-30', `from=${day(5)}&to=${day(4)}`, 'period=soon']) {
       const response = await visitor.get(`/api/auctions?${query}`)
       assert.equal(response.status, 400, query)
       assert.equal(errorCode(response), 'validation_failed', query)
@@ -277,223 +213,55 @@ describe('reading sales', () => {
   })
 })
 
-describe('managing sales', () => {
-  test('only administrators can create, change or delete sales, and only with a CSRF token', async () => {
-    assert.equal((await visitor.post('/api/auctions', newAuction('nope'))).status, 401)
-    assert.equal((await customer.post('/api/auctions', newAuction('nope'))).status, 403)
-    assert.equal((await customer.patch(`/api/auctions/${prefix}-published`, { title: 'Mine now' })).status, 403)
-    assert.equal((await customer.delete(`/api/auctions/${prefix}-draft`)).status, 403)
-    const noToken = await admin.post('/api/auctions', newAuction('no-token'), { csrf: false })
-    assert.equal(noToken.status, 403)
-    assert.equal(errorCode(noToken), 'csrf_invalid')
-  })
-
-  test('a new sale is a draft unless published, with its fields trimmed', async () => {
-    const auction = await createAuction('fresh', { title: '  Spaced title  ', lotCount: undefined, viewing: undefined })
-    assert.equal(auction.status, 'draft')
-    assert.equal(auction.title, 'Spaced title')
-    assert.equal(auction.lotCount, null)
-    assert.equal(auction.viewing, null)
-    assert.equal(auction.featured, false)
-    assert.deepEqual(auction.catalogues, [])
-
-    const duplicate = await admin.post('/api/auctions', newAuction('fresh'))
-    assert.equal(duplicate.status, 409)
-    assert.equal(errorCode(duplicate), 'auction_exists')
-  })
-
-  test('required fields, dates, times and links are checked', async () => {
-    const empty = await admin.post('/api/auctions', { id: `${prefix}-empty` })
-    assert.equal(empty.status, 400)
-    assert.deepEqual(errorPaths(empty).sort(), [
-      'body.category',
-      'body.city',
-      'body.description',
-      'body.house',
-      'body.saleDate',
-      'body.saleTime',
-      'body.title',
-    ])
-
-    const cases: [Record<string, unknown>, string][] = [
-      [{ id: 'Not A Slug' }, 'body.id'],
-      [{ title: '   ' }, 'body.title'],
-      [{ saleDate: '2027-02-30' }, 'body.saleDate'],
-      [{ saleDate: day(-1) }, 'body.saleDate'],
-      [{ saleDate: day(5 * 366 + 1) }, 'body.saleDate'],
-      [{ saleTime: '24:00' }, 'body.saleTime'],
-      [{ lotCount: 0 }, 'body.lotCount'],
-      [{ viewing: { start: day(ahead + 9), end: day(ahead + 8) } }, 'body.viewing.end'],
-      [{ viewing: { start: day(ahead + 9), end: day(ahead + 11) } }, 'body.viewing.end'],
-      [{ image: { src: 'http://example.com/a.jpg', alt: 'A lot' } }, 'body.image.src'],
-      [{ image: { src: '//example.com/a.jpg', alt: 'A lot' } }, 'body.image.src'],
-      // Browsers drop the tab, leaving //example.com/a.jpg
-      [{ image: { src: '/\t/example.com/a.jpg', alt: 'A lot' } }, 'body.image.src'],
-      [{ image: { src: '/images/a.jpg', alt: '' } }, 'body.image.alt'],
-      [{ status: 'postponed' }, 'body.status'],
-      [{ databaseId: 'x' }, 'body'],
-    ]
-    for (const [overrides, path] of cases) {
-      const response = await admin.post('/api/auctions', newAuction('checked', overrides))
-      assert.equal(response.status, 400, JSON.stringify(overrides))
-      assert.ok(errorPaths(response).includes(path), `${JSON.stringify(overrides)}: ${errorPaths(response).join(', ')}`)
-    }
-  })
-
-  test('changes keep the rules: partial updates, status changes and lot counts', async () => {
-    const id = `${prefix}-changed`
-    await createAuction('changed')
-    await createCatalogue('changed-cat', 'changed', { lots: { first: 1, last: 150 } })
-
-    const renamed = auctionOf(await admin.patch(`/api/auctions/${id}`, { title: 'Renamed sale' }))
-    assert.equal(renamed.title, 'Renamed sale')
-    assert.equal(renamed.category, 'Fine art', 'fields not sent stay as they were')
-    assert.equal(renamed.catalogues.length, 1)
-
-    assert.equal((await admin.patch(`/api/auctions/${id}`, {})).status, 400)
-    assert.deepEqual(errorPaths(await admin.patch(`/api/auctions/${id}`, { id: `${prefix}-other` })), ['body'])
-
-    assert.equal(auctionOf(await admin.patch(`/api/auctions/${id}`, { status: 'published' })).status, 'published')
-    const backToDraft = await admin.patch(`/api/auctions/${id}`, { status: 'draft' })
-    assert.equal(backToDraft.status, 409)
-    assert.equal(errorCode(backToDraft), 'invalid_status_change')
-    assert.equal(auctionOf(await admin.patch(`/api/auctions/${id}`, { status: 'cancelled' })).status, 'cancelled')
-    assert.equal(auctionOf(await admin.patch(`/api/auctions/${id}`, { status: 'published' })).status, 'published')
-
-    const tooFewLots = await admin.patch(`/api/auctions/${id}`, { lotCount: 120 })
-    assert.equal(tooFewLots.status, 409)
-    assert.equal(errorCode(tooFewLots), 'catalogue_lots_exceed_count')
-    assert.equal(auctionOf(await admin.patch(`/api/auctions/${id}`, { lotCount: 150 })).lotCount, 150)
-
-    const viewingAfterSale = await admin.patch(`/api/auctions/${id}`, { saleDate: day(ahead + 7) })
-    assert.deepEqual(errorPaths(viewingAfterSale), ['body.viewing.end'])
-    const moved = auctionOf(await admin.patch(`/api/auctions/${id}`, { saleDate: day(ahead + 12), saleTime: '19:30' }))
-    assert.deepEqual([moved.saleDate, moved.saleTime], [day(ahead + 12), '19:30'])
-
-    assert.equal((await admin.patch(`/api/auctions/${prefix}-missing`, { title: 'x' })).status, 404)
-  })
-
-  test('a completed sale can be corrected but not moved into the past', async () => {
-    await insertPastSale('past-fix', 30)
-    const fixed = await admin.patch(`/api/auctions/${prefix}-past-fix`, { description: 'Corrected description.' })
-    assert.equal(fixed.status, 200)
-    const moved = await admin.patch(`/api/auctions/${prefix}-past-fix`, { saleDate: day(-31) })
-    assert.deepEqual(errorPaths(moved), ['body.saleDate'])
-  })
-
-  test('a sale with catalogues is cancelled, not deleted; one without is deleted', async () => {
-    const withCatalogue = await admin.delete(`/api/auctions/${prefix}-published`)
-    assert.equal(withCatalogue.status, 409)
-    assert.equal(errorCode(withCatalogue), 'auction_has_catalogues')
-
-    await createAuction('to-delete')
-    assert.equal((await admin.delete(`/api/auctions/${prefix}-to-delete`)).status, 204)
-    assert.equal((await admin.get(`/api/auctions/${prefix}-to-delete`)).status, 404)
-    assert.equal((await admin.delete(`/api/auctions/${prefix}-to-delete`)).status, 404)
-  })
-})
-
-describe('catalogues', () => {
-  test("visitors see a catalogue exactly when they can see its sale", async () => {
-    const published = cataloguePage.parse((await visitor.get(`/api/catalogues?auction=${prefix}-published`)).body)
-    assert.deepEqual(published.catalogues.map((catalogue) => catalogue.id), [`${prefix}-published-cat`])
-    assert.equal(published.catalogues[0]?.auction.id, `${prefix}-published`)
-
-    const draft = cataloguePage.parse((await visitor.get(`/api/catalogues?auction=${prefix}-draft`)).body)
-    assert.equal(draft.total, 0)
-    assert.equal((await visitor.get(`/api/catalogues/${prefix}-draft-cat`)).status, 404)
-    assert.equal((await visitor.get(`/api/catalogues/${prefix}-published-cat`)).status, 200)
-
-    const asAdmin = await admin.get(`/api/catalogues/${prefix}-draft-cat`)
-    assert.equal(z.object({ catalogue: catalogueWithAuctionBody }).parse(asAdmin.body).catalogue.auction.status, 'draft')
-    assert.equal((await customer.get(`/api/catalogues?status=draft`)).status, 403)
-  })
-
-  test('only administrators can create, change or delete catalogues', async () => {
-    assert.equal((await visitor.post('/api/catalogues', newCatalogue('nope', 'published'))).status, 401)
-    assert.equal((await customer.post('/api/catalogues', newCatalogue('nope', 'published'))).status, 403)
-    assert.equal((await customer.patch(`/api/catalogues/${prefix}-published-cat`, { title: 'x' })).status, 403)
-    assert.equal((await customer.delete(`/api/catalogues/${prefix}-published-cat`)).status, 403)
-  })
-
-  test('PDF links must be public https:// addresses', async () => {
-    for (const pdfUrl of [
-      'http://example.com/catalogue.pdf',
-      'javascript:alert(1)',
-      'https://user:secret@example.com/catalogue.pdf',
-      'https://localhost/catalogue.pdf',
-      'https://127.0.0.1/catalogue.pdf',
-      'not a link',
-      `https://example.com/${'a'.repeat(2050)}.pdf`,
-    ]) {
-      const response = await admin.post('/api/catalogues', newCatalogue('bad-link', 'published', { pdfUrl, lots: { first: 101, last: 110 } }))
-      assert.equal(response.status, 400, pdfUrl)
-      assert.deepEqual(errorPaths(response), ['body.pdfUrl'], pdfUrl)
-    }
-  })
-
-  test('lots must fit the sale and not overlap its other catalogues', async () => {
-    const backwards = await admin.post('/api/catalogues', newCatalogue('lots', 'published', { lots: { first: 120, last: 110 } }))
-    assert.deepEqual(errorPaths(backwards), ['body.lots.last'])
-
-    const beyondSale = await admin.post('/api/catalogues', newCatalogue('lots', 'published', { lots: { first: 101, last: 201 } }))
-    assert.deepEqual(errorPaths(beyondSale), ['body.lots.last'])
-
-    const unknownSale = await admin.post('/api/catalogues', newCatalogue('lots', 'missing'))
-    assert.deepEqual(errorPaths(unknownSale), ['body.auctionId'])
-
-    const overlapping = await admin.post('/api/catalogues', newCatalogue('lots', 'published', { lots: { first: 100, last: 150 } }))
-    assert.equal(overlapping.status, 409)
-    assert.equal(errorCode(overlapping), 'lots_overlap')
-
-    await createCatalogue('volume-2', 'published', { lots: { first: 101, last: 200 }, pageCount: 90 })
-    const { auction } = z.object({ auction: auctionBody }).parse((await visitor.get(`/api/auctions/${prefix}-published`)).body)
-    assert.deepEqual(
-      auction.catalogues.map((catalogue) => [catalogue.id, catalogue.lots.first]),
-      [
-        [`${prefix}-published-cat`, 1],
-        [`${prefix}-volume-2`, 101],
-      ],
-    )
-
-    const duplicate = await admin.post('/api/catalogues', newCatalogue('volume-2', 'draft', { lots: { first: 101, last: 110 } }))
-    assert.equal(errorCode(duplicate), 'catalogue_exists')
-  })
-
-  test('a catalogue keeps the lots customers have requested', async () => {
-    const id = `${prefix}-requested-cat`
-    await createAuction('requested', { status: 'published' })
-    await createCatalogue('requested-cat', 'requested')
+describe('reading lots', () => {
+  test("a sale's lots come in catalogue order, numbered lots by their number", async () => {
+    const sale = await createSale('numbers', ahead + 7, 1)
     await pool.query(
-      `INSERT INTO bid_requests (customer_id, auction_id, catalogue_id, lot_number, max_bid_eur)
-       SELECT $1, c.auction_id, c.id, 50, 1000 FROM catalogues c WHERE c.slug = $2`,
-      [customerId, id],
+      `INSERT INTO lots (auction_id, external_id, lot_number, title, source_url)
+       SELECT $1, $2 || '-' || n, n, 'Lot ' || n, 'https://example.com/lot'
+       FROM unnest(ARRAY['10', '9', '9A', '100']) AS n`,
+      [sale.auctionId, `${prefix}-numbers-extra`],
     )
-
-    const narrowed = await admin.patch(`/api/catalogues/${id}`, { lots: { first: 60, last: 100 } })
-    assert.equal(narrowed.status, 409)
-    assert.equal(errorCode(narrowed), 'requested_lots_outside_range')
-
-    const movedSale = await admin.patch(`/api/catalogues/${id}`, { auctionId: `${prefix}-draft`, lots: { first: 101, last: 150 } })
-    assert.equal(errorCode(movedSale), 'catalogue_has_requests')
-
-    const deleted = await admin.delete(`/api/catalogues/${id}`)
-    assert.equal(deleted.status, 409)
-    assert.equal(errorCode(deleted), 'catalogue_has_requests')
-
-    const renamed = await admin.patch(`/api/catalogues/${id}`, { title: 'Renamed catalogue', lots: { first: 1, last: 120 } })
-    assert.equal(renamed.status, 200)
-    const { catalogue } = z.object({ catalogue: catalogueWithAuctionBody }).parse(renamed.body)
-    assert.deepEqual([catalogue.title, catalogue.lots.last, catalogue.pdfUrl], ['Renamed catalogue', 120, 'https://example.com/catalogues/test.pdf'])
+    await pool.query(
+      "INSERT INTO lots (auction_id, external_id, lot_number, source_url) VALUES ($1, $2, NULL, 'https://example.com/lot')",
+      [sale.auctionId, `${prefix}-numbers-unnumbered`],
+    )
+    const response = await visitor.get(`/api/auctions/${sale.auctionId}/lots`)
+    assert.equal(response.status, 200)
+    assert.deepEqual(
+      lotSummaries.parse(response.body).lots.map((lot) => lot.lotNumber),
+      ['1', '9', '9A', '10', '100', null],
+    )
   })
 
-  test('a catalogue nobody has requested from can move sale or be deleted', async () => {
-    const moved = await admin.patch(`/api/catalogues/${prefix}-draft-cat`, { auctionId: `${prefix}-cancelled` })
-    assert.equal(moved.status, 200)
-    assert.equal(z.object({ catalogue: catalogueWithAuctionBody }).parse(moved.body).catalogue.auctionId, `${prefix}-cancelled`)
+  test('lots can be listed by sale and period, each with its sale, paged', async () => {
+    const all = lotPage.parse((await visitor.get(`/api/lots?auction=${saleId('collected')}`)).body)
+    assert.equal(all.total, 2)
+    const [first] = all.lots
+    assert.deepEqual(first?.auction, {
+      id: saleId('collected'),
+      title: 'Fine Arts & Antiques — Day 1',
+      startsAt: first?.auction.startsAt,
+      auctionDate: day(ahead + 3),
+      location: 'Drouot "Richelieu"',
+    })
+    assert.equal(first?.titleUk, 'Bronze & Marble Buddha')
+    assert.equal(first?.imageUrl, null, 'http:// images are not passed on')
+    assert.deepEqual([first?.estimateLow, first?.estimateHigh, first?.currency], ['1500.00', '2000.00', 'EUR'])
+    assert.deepEqual(first?.materials, ['bronze', 'marble'])
 
-    assert.equal((await admin.delete(`/api/catalogues/${prefix}-draft-cat`)).status, 204)
-    assert.equal((await admin.get(`/api/catalogues/${prefix}-draft-cat`)).status, 404)
-    assert.equal((await admin.delete(`/api/catalogues/${prefix}-draft-cat`)).status, 404)
+    const second = lotPage.parse((await visitor.get(`/api/lots?auction=${saleId('collected')}&limit=1&offset=1`)).body)
+    assert.deepEqual(second.lots.map((lot) => lot.lotNumber), ['2'])
+
+    const completed = lotPage.parse((await visitor.get(`/api/lots?auction=${saleId('collected')}&period=completed`)).body)
+    assert.equal(completed.total, 0)
+  })
+
+  test('list parameters are checked', async () => {
+    for (const query of ['auction=abc', 'auction=0', 'period=soon', 'limit=101']) {
+      const response = await visitor.get(`/api/lots?${query}`)
+      assert.equal(response.status, 400, query)
+      assert.equal(errorCode(response), 'validation_failed', query)
+    }
   })
 })

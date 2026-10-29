@@ -1,7 +1,7 @@
 import { use, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 import { Link } from 'react-router'
-import { adminAuctionPath } from '../../app/paths'
+import { auctionPath } from '../../app/paths'
 import { StatusBadge, statusLabel } from '../../components/ui/Badge'
 import { Button, ButtonLink } from '../../components/ui/Button'
 import { EmptyState } from '../../components/ui/EmptyState'
@@ -9,8 +9,9 @@ import { Notice } from '../../components/ui/Notice'
 import { Pagination } from '../../components/ui/Pagination'
 import { countPages, type Page } from '../../services/pagination'
 import { formatEur } from '../../utils/money'
-import { formatDayMonthYear, formatSaleDateShort } from '../auctions/formatAuction'
+import { formatDayMonthYear, formatSaleLine } from '../auctions/formatAuction'
 import { toParisDate } from '../auctions/saleStatus'
+import { lotName, lotTitle } from '../lots/lotText'
 import { ReviewRequestDialog } from './ReviewRequestDialog'
 import { reviewSearch } from './reviewDecisions'
 import { getReviewDetail, type DetailResult } from './reviewService'
@@ -76,7 +77,7 @@ export function ReviewRequestsTable({ requests: requestsPromise, view, page, fil
     // Close the dialog and move focus to the confirmation, so keyboard and screen reader users hear it.
     flushSync(() => {
       setSelection(null)
-      setConfirmation(`Lot ${request.lotNumber} in ${request.auction.title} is now marked “${statusLabel(request.status)}”.`)
+      setConfirmation(`${lotName(request.lot.lotNumber)} in ${request.auction.title} is now marked “${statusLabel(request.status)}”.`)
     })
     confirmationRef.current?.focus()
   }
@@ -143,16 +144,14 @@ export function ReviewRequestsTable({ requests: requestsPromise, view, page, fil
             {rows.map((request) => (
               <tr key={request.id}>
                 <td>
-                  <Link className="table__primary" to={adminAuctionPath(request.auction.id)}>
+                  <Link className="table__primary" to={auctionPath(request.auction.id)}>
                     {request.auction.title}
                   </Link>
-                  <span className="table__secondary">
-                    {`${formatSaleDateShort(request.auction.saleDate)} · ${request.auction.house}`}
-                  </span>
+                  <span className="table__secondary">{formatSaleLine(request.auction)}</span>
                 </td>
                 <td>
-                  <span className="table__primary">{`Lot ${request.lotNumber}`}</span>
-                  <span className="table__secondary">{request.catalogue.title}</span>
+                  <span className="table__primary">{lotName(request.lot.lotNumber)}</span>
+                  <span className="table__secondary">{lotTitle(request.lot)}</span>
                 </td>
                 <td>
                   <Link
@@ -178,7 +177,7 @@ export function ReviewRequestsTable({ requests: requestsPromise, view, page, fil
                   <Button
                     size="sm"
                     variant="secondary"
-                    aria-label={`Review lot ${request.lotNumber} for ${request.customer.firstName} ${request.customer.lastName}`}
+                    aria-label={`Review ${lotName(request.lot.lotNumber).toLowerCase()} for ${request.customer.firstName} ${request.customer.lastName}`}
                     onClick={() => handleReview(request)}
                   >
                     Review

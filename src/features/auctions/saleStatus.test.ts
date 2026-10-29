@@ -1,12 +1,13 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   formatAuctionMeta,
-  formatCatalogueMeta,
   formatDayMonthYear,
-  formatSaleDateFrench,
+  formatLinkHost,
   formatSaleDateLong,
   formatSaleDateShort,
-  formatViewingRange,
+  formatSaleLine,
+  formatSaleMoment,
+  formatSaleTime,
 } from './formatAuction'
 import { getSaleStatus, parseSaleStatus, toParisDate, todayInParis } from './saleStatus'
 
@@ -36,6 +37,7 @@ describe('getSaleStatus', () => {
   it('keeps a sale upcoming until the end of its sale day', () => {
     expect(getSaleStatus('2026-11-14', '2026-11-13')).toBe('upcoming')
     expect(getSaleStatus('2026-11-14', '2026-11-14')).toBe('upcoming')
+    expect(getSaleStatus(null, '2026-11-14')).toBe('completed')
     expect(getSaleStatus('2026-11-14', '2026-11-15')).toBe('completed')
   })
 
@@ -52,24 +54,28 @@ describe('sale date formats', () => {
     expect(formatSaleDateShort('2026-11-14')).toBe('Sat 14 Nov 2026')
     expect(formatDayMonthYear('2026-11-14')).toBe('14 Nov 2026')
     expect(formatSaleDateLong('2026-11-14')).toBe('Saturday, 14 November 2026')
-    expect(formatSaleDateFrench('2026-11-14')).toBe('14 novembre 2026')
   })
 
   it('writes September as "Sep", not "Sept"', () => {
     expect(formatSaleDateShort('2026-09-26')).toBe('Sat 26 Sep 2026')
   })
 
-  it('shortens viewing ranges', () => {
-    expect(formatViewingRange({ start: '2026-11-12', end: '2026-11-13' })).toBe('12–13 Nov')
-    expect(formatViewingRange({ start: '2026-09-30', end: '2026-10-01' })).toBe('30 Sep – 1 Oct')
-    expect(formatViewingRange({ start: '2026-11-12', end: '2026-11-12' })).toBe('12 Nov')
+  it('shows sale times in Paris time, in winter and summer', () => {
+    expect(formatSaleTime('2026-10-28T18:00:00.000Z')).toBe('19:00')
+    expect(formatSaleTime('2026-07-14T12:30:00.000Z')).toBe('14:30')
   })
 
-  it('leaves out lot counts, viewing days and page counts that are not known yet', () => {
-    const viewing = { start: '2026-11-12', end: '2026-11-13' }
-    expect(formatAuctionMeta({ lotCount: 212, saleTime: '14:00', viewing })).toBe('212 lots · Sale at 14:00 · Viewing 12–13 Nov')
-    expect(formatAuctionMeta({ lotCount: null, saleTime: '14:00', viewing: null })).toBe('Sale at 14:00')
-    expect(formatCatalogueMeta({ lots: { first: 1, last: 212 }, pageCount: 1168 })).toBe('Lots 1–212 · 1,168 pages')
-    expect(formatCatalogueMeta({ lots: { first: 1, last: 212 }, pageCount: null })).toBe('Lots 1–212')
+  it('leaves out what the auction house has not published', () => {
+    expect(formatAuctionMeta({ lotCount: 212, startsAt: '2026-11-14T13:00:00Z' })).toBe('212 lots · Sale at 14:00')
+    expect(formatAuctionMeta({ lotCount: 0, startsAt: null })).toBe('Lots not yet published')
+    expect(formatSaleMoment({ auctionDate: '2026-11-14', startsAt: '2026-11-14T13:00:00Z' })).toBe('Saturday, 14 November 2026 at 14:00')
+    expect(formatSaleMoment({ auctionDate: '2026-11-14', startsAt: null })).toBe('Saturday, 14 November 2026')
+    expect(formatSaleMoment({ auctionDate: null, startsAt: null })).toBe('Date to be announced')
+    expect(formatSaleLine({ auctionDate: '2026-11-14', location: 'Paris 9e' })).toBe('Sat 14 Nov 2026 · Paris 9e')
+    expect(formatSaleLine({ auctionDate: '2026-11-14', location: null })).toBe('Sat 14 Nov 2026')
+  })
+
+  it('names the website a link leads to', () => {
+    expect(formatLinkHost('https://www.drouot.com/en/l/35306475')).toBe('drouot.com')
   })
 })

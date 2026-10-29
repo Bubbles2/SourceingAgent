@@ -5,11 +5,11 @@ import { AuctionDetails } from '../features/auctions/AuctionDetails'
 import { AuctionDetailsSkeleton } from '../features/auctions/AuctionDetailsSkeleton'
 
 export function AuctionDetailsPage(): React.JSX.Element {
-  const { auctionId, auction } = useLoaderData<typeof auctionDetailsLoader>()
+  const { auctionId, auction, lots, page } = useLoaderData<typeof auctionDetailsLoader>()
 
   return (
     <Suspense key={auctionId} fallback={<AuctionDetailsSkeleton />}>
-      <AuctionDetails auction={auction} />
+      <AuctionDetails auction={auction} lots={lots} page={page} />
     </Suspense>
   )
 }

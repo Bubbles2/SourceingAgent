@@ -6,6 +6,7 @@ import { randomUUID } from 'node:crypto'
 import { after, before, describe, test } from 'node:test'
 import { z } from 'zod'
 import { createApp } from '../src/app.ts'
+import { deleteTestData, insertTestSale, type TestSale } from '../src/cli/testSales.ts'
 import { closePool, pool, withTransaction } from '../src/db/pool.ts'
 import { BrowserClient, type ApiResponse } from './browserClient.ts'
 import { startTestServer, type TestServer } from './httpServer.ts'
@@ -16,9 +17,8 @@ const prefix = `admintest-${run}`
 const summaryBody = z.object({
   summary: z.strictObject({
     upcomingAuctions: z.number(),
-    draftAuctions: z.number(),
     completedAuctions: z.number(),
-    publishedCatalogues: z.number(),
+    upcomingLots: z.number(),
     pendingRequests: z.number(),
     acceptedRequests: z.number(),
     placedBids: z.number(),
@@ -35,6 +35,7 @@ let server: TestServer
 let admin: BrowserClient
 let customer: BrowserClient
 let visitor: BrowserClient
+const sales = new Map<string, TestSale>()
 
 async function register(label: string, role: 'customer' | 'administrator', names = { firstName: 'Test', lastName: label }): Promise<BrowserClient> {
   const client = new BrowserClient(server.baseUrl)
@@ -49,24 +50,25 @@ async function register(label: string, role: 'customer' | 'administrator', names
   return client
 }
 
-async function createSale(id: string, status: 'draft' | 'published', startsIn: string): Promise<void> {
-  const { rows } = await pool.query<{ id: string }>(
-    `INSERT INTO auctions (slug, title, category, auction_house, city, starts_at, description, status)
-     VALUES ($1, 'Admin test sale', 'Fine art', 'Maison Test', 'Paris', now() + $2::interval, 'A test sale.', $3) RETURNING id`,
-    [`${prefix}-${id}`, startsIn, status],
-  )
-  await pool.query(
-    `INSERT INTO catalogues (slug, auction_id, title, description, first_lot, last_lot, pdf_url)
-     VALUES ($1, $2, 'Admin test catalogue', '', 1, 100, 'https://example.com/test.pdf')`,
-    [`${prefix}-${id}-cat`, rows[0]?.id],
-  )
+async function createSale(label: string, daysAhead: number, lotCount = 20): Promise<TestSale> {
+  const sale = await insertTestSale(`${prefix}-${label}`, { daysAhead, lotCount }, pool)
+  sales.set(label, sale)
+  return sale
 }
 
-async function submit(client: BrowserClient, sale: string, lotNumber: number): Promise<string> {
+/** A sale's database id, by its label */
+function saleId(label: string): string {
+  const sale = sales.get(label)
+  assert.ok(sale, `no sale ${label}`)
+  return sale.auctionId
+}
+
+async function submit(client: BrowserClient, label: string, lotNumber: number): Promise<string> {
+  const lot = sales.get(label)?.lots.find((candidate) => candidate.lotNumber === String(lotNumber))
+  assert.ok(lot, `no lot ${lotNumber} in ${label}`)
   const response = await client.post('/api/bid-requests', {
-    auctionId: `${prefix}-${sale}`,
-    catalogueId: `${prefix}-${sale}-cat`,
-    lotNumber,
+    auctionId: saleId(label),
+    lotId: lot.id,
     maxBidEur: 500,
     instructions: '',
     acknowledgedCharges: true,
@@ -90,26 +92,13 @@ before(async () => {
   visitor = new BrowserClient(server.baseUrl)
   admin = await register('admin', 'administrator')
   customer = await register('customer', 'customer', { firstName: 'Élodie', lastName: 'Marchand' })
-  await createSale('one', 'published', '20 days')
-  await createSale('two', 'published', '25 days')
+  await createSale('one', 20)
+  await createSale('two', 25)
 })
 
 after(async () => {
   await server.close()
-  await withTransaction(async (client) => {
-    await client.query('ALTER TABLE request_status_history DISABLE TRIGGER request_status_history_append_only')
-    await client.query(
-      `DELETE FROM request_status_history WHERE bid_request_id IN (
-         SELECT br.id FROM bid_requests br JOIN auctions a ON a.id = br.auction_id WHERE a.slug LIKE $1)`,
-      [`${prefix}-%`],
-    )
-    await client.query('ALTER TABLE request_status_history ENABLE TRIGGER request_status_history_append_only')
-    await client.query('DELETE FROM bid_requests WHERE auction_id IN (SELECT id FROM auctions WHERE slug LIKE $1)', [`${prefix}-%`])
-    await client.query('DELETE FROM catalogues WHERE slug LIKE $1', [`${prefix}-%`])
-    await client.query('DELETE FROM auctions WHERE slug LIKE $1', [`${prefix}-%`])
-    await client.query('DELETE FROM email_outbox WHERE to_address LIKE $1', [`${prefix}-%`])
-    await client.query('DELETE FROM users WHERE email LIKE $1', [`${prefix}-%`])
-  })
+  await withTransaction((client) => deleteTestData(prefix, client))
   await closePool()
 })
 
@@ -121,14 +110,6 @@ describe('protected operations', () => {
     { method: 'GET', path: '/api/admin/bid-requests?status=all' },
     { method: 'GET', path: `/api/admin/bid-requests/${someId}` },
     { method: 'POST', path: `/api/admin/bid-requests/${someId}/status-changes`, body: { from: 'pending', to: 'accepted' } },
-    { method: 'GET', path: '/api/auctions?status=draft' },
-    { method: 'GET', path: '/api/catalogues?status=all' },
-    { method: 'POST', path: '/api/auctions', body: { id: `${prefix}-nope` } },
-    { method: 'PATCH', path: `/api/auctions/${prefix}-one`, body: { status: 'cancelled' } },
-    { method: 'DELETE', path: `/api/auctions/${prefix}-one` },
-    { method: 'POST', path: '/api/catalogues', body: { id: `${prefix}-nope` } },
-    { method: 'PATCH', path: `/api/catalogues/${prefix}-one-cat`, body: { pdfUrl: 'https://example.com/other.pdf' } },
-    { method: 'DELETE', path: `/api/catalogues/${prefix}-one-cat` },
   ]
 
   function send(client: BrowserClient, { method, path, body }: (typeof operations)[number]): Promise<ApiResponse> {
@@ -152,20 +133,32 @@ describe('protected operations', () => {
       const response = await send(customer, operation)
       assert.equal(response.status, 403, `${operation.method} ${operation.path}: ${JSON.stringify(response.body)}`)
     }
-    // Nothing changed
-    const { rows } = await pool.query<{ status: string }>('SELECT status FROM auctions WHERE slug = $1', [`${prefix}-one`])
-    assert.equal(rows[0]?.status, 'published')
-    const catalogue = await pool.query('SELECT 1 FROM catalogues WHERE slug = $1', [`${prefix}-one-cat`])
-    assert.equal(catalogue.rowCount, 1)
+  })
+})
+
+describe('sales and lots', () => {
+  test('come from the auction monitor, so nobody can create, change or delete them through the API', async () => {
+    const id = saleId('one')
+    for (const [method, path] of [
+      ['POST', '/api/auctions'],
+      ['PATCH', `/api/auctions/${id}`],
+      ['DELETE', `/api/auctions/${id}`],
+      ['POST', '/api/lots'],
+      ['POST', '/api/catalogues'],
+    ] as const) {
+      const response = method === 'POST' ? await admin.post(path, {}) : method === 'PATCH' ? await admin.patch(path, {}) : await admin.delete(path)
+      assert.equal(response.status, 404, `${method} ${path}`)
+    }
+    const { rows } = await pool.query<{ lots: number }>('SELECT count(*)::int AS lots FROM lots WHERE auction_id = $1', [id])
+    assert.equal(rows[0]?.lots, 20, 'nothing changed')
   })
 })
 
 describe('dashboard summary', () => {
-  test('counts upcoming, draft and completed sales, upcoming published catalogues and open requests', async () => {
+  test('counts upcoming and completed sales, the lots of upcoming sales and open requests', async () => {
     const before = await summary()
-    await createSale('draft', 'draft', '30 days')
-    await createSale('upcoming', 'published', '30 days')
-    await createSale('past', 'published', '-30 days')
+    await createSale('upcoming', 30, 4)
+    await createSale('past', -30, 2)
     const pending = await submit(customer, 'upcoming', 1)
     const accepted = await submit(customer, 'upcoming', 2)
     const change = await admin.post(`/api/admin/bid-requests/${accepted}/status-changes`, { from: 'pending', to: 'accepted' })
@@ -175,15 +168,14 @@ describe('dashboard summary', () => {
     assert.deepEqual(
       {
         upcomingAuctions: after.upcomingAuctions - before.upcomingAuctions,
-        draftAuctions: after.draftAuctions - before.draftAuctions,
         completedAuctions: after.completedAuctions - before.completedAuctions,
-        publishedCatalogues: after.publishedCatalogues - before.publishedCatalogues,
+        upcomingLots: after.upcomingLots - before.upcomingLots,
         pendingRequests: after.pendingRequests - before.pendingRequests,
         acceptedRequests: after.acceptedRequests - before.acceptedRequests,
         placedBids: after.placedBids - before.placedBids,
       },
-      // Only the upcoming published sale's catalogue counts, as the card's list (upcoming catalogues) shows.
-      { upcomingAuctions: 1, draftAuctions: 1, completedAuctions: 1, publishedCatalogues: 1, pendingRequests: 1, acceptedRequests: 1, placedBids: 0 },
+      // Only the upcoming sale's lots count, as the card's list (upcoming lots) shows.
+      { upcomingAuctions: 1, completedAuctions: 1, upcomingLots: 4, pendingRequests: 1, acceptedRequests: 1, placedBids: 0 },
     )
     assert.ok(pending)
   })
@@ -207,7 +199,7 @@ describe('bid request filters', () => {
   }
 
   test('by sale', async () => {
-    const found = idsIn(await listRequests(`status=all&auction=${prefix}-one`))
+    const found = idsIn(await listRequests(`status=all&auction=${saleId('one')}`))
     assert.deepEqual(new Set(found), new Set([ids.oneByElodie, ids.oneByOther]))
   })
 
@@ -221,16 +213,16 @@ describe('bid request filters', () => {
   })
 
   test('search text is matched literally, wildcards included', async () => {
-    assert.deepEqual(idsIn(await listRequests(`status=all&auction=${prefix}-one&customer=${encodeURIComponent('100%')}`)), [ids.oneByOther])
-    assert.deepEqual(idsIn(await listRequests(`status=all&auction=${prefix}-one&customer=${encodeURIComponent('_')}`)), [])
+    assert.deepEqual(idsIn(await listRequests(`status=all&auction=${saleId('one')}&customer=${encodeURIComponent('100%')}`)), [ids.oneByOther])
+    assert.deepEqual(idsIn(await listRequests(`status=all&auction=${saleId('one')}&customer=${encodeURIComponent('_')}`)), [])
   })
 
   test('by status, including all of them, combined with the other filters', async () => {
     const all = await listRequests(`status=all&customer=${encodeURIComponent(`${prefix}-customer`)}`)
     assert.ok(idsIn(all).includes(ids.twoByElodie), 'rejected requests are included')
-    assert.deepEqual(idsIn(await listRequests(`status=rejected&customer=${encodeURIComponent('Élodie')}&auction=${prefix}-two`)), [ids.twoByElodie])
-    assert.deepEqual(idsIn(await listRequests(`status=pending&auction=${prefix}-two`)), [])
-    assert.equal(requestList.parse((await listRequests(`status=all&auction=${prefix}-one`)).body).total, 2)
+    assert.deepEqual(idsIn(await listRequests(`status=rejected&customer=${encodeURIComponent('Élodie')}&auction=${saleId('two')}`)), [ids.twoByElodie])
+    assert.deepEqual(idsIn(await listRequests(`status=pending&auction=${saleId('two')}`)), [])
+    assert.equal(requestList.parse((await listRequests(`status=all&auction=${saleId('one')}`)).body).total, 2)
   })
 
   test('filter values are checked', async () => {

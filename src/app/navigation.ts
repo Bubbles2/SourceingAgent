@@ -8,7 +8,7 @@ export type NavItem = {
 /** Public browsing links shown in the header and the footer's Explore column. */
 export const mainNavItems: readonly NavItem[] = [
   { label: 'Auctions', to: paths.auctions },
-  { label: 'Catalogues', to: paths.catalogues },
+  { label: 'Lots', to: paths.lots },
   { label: 'Calendar', to: paths.calendar },
   { label: 'Requested lots', to: paths.requestedLots },
 ]

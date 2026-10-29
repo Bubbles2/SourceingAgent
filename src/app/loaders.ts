@@ -1,12 +1,11 @@
 // Route loaders start data requests as navigation begins and hand the promises to the page,
 // which renders skeletons inside <Suspense> until they resolve.
 import { data, redirect, type LoaderFunctionArgs } from 'react-router'
-import { getAdminAuction, listAdminAuctions, listAllAuctions, parseAdminAuctionView } from '../features/admin/adminAuctionService'
-import { getAdminCatalogue, listAdminCatalogues } from '../features/admin/adminCatalogueService'
 import { getAdminSummary } from '../features/admin/adminSummaryService'
-import { isIsoDate } from '../features/admin/auctionFormRules'
 import {
   getAuction,
+  isAuctionId,
+  listAllAuctions,
   listAuctions,
   listAuctionsBetween,
   listFeaturedAuctions,
@@ -17,17 +16,22 @@ import { loadSession, sessionCheckFailed } from '../features/auth/sessionStore'
 import type { CustomerAccount } from '../features/auth/types'
 import { listMyRequests, listRequestedLots } from '../features/bid-requests/bidRequestService'
 import { getMonthGridRange, parseMonthKey } from '../features/calendar/calendarDates'
-import { listCatalogues } from '../features/catalogues/catalogueService'
+import { listLots, loadAuctionLots } from '../features/lots/lotService'
 import { parseReviewView } from '../features/request-review/reviewDecisions'
 import { listReviewRequests } from '../features/request-review/reviewService'
 import { ApiError } from '../services/apiClient'
 import { parsePageNumber } from '../services/pagination'
 import { paths, signInPath } from './paths'
 
-/** ?status=upcoming|completed and ?page=, as the auction and catalogue lists use them */
+/** ?status=upcoming|completed and ?page=, as the auction and lot lists use them */
 function readListParams(request: Request) {
   const searchParams = new URL(request.url).searchParams
   return { status: parseSaleStatus(searchParams.get('status')), page: parsePageNumber(searchParams.get('page')) }
+}
+
+/** A sale id from the address, or null when it can't be one */
+function readAuctionId(value: string | null | undefined): string | null {
+  return value && isAuctionId(value) ? value : null
 }
 
 export function landingLoader() {
@@ -39,9 +43,31 @@ export function auctionsLoader({ request }: LoaderFunctionArgs) {
   return { status, page, auctions: listAuctions({ status, page }) }
 }
 
-export function auctionDetailsLoader({ params }: LoaderFunctionArgs) {
+/** The sale and a page of its lots (?page=), fetched together */
+export function auctionDetailsLoader({ request, params }: LoaderFunctionArgs) {
   const auctionId = params.auctionId ?? ''
-  return { auctionId, auction: getAuction(auctionId) }
+  const page = parsePageNumber(new URL(request.url).searchParams.get('page'))
+  const validId = readAuctionId(auctionId)
+  return {
+    auctionId,
+    page,
+    auction: getAuction(auctionId),
+    // An id that can't be a sale shows "not found", so there are no lots to fetch.
+    lots: validId ? listLots({ auction: validId, page }) : Promise.resolve({ items: [], total: 0, limit: 1, offset: 0 }),
+  }
+}
+
+/** Lots of upcoming or completed sales, or of one sale (?auction=) */
+export function lotsLoader({ request }: LoaderFunctionArgs) {
+  const { status, page } = readListParams(request)
+  const auctionId = readAuctionId(new URL(request.url).searchParams.get('auction'))
+  return {
+    status,
+    page,
+    auctionId,
+    auction: auctionId ? getAuction(auctionId) : null,
+    lots: auctionId ? listLots({ auction: auctionId, page }) : listLots({ status, page }),
+  }
 }
 
 export function calendarLoader({ request }: LoaderFunctionArgs) {
@@ -67,14 +93,19 @@ async function requireSignIn(request: Request): Promise<CustomerAccount> {
   return account
 }
 
-/** Only upcoming sales can take requests; ?auction= and ?catalogue= pre-select the form. */
+/**
+ * Only upcoming sales can take requests; ?auction= and ?lot= pre-select the form. A pre-selected
+ * sale's lots are requested alongside the sales, rather than after them.
+ */
 export async function requestBidLoader({ request }: LoaderFunctionArgs) {
   await requireSignIn(request)
   const searchParams = new URL(request.url).searchParams
+  const auctionId = readAuctionId(searchParams.get('auction'))
   return {
-    auctionId: searchParams.get('auction'),
-    catalogueId: searchParams.get('catalogue'),
+    auctionId,
+    lotId: searchParams.get('lot'),
     auctions: listOpenAuctions(),
+    lots: auctionId ? loadAuctionLots(auctionId) : null,
   }
 }
 
@@ -103,53 +134,6 @@ export async function adminDashboardLoader({ request }: LoaderFunctionArgs) {
   return { summary: getAdminSummary() }
 }
 
-export async function adminAuctionsLoader({ request }: LoaderFunctionArgs) {
-  await requireAdministrator(request)
-  const searchParams = new URL(request.url).searchParams
-  const view = parseAdminAuctionView(searchParams.get('view'))
-  const page = parsePageNumber(searchParams.get('page'))
-  return { view, page, auctions: listAdminAuctions({ view, page }) }
-}
-
-export async function adminAuctionLoader({ request, params }: LoaderFunctionArgs) {
-  await requireAdministrator(request)
-  const auctionId = params.auctionId ?? ''
-  return { auctionId, auction: getAdminAuction(auctionId) }
-}
-
-/** ?date= comes from the calendar and fills in the sale date */
-export async function newAuctionLoader({ request }: LoaderFunctionArgs) {
-  await requireAdministrator(request)
-  const date = new URL(request.url).searchParams.get('date') ?? ''
-  return { saleDate: isIsoDate(date) ? date : '' }
-}
-
-export async function editAuctionLoader({ request, params }: LoaderFunctionArgs) {
-  await requireAdministrator(request)
-  const auctionId = params.auctionId ?? ''
-  return { auctionId, auction: getAdminAuction(auctionId) }
-}
-
-export async function adminCataloguesLoader({ request }: LoaderFunctionArgs) {
-  await requireAdministrator(request)
-  const searchParams = new URL(request.url).searchParams
-  const period = parseSaleStatus(searchParams.get('period'))
-  const page = parsePageNumber(searchParams.get('page'))
-  return { period, page, catalogues: listAdminCatalogues({ period, page }) }
-}
-
-/** ?auction= chooses the sale when adding a catalogue from it */
-export async function newCatalogueLoader({ request }: LoaderFunctionArgs) {
-  await requireAdministrator(request)
-  return { auctionId: new URL(request.url).searchParams.get('auction') ?? '', auctions: listAllAuctions() }
-}
-
-export async function editCatalogueLoader({ request, params }: LoaderFunctionArgs) {
-  await requireAdministrator(request)
-  const catalogueId = params.catalogueId ?? ''
-  return { catalogueId, catalogue: getAdminCatalogue(catalogueId), auctions: listAllAuctions() }
-}
-
 /** Tabs by status, and optional filters for one sale (?auction=) and a customer search (?customer=) */
 export async function reviewRequestsLoader({ request }: LoaderFunctionArgs) {
   await requireAdministrator(request)
@@ -157,15 +141,15 @@ export async function reviewRequestsLoader({ request }: LoaderFunctionArgs) {
   const filters = {
     view: parseReviewView(searchParams.get('view')),
     page: parsePageNumber(searchParams.get('page')),
-    auction: searchParams.get('auction')?.trim() ?? '',
+    auction: readAuctionId(searchParams.get('auction')?.trim()) ?? '',
     customer: searchParams.get('customer')?.trim() ?? '',
   }
   return { ...filters, requests: listReviewRequests(filters), auctions: listAllAuctions() }
 }
 
-export function cataloguesLoader({ request }: LoaderFunctionArgs) {
-  const { status, page } = readListParams(request)
-  return { status, page, catalogues: listCatalogues({ status, page }) }
+/** The catalogues page became the lots page; old links still arrive. */
+export function cataloguesRedirectLoader() {
+  return redirect(paths.lots)
 }
 
 /** Finds out who is signed in before the first render, so the header never flickers. */

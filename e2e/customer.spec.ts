@@ -2,7 +2,7 @@
 // sign out and in, and reset a forgotten password. The tests share one account, so they run serially.
 import type { Page } from '@playwright/test'
 import { expect, test } from './support/fixtures'
-import { latestEmailLink, testEmail, testPassword } from './support/testData'
+import { addTestSale, latestEmailLink, testEmail, testId, testPassword, type TestSale } from './support/testData'
 
 test.describe.configure({ mode: 'serial' })
 
@@ -10,10 +10,30 @@ const email = testEmail('customer')
 const newPassword = 'a brand new passphrase'
 // Chrome computes "Inès , your account": the hidden ", your account" is positioned on its own
 const accountLinkName = /^Inès\s*, your account$/
-const requestBidUrl ='/request-bid?auction=vauclair-tableaux-anciens-2026-11&catalogue=vauclair-tableaux-anciens'
+const saleId = testId('customer-sale')
+const saleTitle = `Test sale ${saleId}`
+let sale: TestSale
 
-async function requestBid(page: Page, lot: string, maxBid: string): Promise<void> {
-  await page.getByLabel('Lot number').fill(lot)
+test.beforeAll(() => {
+  sale = addTestSale(saleId, { daysAhead: 15, lotCount: 5 })
+})
+
+/** The lot's id, by its number in the sale */
+function lotId(lotNumber: string): string {
+  const lot = sale.lots.find((candidate) => candidate.lotNumber === lotNumber)
+  if (!lot) {
+    throw new Error(`No lot ${lotNumber} in the test sale`)
+  }
+  return lot.id
+}
+
+/** The form, opened from a lot: its sale and the lot are already chosen */
+function requestBidUrl(lotNumber: string): string {
+  return `/request-bid?auction=${sale.auctionId}&lot=${lotId(lotNumber)}`
+}
+
+async function requestBid(page: Page, lotNumber: string, maxBid: string): Promise<void> {
+  await page.getByRole('combobox', { name: 'Lot', exact: true }).selectOption(lotId(lotNumber))
   await page.getByLabel('Maximum bid (EUR)').fill(maxBid)
   await page.getByRole('checkbox', { name: /I understand that my maximum bid is the hammer price only/ }).check()
   await page.getByRole('button', { name: 'Submit request' }).click()
@@ -49,9 +69,9 @@ test('a new customer registers, confirms their email and requests a bid', async 
   })
 
   await test.step('bids need a confirmed email address', async () => {
-    await page.goto(requestBidUrl)
+    await page.goto(requestBidUrl('2'))
     await expect(page.getByText('Confirm your email address to request bids.')).toBeVisible()
-    await expect(page.getByLabel('Lot number')).toHaveCount(0)
+    await expect(page.getByRole('combobox', { name: 'Lot', exact: true })).toHaveCount(0)
   })
 
   await test.step('the emailed link confirms the address and leaves no token in the address bar', async () => {
@@ -60,16 +80,20 @@ test('a new customer registers, confirms their email and requests a bid', async 
     await expect(page).toHaveURL('/verify-email')
   })
 
-  await test.step("a lot another customer's accepted request reserves is refused", async () => {
-    await page.goto(requestBidUrl)
-    await expect(page.getByRole('combobox', { name: 'Auction', exact: true })).toHaveValue('vauclair-tableaux-anciens-2026-11')
-    await expect(page.getByRole('combobox', { name: 'Catalogue', exact: true })).toHaveValue('vauclair-tableaux-anciens')
-    await requestBid(page, '45', '4000')
-    await expect(page.getByText(/^Lot 45 already has an accepted request from another customer/).first()).toBeVisible()
+  await test.step('opened from a lot, the form has its sale and the lot chosen, and the lot is needed', async () => {
+    await page.goto(requestBidUrl('2'))
+    await expect(page.getByRole('combobox', { name: 'Auction', exact: true })).toHaveValue(sale.auctionId)
+    const lot = page.getByRole('combobox', { name: 'Lot', exact: true })
+    await expect(lot).toHaveValue(lotId('2'))
+    await expect(lot.getByRole('option', { name: '2 · Test object 2' })).toHaveCount(1)
+
+    await lot.selectOption('')
+    await page.getByRole('button', { name: 'Submit request' }).click()
+    await expect(page.getByText('Choose the lot you want the agent to bid on.').first()).toBeVisible()
   })
 
-  await test.step('a free lot is accepted for review', async () => {
-    await requestBid(page, '50', '4000')
+  await test.step('the request is accepted for review', async () => {
+    await requestBid(page, '2', '4000')
     await expect(page.getByRole('heading', { name: 'Request submitted' })).toBeVisible()
     await expect(page.getByText('€4,000')).toBeVisible()
     await expect(page.getByText('Pending review')).toBeVisible()
@@ -78,16 +102,17 @@ test('a new customer registers, confirms their email and requests a bid', async 
   await test.step('My requests lists the request, and only theirs', async () => {
     await page.getByRole('link', { name: 'View my requests' }).click()
     await expect(page.getByRole('heading', { name: '1 request, newest first' })).toBeVisible()
-    const row = page.getByRole('row').filter({ hasText: 'Tableaux anciens & dessins' })
+    const row = page.getByRole('row').filter({ hasText: saleTitle })
     await expect(row).toHaveCount(1)
+    await expect(row).toContainText('Test object 2')
     await expect(row).toContainText('€4,000')
     await expect(row).toContainText('Pending review')
   })
 
   await test.step('the same lot cannot be requested twice', async () => {
-    await page.goto(requestBidUrl)
-    await requestBid(page, '50', '5000')
-    await expect(page.getByText(/^You already have a request for lot 50 in this catalogue/).first()).toBeVisible()
+    await page.goto(requestBidUrl('2'))
+    await requestBid(page, '2', '5000')
+    await expect(page.getByText(/^You already have a request for lot 2 in this sale/).first()).toBeVisible()
   })
 })
 

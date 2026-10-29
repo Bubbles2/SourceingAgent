@@ -3,7 +3,8 @@ import { Link } from 'react-router'
 import { auctionPath, paths } from '../../app/paths'
 import { ButtonLink } from '../../components/ui/Button'
 import { EmptyState } from '../../components/ui/EmptyState'
-import { formatSaleDateShort } from '../auctions/formatAuction'
+import { formatSaleLine } from '../auctions/formatAuction'
+import { lotName, lotTitle } from '../lots/lotText'
 import { AvailabilityBadge } from './AvailabilityBadge'
 import type { RequestedLot } from './types'
 import '../../components/ui/Table.css'
@@ -32,24 +33,23 @@ export function RequestedLotsTable({ lots: lotsPromise }: RequestedLotsTableProp
           <thead>
             <tr>
               <th scope="col">Auction</th>
-              <th scope="col">Catalogue</th>
-              <th scope="col" className="num">
-                Lot
-              </th>
+              <th scope="col">Lot</th>
               <th scope="col">Availability</th>
             </tr>
           </thead>
           <tbody>
             {lots.map((lot) => (
-              <tr key={`${lot.catalogue.id}-${lot.lotNumber}`}>
+              <tr key={lot.lot.id}>
                 <td>
                   <Link className="table__primary" to={auctionPath(lot.auction.id)}>
                     {lot.auction.title}
                   </Link>
-                  <span className="table__secondary">{`${formatSaleDateShort(lot.auction.saleDate)} · ${lot.auction.house}`}</span>
+                  <span className="table__secondary">{formatSaleLine(lot.auction)}</span>
                 </td>
-                <td>{lot.catalogue.title}</td>
-                <td className="num">{lot.lotNumber}</td>
+                <td>
+                  <span className="table__primary">{lotName(lot.lot.lotNumber)}</span>
+                  <span className="table__secondary">{lotTitle(lot.lot)}</span>
+                </td>
                 <td>
                   <AvailabilityBadge availability={lot.availability} />
                 </td>

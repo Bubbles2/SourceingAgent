@@ -1,14 +1,14 @@
 // Client-side validation for the bid request form: instant, helpful feedback only.
 // The API checks everything again on submission.
 import { parseWholeEuros } from '../../utils/money'
-import type { AuctionWithCatalogues } from '../auctions/types'
-import { bidLimits, checkLotNumber, checkMaxBid } from './bidRequestRules'
+import type { Auction } from '../auctions/types'
+import type { LotSummary } from '../lots/types'
+import { bidLimits, checkMaxBid } from './bidRequestRules'
 import type { BidRequestInput } from './types'
 
 export type BidRequestFormValues = {
   auctionId: string
-  catalogueId: string
-  lotNumber: string
+  lotId: string
   maxBid: string
   instructions: string
   acknowledgedCharges: boolean
@@ -20,20 +20,18 @@ export type BidRequestField = keyof BidRequestFormValues
 export type BidRequestErrors = Partial<Record<BidRequestField | 'form', string>>
 
 /** Form order, used to list errors in the summary */
-export const bidRequestFields: readonly BidRequestField[] = [
-  'auctionId',
-  'catalogueId',
-  'lotNumber',
-  'maxBid',
-  'instructions',
-  'acknowledgedCharges',
-]
+export const bidRequestFields: readonly BidRequestField[] = ['auctionId', 'lotId', 'maxBid', 'instructions', 'acknowledgedCharges']
 
 type ValidationResult = { errors: BidRequestErrors; input: BidRequestInput | null }
 
+/**
+ * `lots` are the chosen sale's lots, or null while they load (or couldn't be loaded); a lot is
+ * only checked against them once they are known.
+ */
 export function validateBidRequest(
   values: BidRequestFormValues,
-  auctions: readonly AuctionWithCatalogues[],
+  auctions: readonly Auction[],
+  lots: readonly LotSummary[] | null,
 ): ValidationResult {
   const errors: BidRequestErrors = {}
 
@@ -44,23 +42,12 @@ export function validateBidRequest(
     errors.auctionId = 'This sale is no longer taking bid requests. Choose another auction.'
   }
 
-  const catalogue = auction?.catalogues.find((candidate) => candidate.id === values.catalogueId)
-  if (auction && auction.catalogues.length === 0) {
-    errors.catalogueId = "This sale's catalogue isn't published yet, so requests open once it is."
-  } else if (!values.catalogueId) {
-    errors.catalogueId = 'Choose the catalogue that lists your lot.'
-  } else if (auction && !catalogue) {
-    errors.catalogueId = 'Choose a catalogue from the selected sale.'
-  }
-
-  const lotText = values.lotNumber.trim()
-  const lotNumber = /^\d+$/.test(lotText) ? Number(lotText) : null
-  if (!lotText) {
-    errors.lotNumber = 'Enter the lot number from the catalogue.'
-  } else if (lotNumber === null) {
-    errors.lotNumber = 'Enter the lot number using digits only, for example 45.'
-  } else if (catalogue) {
-    addError(errors, 'lotNumber', checkLotNumber(catalogue, lotNumber))
+  if (auction && lots?.length === 0) {
+    errors.lotId = "This sale's lots aren't published yet, so requests open once they are."
+  } else if (!values.lotId) {
+    errors.lotId = 'Choose the lot you want the agent to bid on.'
+  } else if (auction && lots && !lots.some((lot) => lot.id === values.lotId)) {
+    errors.lotId = 'Choose a lot from the selected sale.'
   }
 
   const maxBidEur = parseWholeEuros(values.maxBid)
@@ -81,7 +68,7 @@ export function validateBidRequest(
   }
 
   const hasErrors = bidRequestFields.some((field) => errors[field])
-  if (hasErrors || !auction || !catalogue || lotNumber === null || maxBidEur === null) {
+  if (hasErrors || !auction || maxBidEur === null) {
     return { errors, input: null }
   }
 
@@ -89,8 +76,7 @@ export function validateBidRequest(
     errors: {},
     input: {
       auctionId: auction.id,
-      catalogueId: catalogue.id,
-      lotNumber,
+      lotId: values.lotId,
       maxBidEur,
       instructions: values.instructions.trim(),
       acknowledgedCharges: true,

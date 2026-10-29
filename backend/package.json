@@ -16,11 +16,11 @@
     "migrate:up": "node --env-file-if-exists=.env src/db/migrate.ts up",
     "migrate:down": "node --env-file-if-exists=.env src/db/migrate.ts down",
     "migrate:create": "node-pg-migrate create --migrations-dir migrations --migration-file-language sql",
-    "db:seed": "node --env-file-if-exists=.env src/cli/seedSampleData.ts",
     "user:role": "node --env-file-if-exists=.env src/cli/setUserRole.ts",
     "mail:outbox": "node --env-file-if-exists=.env src/cli/showOutbox.ts",
     "test": "node --env-file-if-exists=.env --test --test-concurrency=1 \"test/**/*.test.ts\"",
-    "test:cleanup": "node --env-file-if-exists=.env src/cli/removeTestAccounts.ts"
+    "test:cleanup": "node --env-file-if-exists=.env src/cli/removeTestAccounts.ts",
+    "sale:test": "node --env-file-if-exists=.env src/cli/addTestSale.ts"
   },
   "dependencies": {
     "cors": "^2.8.6",

@@ -1,21 +1,29 @@
 import { auctionPath } from '../../app/paths'
 import { ButtonLink } from '../../components/ui/Button'
-import { CatalogueLink } from '../catalogues/CatalogueLink'
+import { OutboundLink } from '../../components/ui/OutboundLink'
 import { AuctionCard } from './AuctionCard'
-import type { AuctionWithCatalogues } from './types'
+import { formatLinkHost } from './formatAuction'
+import type { Auction } from './types'
 
 type AuctionListingCardProps = {
-  auction: AuctionWithCatalogues
+  auction: Auction
 }
 
 export function AuctionListingCard({ auction }: AuctionListingCardProps): React.JSX.Element {
   return (
     <AuctionCard
       auction={auction}
-      showDescription
       actions={
         <>
-          <CatalogueLink auction={auction} label="View catalogue" />
+          {auction.catalogueUrl ? (
+            <OutboundLink
+              href={auction.catalogueUrl}
+              label={`Catalogue on ${formatLinkHost(auction.catalogueUrl)}`}
+              context={auction.title}
+            />
+          ) : (
+            <span />
+          )}
           <ButtonLink
             className="auction-card__action"
             to={auctionPath(auction.id)}

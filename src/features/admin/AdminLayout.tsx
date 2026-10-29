@@ -9,8 +9,6 @@ import './AdminLayout.css'
 
 const adminLinks = [
   { label: 'Dashboard', to: paths.admin, end: true },
-  { label: 'Auctions', to: paths.adminAuctions, end: false },
-  { label: 'Catalogues', to: paths.adminCatalogues, end: false },
   { label: 'Bid requests', to: paths.reviewRequests, end: false },
 ] as const
 
@@ -26,7 +24,7 @@ export function AdminLayout(): React.JSX.Element {
     return (
       <PageContainer eyebrow="Administration" title="Administration">
         <EmptyState title="You're signed out" actions={<ButtonLink to={paths.signIn}>Sign in</ButtonLink>}>
-          Sign in again to manage sales, catalogues and requests.
+          Sign in again to review bid requests.
         </EmptyState>
       </PageContainer>
     )

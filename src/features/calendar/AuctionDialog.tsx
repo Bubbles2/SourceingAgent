@@ -1,29 +1,27 @@
 import { useId } from 'react'
-import { CalendarDays, Eye, Landmark, MapPin, X } from 'lucide-react'
-import { adminAuctionPath, auctionPath, requestBidPath } from '../../app/paths'
+import { CalendarDays, Gavel, MapPin, X } from 'lucide-react'
+import { auctionPath, requestBidPath } from '../../app/paths'
 import { Button, ButtonLink } from '../../components/ui/Button'
 import { Dialog } from '../../components/ui/Dialog'
+import { OutboundLink } from '../../components/ui/OutboundLink'
 import { AuctionDateStrip } from '../auctions/AuctionDateStrip'
-import { formatSaleDateLong, formatViewingRange } from '../auctions/formatAuction'
+import { formatLinkHost, formatLotCount, formatSaleMoment } from '../auctions/formatAuction'
 import { getSaleStatus } from '../auctions/saleStatus'
-import { useCurrentCustomer } from '../auth/useCurrentCustomer'
-import type { AuctionWithCatalogues } from '../auctions/types'
-import { CatalogueLink } from '../catalogues/CatalogueLink'
+import type { Auction } from '../auctions/types'
 import './AuctionDialog.css'
 
 type AuctionDialogProps = {
-  auction: AuctionWithCatalogues
+  auction: Auction
   onClose: () => void
 }
 
 export function AuctionDialog({ auction, onClose }: AuctionDialogProps): React.JSX.Element {
   const titleId = useId()
-  const isUpcoming = getSaleStatus(auction.saleDate) === 'upcoming'
-  const isAdministrator = useCurrentCustomer()?.role === 'administrator'
+  const isUpcoming = getSaleStatus(auction.auctionDate) === 'upcoming'
 
   return (
     <Dialog labelledBy={titleId} onClose={onClose}>
-      <AuctionDateStrip saleDate={auction.saleDate} category={auction.category} />
+      <AuctionDateStrip saleDate={auction.auctionDate} />
 
       <div className="auction-dialog__body">
         <div className="auction-dialog__heading">
@@ -39,49 +37,43 @@ export function AuctionDialog({ auction, onClose }: AuctionDialogProps): React.J
         </div>
 
         <ul className="auction-dialog__facts">
-          <li>
-            <Landmark size={16} />
-            <span>
-              <span className="visually-hidden">Auction house: </span>
-              {auction.house}
-            </span>
-          </li>
-          <li>
-            <MapPin size={16} />
-            <span>
-              <span className="visually-hidden">Location: </span>
-              {auction.city}
-            </span>
-          </li>
+          {auction.location ? (
+            <li>
+              <MapPin size={16} />
+              <span>
+                <span className="visually-hidden">Location: </span>
+                {auction.location}
+              </span>
+            </li>
+          ) : null}
           <li>
             <CalendarDays size={16} />
             <span>
               <span className="visually-hidden">Date and time: </span>
-              <time dateTime={`${auction.saleDate}T${auction.saleTime}`}>
-                {`${formatSaleDateLong(auction.saleDate)} at ${auction.saleTime}`}
-              </time>
-              {' (Paris time)'}
+              {auction.startsAt ? <time dateTime={auction.startsAt}>{formatSaleMoment(auction)}</time> : formatSaleMoment(auction)}
+              {auction.startsAt ? ' (Paris time)' : null}
             </span>
           </li>
-          {auction.viewing ? (
+          {auction.lotCount > 0 ? (
             <li>
-              <Eye size={16} />
-              <span>{`Viewing ${formatViewingRange(auction.viewing)}`}</span>
+              <Gavel size={16} />
+              <span>{formatLotCount(auction.lotCount)}</span>
             </li>
           ) : null}
         </ul>
-
-        <p className="auction-dialog__description">{auction.description}</p>
       </div>
 
       <div className="auction-dialog__foot">
-        <CatalogueLink auction={auction} label="View catalogue" />
+        {auction.catalogueUrl ? (
+          <OutboundLink
+            href={auction.catalogueUrl}
+            label={`Catalogue on ${formatLinkHost(auction.catalogueUrl)}`}
+            context={auction.title}
+          />
+        ) : (
+          <span />
+        )}
         <div className="auction-dialog__actions">
-          {isAdministrator ? (
-            <ButtonLink to={adminAuctionPath(auction.id)} variant="secondary">
-              Manage
-            </ButtonLink>
-          ) : null}
           <ButtonLink to={auctionPath(auction.id)} variant="secondary">
             View details
           </ButtonLink>

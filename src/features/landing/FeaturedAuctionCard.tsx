@@ -1,11 +1,10 @@
-import { requestBidPath } from '../../app/paths'
+import { auctionLotsPath, requestBidPath } from '../../app/paths'
 import { ButtonLink } from '../../components/ui/Button'
 import { AuctionCard } from '../auctions/AuctionCard'
-import type { AuctionWithCatalogues } from '../auctions/types'
-import { CatalogueLink } from '../catalogues/CatalogueLink'
+import type { Auction } from '../auctions/types'
 
 type FeaturedAuctionCardProps = {
-  auction: AuctionWithCatalogues
+  auction: Auction
 }
 
 export function FeaturedAuctionCard({ auction }: FeaturedAuctionCardProps): React.JSX.Element {
@@ -14,7 +13,9 @@ export function FeaturedAuctionCard({ auction }: FeaturedAuctionCardProps): Reac
       auction={auction}
       actions={
         <>
-          <CatalogueLink auction={auction} label="Catalogue (PDF)" />
+          <ButtonLink variant="link" to={auctionLotsPath(auction.id)} aria-label={`Browse the lots: ${auction.title}`}>
+            Browse the lots
+          </ButtonLink>
           <ButtonLink
             className="auction-card__action"
             to={requestBidPath(auction.id)}

@@ -22,9 +22,12 @@ export function toParisDate(isoDateTime: string): string {
   return parisDateFormatter.format(new Date(isoDateTime))
 }
 
-/** A sale stays upcoming until the end of its sale day in Paris. */
-export function getSaleStatus(saleDate: string, today: string = todayInParis()): SaleStatus {
-  return saleDate >= today ? 'upcoming' : 'completed'
+/**
+ * A sale stays upcoming until the end of its sale day in Paris. A sale without a date counts as
+ * completed, as the API treats it: nobody could say when to bid.
+ */
+export function getSaleStatus(saleDate: string | null, today: string = todayInParis()): SaleStatus {
+  return saleDate !== null && saleDate >= today ? 'upcoming' : 'completed'
 }
 
 /** Reads the `status` search param, defaulting to upcoming sales. */

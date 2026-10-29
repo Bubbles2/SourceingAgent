@@ -1,5 +1,0 @@
-/* Administration tables. Wide ones scroll inside .table-wrap rather than squeeze (DESIGN.md §5). */
-.admin-table { min-width: 760px; }
-.admin-table__date { white-space: nowrap; }
-.admin-table__actions { text-align: right; white-space: nowrap; }
-.admin-table__actions > * + * { margin-left: var(--space-2); }

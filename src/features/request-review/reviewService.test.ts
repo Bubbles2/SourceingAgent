@@ -13,22 +13,19 @@ vi.mock('../auth/sessionStore', () => ({ refreshSession: vi.fn() }))
 
 const apiRequestFromApi = {
   id: '6f1c2b0e-1d2a-4b8e-9a51-3c6f8e2d4a10',
-  lotNumber: 45,
   maxBidEur: '6000.00',
   instructions: 'Only if unrestored.',
   status: 'pending',
   submittedAt: '2026-10-28T09:14:00.000Z',
   updatedAt: '2026-10-28T09:14:00.000Z',
   auction: {
-    id: 'vauclair-tableaux-anciens-2026-11',
+    id: '1',
     title: 'Tableaux anciens & dessins',
-    house: 'Maison Vauclair',
-    city: 'Paris 9e',
-    saleDate: '2026-11-14',
-    saleTime: '14:00',
-    status: 'published',
+    startsAt: '2026-11-14T13:00:00.000Z',
+    auctionDate: '2026-11-14',
+    location: 'Paris 9e',
   },
-  catalogue: { id: 'vauclair-tableaux-anciens', title: "Collection d'un amateur" },
+  lot: { id: '45', lotNumber: '45', title: '45 - Portrait de femme', titleUk: 'Portrait of a woman' },
   customer: {
     id: '0d6d3a7e-2a55-4d0f-8f34-5b8c1e9f7a21',
     firstName: 'Hugo',
@@ -51,7 +48,7 @@ describe('review responses', () => {
     const page = parseReviewPage({ requests: [apiRequestFromApi], total: 1, limit: 25, offset: 0 })
     expect(page.total).toBe(1)
     expect(page.items[0]).toMatchObject({
-      lotNumber: 45,
+      lot: { lotNumber: '45', titleUk: 'Portrait of a woman' },
       maxBidEur: 6000,
       customer: { firstName: 'Hugo', email: 'hugo@example.com', companyName: null },
       nextStatuses: ['accepted', 'rejected', 'cancelled'],
