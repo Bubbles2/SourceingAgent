@@ -20,6 +20,7 @@ import { ResetPasswordPage } from '../pages/ResetPasswordPage'
 import { ReviewRequestsPage } from '../pages/ReviewRequestsPage'
 import { RouteErrorPage } from '../pages/RouteErrorPage'
 import { SignInPage } from '../pages/SignInPage'
+import { SearchPage } from '../pages/SearchPage'
 import { TermsPage } from '../pages/TermsPage'
 import { VerifyEmailPage } from '../pages/VerifyEmailPage'
 import {
@@ -37,6 +38,7 @@ import {
   requestedLotsLoader,
   reviewRequestsLoader,
   rootLoader,
+  searchLoader,
 } from './loaders'
 import { paths } from './paths'
 
@@ -63,6 +65,7 @@ export const router = createBrowserRouter([
             hydrateFallbackElement: pageLoading,
           },
           { path: paths.lots, loader: lotsLoader, element: <LotsPage />, hydrateFallbackElement: pageLoading },
+          { path: paths.search, loader: searchLoader, element: <SearchPage />, hydrateFallbackElement: pageLoading },
           { path: paths.catalogues, loader: cataloguesRedirectLoader },
           {
             path: paths.calendar,

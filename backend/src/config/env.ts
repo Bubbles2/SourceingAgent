@@ -27,6 +27,7 @@ export type Config = {
   }
   /** Proxies in front of the API whose X-Forwarded-For can be trusted (0 = none) */
   trustProxyHops: number
+  search: { webhookUrl: string; apiKey: string }
 }
 
 function isOrigin(value: string): boolean {
@@ -67,6 +68,8 @@ const envSchema = z.object({
   // Defaults to true in production; browsers only send Secure cookies over HTTPS (and to localhost)
   COOKIE_SECURE: booleanFlag.optional(),
   TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(10).default(0),
+  N8N_SEARCH_WEBHOOK_URL: z.url().default('http://localhost:5678/webhook/auctionmonitor/search'),
+  N8N_SEARCH_API_KEY: z.string().default(''),
 }).refine((values) => !(values.NODE_ENV === 'production' && values.COOKIE_SECURE === false), {
   // A copied .env.example would otherwise send the session cookie over plain HTTP.
   message: 'must not be false in production; session cookies need HTTPS',
@@ -102,6 +105,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
       cookieSecure: values.COOKIE_SECURE ?? values.NODE_ENV === 'production',
     }),
     trustProxyHops: values.TRUST_PROXY_HOPS,
+    search: Object.freeze({ webhookUrl: values.N8N_SEARCH_WEBHOOK_URL, apiKey: values.N8N_SEARCH_API_KEY }),
   })
 }
 

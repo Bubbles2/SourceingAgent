@@ -10,6 +10,7 @@ import { createBidRequestsRouter } from './bid-requests/index.ts'
 import { healthRouter } from './health/index.ts'
 import { createLotsRouter } from './lots/index.ts'
 import { requestedLotsRouter } from './requested-lots/index.ts'
+import { searchRouter } from './search/index.ts'
 
 export function createApiRouter(): Router {
   const router = Router()
@@ -26,6 +27,7 @@ export function createApiRouter(): Router {
   router.use('/lots', createLotsRouter())
   router.use('/bid-requests', createBidRequestsRouter())
   router.use('/requested-lots', requestedLotsRouter)
+  router.use('/search', searchRouter)
   router.use('/admin', requireRole('administrator'), createAdminRouter())
 
   return router

@@ -5,6 +5,7 @@ export const paths = {
   home: '/',
   auctions: '/auctions',
   lots: '/lots',
+  search: '/search',
   /** The old catalogues page; it now leads to the lots */
   catalogues: '/catalogues',
   calendar: '/calendar',

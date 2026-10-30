@@ -19,6 +19,7 @@ import { getMonthGridRange, parseMonthKey } from '../features/calendar/calendarD
 import { listLots, loadAuctionLots } from '../features/lots/lotService'
 import { parseReviewView } from '../features/request-review/reviewDecisions'
 import { listReviewRequests } from '../features/request-review/reviewService'
+import { searchLots } from '../features/search/searchService'
 import { ApiError } from '../services/apiClient'
 import { parsePageNumber } from '../services/pagination'
 import { paths, signInPath } from './paths'
@@ -68,6 +69,11 @@ export function lotsLoader({ request }: LoaderFunctionArgs) {
     auction: auctionId ? getAuction(auctionId) : null,
     lots: auctionId ? listLots({ auction: auctionId, page }) : listLots({ status, page }),
   }
+}
+
+export function searchLoader({ request }: LoaderFunctionArgs) {
+  const query = new URL(request.url).searchParams.get('q')?.trim() ?? ''
+  return { query, results: query.length >= 2 && query.length <= 200 ? searchLots(query) : null }
 }
 
 export function calendarLoader({ request }: LoaderFunctionArgs) {
