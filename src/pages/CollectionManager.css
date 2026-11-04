@@ -1,0 +1,13 @@
+.collection-manager {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-5);
+  width: min(100%, 520px);
+}
+
+.collection-manager > .field,
+.collection-manager > .error-summary,
+.collection-manager > .notice {
+  width: 100%;
+}

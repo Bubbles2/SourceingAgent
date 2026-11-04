@@ -34,6 +34,13 @@ export const listBidRequestsQuery = z.object({
 /** Any id is looked up as given; one that matches no request is a 404. */
 export const bidRequestParams = z.object({ requestId: z.string().max(100) })
 
+export const createCollectionBody = z.strictObject({
+  maxAuctions: z.number({ error: 'Enter a number of auctions.' })
+    .int('Enter a whole number of auctions.')
+    .min(1, 'Enter at least one auction.')
+    .max(Number.MAX_SAFE_INTEGER, 'Enter a smaller number of auctions.'),
+})
+
 /**
  * `from` is the status the administrator saw. If someone else changed the request in the meantime,
  * the change is refused rather than applied to a request in a different state.

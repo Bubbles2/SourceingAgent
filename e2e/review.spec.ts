@@ -16,7 +16,7 @@ test('the agent accepts a request, records the bid and the result, and the custo
   request: adminApi,
   playwright,
 }) => {
-  const customerApi = await playwright.request.newContext({ baseURL: 'http://localhost:3000' })
+  const customerApi = await playwright.request.newContext({ baseURL: 'http://localhost:3001' })
 
   // Earlier today, so the sale is still open for requests and a result can already be recorded.
   const sale = addTestSale(saleId, { daysAhead: 0, lotCount: 10, time: '00:01' })

@@ -47,7 +47,7 @@ test('an administrator opens the dashboard and filters requests by sale', async 
 })
 
 test('customers are kept out of every administration page and endpoint', async ({ browser }) => {
-  const context = await browser.newContext({ baseURL: 'http://localhost:3000' })
+  const context = await browser.newContext({ baseURL: 'http://localhost:3001' })
   const customerPage = await context.newPage()
   // The page's request context shares the browser's cookies, so this signs the page in too.
   await expectStatus(

@@ -140,6 +140,11 @@ export async function adminDashboardLoader({ request }: LoaderFunctionArgs) {
   return { summary: getAdminSummary() }
 }
 
+export async function collectionManagerLoader({ request }: LoaderFunctionArgs) {
+  await requireAdministrator(request)
+  return null
+}
+
 /** Tabs by status, and optional filters for one sale (?auction=) and a customer search (?customer=) */
 export async function reviewRequestsLoader({ request }: LoaderFunctionArgs) {
   await requireAdministrator(request)

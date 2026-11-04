@@ -103,9 +103,9 @@ describe('errors', () => {
 
 describe('CORS', () => {
   test('the configured site origin may call the API with credentials', async () => {
-    const response = await fetch(`${api.baseUrl}/api/health`, { headers: { Origin: 'http://localhost:3000' } })
+    const response = await fetch(`${api.baseUrl}/api/health`, { headers: { Origin: 'http://localhost:3001' } })
 
-    assert.equal(response.headers.get('access-control-allow-origin'), 'http://localhost:3000')
+    assert.equal(response.headers.get('access-control-allow-origin'), 'http://localhost:3001')
     assert.equal(response.headers.get('access-control-allow-credentials'), 'true')
   })
 
@@ -118,7 +118,7 @@ describe('CORS', () => {
   test('preflight requests list the allowed methods', async () => {
     const response = await fetch(`${api.baseUrl}/api/health`, {
       method: 'OPTIONS',
-      headers: { Origin: 'http://localhost:3000', 'Access-Control-Request-Method': 'POST' },
+      headers: { Origin: 'http://localhost:3001', 'Access-Control-Request-Method': 'POST' },
     })
 
     assert.equal(response.status, 204)

@@ -10,6 +10,7 @@ import './AdminLayout.css'
 const adminLinks = [
   { label: 'Dashboard', to: paths.admin, end: true },
   { label: 'Bid requests', to: paths.reviewRequests, end: false },
+  { label: 'Collections', to: paths.collectionManager, end: false },
 ] as const
 
 /**

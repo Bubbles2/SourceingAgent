@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
 // End-to-end tests for the website and API together, in the installed Google Chrome (no browser
-// download). They reuse the dev servers on ports 3000 and 4000 when running, or start them, and use
+// download). They reuse the dev servers on ports 3001 and 4000 when running, or start them, and use
 // the local development database; accounts they create (e2e-…@example.com) are removed afterwards.
 export default defineConfig({
   testDir: './e2e',
@@ -13,7 +13,7 @@ export default defineConfig({
   reporter: [['list'], ['html', { open: 'never' }]],
   globalTeardown: './e2e/globalTeardown.ts',
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL: 'http://localhost:3001',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
@@ -38,7 +38,7 @@ export default defineConfig({
     },
     {
       command: 'npm run dev',
-      url: 'http://localhost:3000',
+      url: 'http://localhost:3001',
       reuseExistingServer: true,
       timeout: 60_000,
     },

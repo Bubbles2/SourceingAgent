@@ -20,6 +20,7 @@ export const paths = {
   myRequests: '/my-requests',
   admin: '/admin',
   reviewRequests: '/admin/requests',
+  collectionManager: '/admin/collections',
   terms: '/terms',
   privacy: '/privacy',
 } as const
