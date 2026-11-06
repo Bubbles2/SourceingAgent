@@ -6,7 +6,7 @@ import * as adminBidRequestsController from './adminBidRequestsController.ts'
 import * as adminSummaryController from './adminSummaryController.ts'
 import * as adminUsersController from './adminUsersController.ts'
 import * as adminCollectionsController from './adminCollectionsController.ts'
-import { bidRequestParams, createCollectionBody, listBidRequestsQuery, listUsersQuery, statusChangeBody } from './adminValidation.ts'
+import { bidRequestParams, collectionJobParams, createCollectionBody, listBidRequestsQuery, listUsersQuery, statusChangeBody } from './adminValidation.ts'
 
 export function createAdminRouter(): Router {
   const router = Router()
@@ -14,6 +14,8 @@ export function createAdminRouter(): Router {
   router.get('/summary', adminSummaryController.show)
   router.get('/users', validate({ query: listUsersQuery }), adminUsersController.list)
   router.post('/collections', validate({ body: createCollectionBody }), adminCollectionsController.create)
+  router.get('/collections/running', adminCollectionsController.running)
+  router.get('/collections/:jobId', validate({ params: collectionJobParams }), adminCollectionsController.status)
 
   // Reviewing bid requests: accept or reject them, then record the bid and its result.
   const changesByUser = rateLimit({ windowMs: 60 * 60_000, max: 600, key: bySignedInUser })

@@ -7,7 +7,7 @@ import { AdminDashboardPage } from '../pages/AdminDashboardPage'
 import { AuctionDetailsPage } from '../pages/AuctionDetailsPage'
 import { AuctionsPage } from '../pages/AuctionsPage'
 import { CalendarPage } from '../pages/CalendarPage'
-import { CollectionManager } from '../pages/CollectionManager'
+import { CollectionManager, CollectionStatusPage } from '../pages/CollectionManager'
 import { ForgotPasswordPage } from '../pages/ForgotPasswordPage'
 import { LandingPage } from '../pages/LandingPage'
 import { LotsPage } from '../pages/LotsPage'
@@ -101,6 +101,7 @@ export const router = createBrowserRouter([
               { index: true, loader: adminDashboardLoader, element: <AdminDashboardPage />, hydrateFallbackElement: pageLoading },
               { path: 'requests', loader: reviewRequestsLoader, element: <ReviewRequestsPage />, hydrateFallbackElement: pageLoading },
               { path: 'collections', loader: collectionManagerLoader, element: <CollectionManager />, hydrateFallbackElement: pageLoading },
+              { path: 'collection-status', loader: collectionManagerLoader, element: <CollectionStatusPage />, hydrateFallbackElement: pageLoading },
             ],
           },
           { path: paths.signIn, loader: guestOnlyLoader, element: <SignInPage />, hydrateFallbackElement: pageLoading },

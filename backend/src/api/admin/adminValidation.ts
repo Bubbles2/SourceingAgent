@@ -41,6 +41,10 @@ export const createCollectionBody = z.strictObject({
     .max(Number.MAX_SAFE_INTEGER, 'Enter a smaller number of auctions.'),
 })
 
+export const collectionJobParams = z.strictObject({
+  jobId: z.string().regex(/^[1-9]\d*$/, 'Enter a positive whole-number job ID.'),
+})
+
 /**
  * `from` is the status the administrator saw. If someone else changed the request in the meantime,
  * the change is refused rather than applied to a request in a different state.

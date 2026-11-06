@@ -11,3 +11,9 @@
 .collection-manager > .notice {
   width: 100%;
 }
+
+.collection-manager__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}

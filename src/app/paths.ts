@@ -21,6 +21,7 @@ export const paths = {
   admin: '/admin',
   reviewRequests: '/admin/requests',
   collectionManager: '/admin/collections',
+  collectionStatus: '/admin/collection-status',
   terms: '/terms',
   privacy: '/privacy',
 } as const
