@@ -5,6 +5,9 @@ from drouot.com and stores them in the `drouot_collector` schema of the PostgreS
 `events_monitor_db`. The app reads them there directly, through two views. It never copies, changes
 or deletes the collector's data.
 
+The collector's code is in `events_monitor/` in this repository; `npm run collector` starts it. See
+`events_monitor/INTEGRATION.md`.
+
 This page documents where the data lives, how the views map the collector's columns to the ones the
 app uses, what the collector doesn't provide, and how the data is refreshed.
 

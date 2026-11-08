@@ -17,7 +17,7 @@ browser ── /search, /admin/search ──► Vite site (src/ + taxonomy_searc
                                           │
                                           ▼
                events_monitor_db: auction_search (taxonomy, classifications, indexes, embeddings, logs)
-                                  drouot_collector (the collector's sales and lots, read only)
+                                  drouot_collector (sales and lots written by events_monitor/, read only here)
 ```
 
 ## Running it

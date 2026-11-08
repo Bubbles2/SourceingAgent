@@ -8,7 +8,7 @@ Customers can discover upcoming auctions, browse the lots in each sale, and subm
 
 The application does not conduct live auctions. It manages bidding requests that are subsequently reviewed and executed by the sourcing agent.
 
-Auctions and their lots come from the auction monitor, a separate collector that gathers sales and lots from French auction websites such as drouot.com. The application reads this data; it does not create or edit auctions or lots.
+Auctions and their lots come from the auction monitor, the Drouot collector in `events_monitor/` (see `events_monitor/INTEGRATION.md`), which gathers sales and lots from drouot.com into `events_monitor_db.drouot_collector`. The application reads this data; it does not create or edit auctions or lots.
 
 ## 2. Core Features
 
@@ -104,6 +104,7 @@ Auctions and their lots come from the auction monitor, a separate collector that
 | HTTP Security | Helmet, CORS, and API rate limiting |
 | Calendar | Custom month grid and agenda (no calendar library) |
 | Testing | Vitest (unit), Node's test runner (backend), Playwright (end-to-end) |
+| Collector | The Drouot collector (Node.js, Express, Cheerio) in `events_monitor/`, on port 3000; started with `npm run collector` |
 | Search | Taxonomy search service in Python (FastAPI) in `taxonomy_search/`, on 127.0.0.1:8000; only the backend calls it, with a shared token |
 
 ## 4. Database

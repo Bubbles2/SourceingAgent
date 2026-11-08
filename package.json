@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "taxonomy": "cd taxonomy_search && .venv/bin/python -m auction_search.cli serve-api --port 8000"
+    "taxonomy": "cd taxonomy_search && .venv/bin/python -m auction_search.cli serve-api --port 8000",
+    "collector": "npm --prefix events_monitor start"
   },
   "dependencies": {
     "lucide-react": "^1.62.0",
