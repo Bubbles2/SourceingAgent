@@ -4,6 +4,10 @@ import './Hero.css'
 export function Hero(): React.JSX.Element {
   return (
     <section className="hero" aria-labelledby="hero-title">
+      <picture className="hero__animation" aria-hidden="true">
+        <source media="(prefers-reduced-motion: reduce)" srcSet="/assets/owl_flight_v2_still.png" />
+        <img src="/assets/owl_flight_v2_transparent.png" alt="" width={1280} height={720} decoding="async" />
+      </picture>
       <div className="container hero__inner">
         <div className="hero__panel">
           <p className="eyebrow hero__eyebrow">Paris-based bidding agent · International buyers</p>

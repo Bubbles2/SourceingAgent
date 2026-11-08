@@ -10,10 +10,35 @@ import './Header.css'
 
 const menuId = 'site-menu'
 
+function AuctionBrand(): React.JSX.Element {
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  return (
+    <span className={isLoaded ? 'site-header__auction-mark site-header__auction-mark--loaded' : 'site-header__auction-mark'}>
+      <picture className="site-header__auction-animation" aria-hidden="true">
+        <source media="(prefers-reduced-motion: reduce)" srcSet="/assets/owl_push_banner.png" />
+        <img
+          src="/assets/owl_push_banner_animated.png"
+          alt=""
+          width={800}
+          height={200}
+          decoding="async"
+          onLoad={() => setIsLoaded(true)}
+        />
+      </picture>
+      <span className="site-header__auction-identity" aria-hidden="true">
+        <img className="site-header__logo" src="/assets/happy_owl_transparent.png" alt="" width={46} height={46} />
+        <span className="site-header__wordmark">Parisien Sourcing Agent</span>
+      </span>
+    </span>
+  )
+}
+
 export function Header(): React.JSX.Element {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const toggleRef = useRef<HTMLButtonElement>(null)
   const location = useLocation()
+  const isAuctionsPage = location.pathname === paths.auctions
   const searchQuery = location.pathname === paths.search ? new URLSearchParams(location.search).get('q') ?? '' : ''
 
   function handleToggleMenu(): void {
@@ -39,9 +64,20 @@ export function Header(): React.JSX.Element {
         onKeyDown={handleHeaderKeyDown}
       >
         <div className="container site-header__inner">
-          <Link to={paths.home} className="site-header__brand" onClick={handleCloseMenu}>
-            <img className="site-header__logo" src="/assets/happy_owl_transparent.png" alt="" width={46} height={46} />
-            <span className="site-header__wordmark">Parisien Sourcing Agent</span>
+          <Link
+            to={paths.home}
+            className={isAuctionsPage ? 'site-header__brand site-header__brand--auction' : 'site-header__brand'}
+            onClick={handleCloseMenu}
+            aria-label={isAuctionsPage ? 'Parisien Sourcing Agent home' : undefined}
+          >
+            {isAuctionsPage ? (
+              <AuctionBrand />
+            ) : (
+              <>
+                <img className="site-header__logo" src="/assets/happy_owl_transparent.png" alt="" width={46} height={46} />
+                <span className="site-header__wordmark">Parisien Sourcing Agent</span>
+              </>
+            )}
           </Link>
 
           <Button

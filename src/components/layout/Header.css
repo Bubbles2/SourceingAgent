@@ -12,6 +12,28 @@
   min-height: var(--tap); color: var(--navy); text-decoration: none;
 }
 .site-header__logo { width: 46px; height: 46px; object-fit: contain; }
+.site-header__brand--auction { flex: 0 1 400px; min-width: 0; }
+.site-header__auction-mark { display: block; position: relative; overflow: hidden; width: 100%; aspect-ratio: 4 / 1; }
+.site-header__auction-animation { display: block; position: absolute; inset: 0; width: 100%; }
+.site-header__auction-animation img { display: block; width: 100%; height: auto; }
+.site-header__auction-identity {
+  display: flex; align-items: center; gap: var(--space-3);
+  position: absolute; top: 50%; left: 0; width: 100%; opacity: 0;
+  transform: translate(-110%, -50%);
+}
+.site-header__auction-identity .site-header__logo { flex: none; }
+.site-header__auction-mark--loaded .site-header__auction-animation {
+  animation: auction-scene-leave 1.5s ease-in-out 7s both;
+}
+.site-header__auction-mark--loaded .site-header__auction-identity {
+  animation: auction-identity-arrive 1.5s ease-in-out 7s both;
+}
+@keyframes auction-scene-leave {
+  to { opacity: 0; transform: translateX(100%); }
+}
+@keyframes auction-identity-arrive {
+  to { opacity: 1; transform: translate(0, -50%); }
+}
 .site-header__wordmark {
   font-family: var(--font-display); font-size: 21px; font-weight: 700; line-height: normal; letter-spacing: 0.01em;
   white-space: nowrap;
@@ -33,6 +55,7 @@
 @media (max-width: 639px) {
   .site-header__inner { column-gap: var(--space-3); }
   .site-header__brand { min-width: 0; }
+  .site-header__brand--auction { flex-basis: min(280px, calc(100vw - 92px)); }
   .site-header__wordmark { font-size: 18px; white-space: normal; }
 
   .site-header__toggle { display: inline-flex; flex: none; width: var(--tap); padding: 0; margin-left: auto; }
@@ -45,4 +68,12 @@
   .site-header__nav { margin-left: 0; }
   .site-header__search { order: 3; }
   .site-header__search button { padding-inline: var(--space-4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header__auction-animation { display: none; }
+  .site-header__auction-mark--loaded .site-header__auction-identity,
+  .site-header__auction-identity {
+    animation: none; opacity: 1; transform: translateY(-50%);
+  }
 }

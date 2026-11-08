@@ -8,8 +8,9 @@ let frameDirectory = URL(fileURLWithPath: CommandLine.arguments[1], isDirectory:
 let outputURL = URL(fileURLWithPath: CommandLine.arguments[2])
 let count = CommandLine.arguments.count > 3 ? Int(CommandLine.arguments[3])! : 168
 let cycleSeconds = CommandLine.arguments.count > 4 ? Int(CommandLine.arguments[4]) : nil
-let width = 1280
-let height = 720
+let width = CommandLine.arguments.count > 5 ? Int(CommandLine.arguments[5])! : 1280
+let height = CommandLine.arguments.count > 6 ? Int(CommandLine.arguments[6])! : 720
+let fps = CommandLine.arguments.count > 7 ? Int(CommandLine.arguments[7])! : 24
 let rowBytes = width * 4
 let byteCount = rowBytes * height
 
@@ -141,10 +142,10 @@ for index in 1...count {
     frameControl.append(be32(UInt32(x)))
     frameControl.append(be32(UInt32(y)))
     let delayTicks = index == count && cycleSeconds != nil
-        ? cycleSeconds! * 24 - (count - 1) : 1
+        ? cycleSeconds! * fps - (count - 1) : 1
     precondition(1...65535 ~= delayTicks)
     frameControl.append(be16(UInt16(delayTicks)))
-    frameControl.append(be16(24))
+    frameControl.append(be16(UInt16(fps)))
     frameControl.append(contentsOf: [0, 0]) // Keep prior canvas; replace changed pixels.
     animation.append(chunk("fcTL", frameControl))
     // Only image data is carried between independently encoded PNG frames.

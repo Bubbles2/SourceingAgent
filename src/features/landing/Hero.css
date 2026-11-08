@@ -1,14 +1,16 @@
-/* Hero — banner rules in DESIGN.md §7 */
+/* The transparent owl animation is the home page's visual header. */
 
 .hero {
-  display: flex; align-items: center; min-height: 620px;
-  background-color: var(--ivory);
-  background-image: url('/assets/paris-banner.jpg');
-  background-position: 72% center;
-  background-repeat: no-repeat;
-  background-size: cover;
+  position: relative; display: flex; align-items: center; min-height: 620px; overflow: hidden;
+  background: radial-gradient(circle at 78% 45%, var(--white), var(--ivory) 68%);
 }
-.hero__inner { width: 100%; padding-block: var(--space-16); }
+.hero__animation {
+  position: absolute; inset: 0; display: block; z-index: 2; pointer-events: none;
+}
+.hero__animation img {
+  display: block; width: 100%; height: 100%; object-fit: contain; object-position: right center;
+}
+.hero__inner { position: relative; z-index: 1; width: 100%; padding-block: var(--space-16); }
 
 .hero__panel {
   display: flex; flex-direction: column; gap: var(--space-5);
@@ -24,9 +26,19 @@
 .hero__actions { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-1); }
 .hero__note { font-size: var(--text-meta); line-height: 1.5; color: var(--ink-muted); }
 
+@media (max-width: 1023px) {
+  .hero { flex-direction: column; min-height: 0; }
+  .hero__inner { order: 1; padding-block: var(--space-12) var(--space-6); }
+  .hero__animation { position: relative; order: 2; width: 100%; max-width: 720px; margin-left: auto; }
+  .hero__animation img { width: 100%; height: auto; }
+}
+
 @media (max-width: 639px) {
-  .hero { min-height: 0; }
-  .hero__inner { padding-block: var(--space-12); }
   .hero__panel { padding: var(--space-6); }
   .hero__actions > * { flex: 1 1 auto; }
+  .hero__animation { height: 300px; overflow: hidden; }
+  .hero__animation img {
+    position: absolute; top: 50%; right: 0; width: max(640px, 100%); height: auto;
+    transform: translateY(-50%);
+  }
 }
