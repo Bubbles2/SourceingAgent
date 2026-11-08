@@ -34,7 +34,7 @@ test('an administrator opens the dashboard and filters requests by sale', async 
       await expect(page.getByRole('link', { name: new RegExp(card) })).toBeVisible()
     }
     const navigation = page.getByRole('navigation', { name: 'Administration' })
-    await expect(navigation.getByRole('link')).toHaveText(['Dashboard', 'Bid requests'])
+    await expect(navigation.getByRole('link')).toHaveText(['Dashboard', 'Bid requests', 'Collections', 'Collection status', 'Search'])
   })
 
   await test.step('requests can be filtered by sale', async () => {
@@ -61,7 +61,7 @@ test('customers are kept out of every administration page and endpoint', async (
     201,
   )
 
-  for (const path of ['/admin', '/admin/requests', '/admin/requests?view=all']) {
+  for (const path of ['/admin', '/admin/requests', '/admin/requests?view=all', '/admin/search']) {
     await customerPage.goto(path)
     await expect(customerPage.getByRole('heading', { level: 1, name: 'Administrators only' })).toBeVisible()
   }
@@ -69,6 +69,9 @@ test('customers are kept out of every administration page and endpoint', async (
 
   await expectStatus(await customerPage.request.get('/api/admin/summary'), 403)
   await expectStatus(await customerPage.request.get('/api/admin/bid-requests'), 403)
+  // The taxonomy search's administration (taxonomy_search/INTEGRATION.md)
+  await expectStatus(await customerPage.request.get('/api/admin/search/status'), 403)
+  await expectStatus(await sendChange(customerPage.request, 'POST', '/api/admin/search/jobs', { command: 'maintain' }), 403)
   // Sales can't be created through the API at all any more.
   await expectStatus(await sendChange(customerPage.request, 'POST', '/api/auctions', { id: testId('sneaky') }), 404)
 

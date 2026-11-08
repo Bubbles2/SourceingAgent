@@ -1,0 +1,1137 @@
+{
+  "generated_at": "2026-11-07T17:43:16+00:00",
+  "target": "postgresql://(libpq default user)@localhost:5432/events_monitor_db schema=drouot_collector",
+  "server": {
+    "version": "18.4 (Homebrew)",
+    "version_num": 180004,
+    "database": "events_monitor_db",
+    "current_user": "dcfinlay",
+    "is_superuser": true,
+    "can_create_schema": true,
+    "installed_extensions": {
+      "pg_trgm": {
+        "version": "1.6",
+        "schema": "public"
+      },
+      "plpgsql": {
+        "version": "1.0",
+        "schema": "pg_catalog"
+      },
+      "vector": {
+        "version": "0.8.7",
+        "schema": "public"
+      }
+    },
+    "extension_availability": {
+      "vector": {
+        "available": true,
+        "default_version": "0.8.7",
+        "installed": true,
+        "requires_superuser": true,
+        "trusted": false
+      },
+      "pg_trgm": {
+        "available": true,
+        "default_version": "1.6",
+        "installed": true,
+        "requires_superuser": true,
+        "trusted": true
+      },
+      "unaccent": {
+        "available": true,
+        "default_version": "1.1",
+        "installed": false,
+        "requires_superuser": true,
+        "trusted": true
+      },
+      "fuzzystrmatch": {
+        "available": true,
+        "default_version": "1.2",
+        "installed": false,
+        "requires_superuser": true,
+        "trusted": true
+      }
+    },
+    "text_search_configs": [
+      "arabic",
+      "armenian",
+      "basque",
+      "catalan",
+      "danish",
+      "dutch",
+      "english",
+      "estonian",
+      "finnish",
+      "french",
+      "german",
+      "greek",
+      "hindi",
+      "hungarian",
+      "indonesian",
+      "irish",
+      "italian",
+      "lithuanian",
+      "nepali",
+      "norwegian",
+      "portuguese",
+      "romanian",
+      "russian",
+      "serbian",
+      "simple",
+      "spanish",
+      "swedish",
+      "tamil",
+      "turkish",
+      "yiddish"
+    ],
+    "app_schema": "auction_search",
+    "app_schema_exists": false
+  },
+  "schemas": [
+    {
+      "name": "drouot_collector",
+      "tables": 5,
+      "views": 0,
+      "total_bytes": 35553280
+    },
+    {
+      "name": "drouot_collector_py",
+      "tables": 5,
+      "views": 0,
+      "total_bytes": 9904128
+    },
+    {
+      "name": "public",
+      "tables": 12,
+      "views": 2,
+      "total_bytes": 1531904
+    }
+  ],
+  "schema": "drouot_collector",
+  "tables": [
+    {
+      "name": "auctions",
+      "kind": "table",
+      "comment": null,
+      "row_count": 122,
+      "row_count_is_estimate": false,
+      "total_bytes": 139264,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "bigint",
+          "nullable": false,
+          "default": "generated always as identity",
+          "comment": null,
+          "role": "identifier",
+          "language": null
+        },
+        {
+          "name": "source",
+          "data_type": "text",
+          "nullable": false,
+          "default": "'drouot'::text",
+          "comment": null,
+          "role": "source",
+          "language": null
+        },
+        {
+          "name": "auction_id",
+          "data_type": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null,
+          "role": "identifier",
+          "language": null
+        },
+        {
+          "name": "title_fr",
+          "data_type": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "title",
+          "language": "fr"
+        },
+        {
+          "name": "description_fr",
+          "data_type": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "description",
+          "language": "fr"
+        },
+        {
+          "name": "title_en",
+          "data_type": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "title",
+          "language": "en"
+        },
+        {
+          "name": "description_en",
+          "data_type": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "description",
+          "language": "en"
+        },
+        {
+          "name": "starts_at",
+          "data_type": "timestamp with time zone",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "date",
+          "language": null
+        },
+        {
+          "name": "auction_date",
+          "data_type": "date",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "date",
+          "language": null
+        },
+        {
+          "name": "auction_house",
+          "data_type": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "auction_house",
+          "language": null
+        },
+        {
+          "name": "catalogue_page_count",
+          "data_type": "integer",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "count",
+          "language": null
+        },
+        {
+          "name": "auction_url_fr",
+          "data_type": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null,
+          "role": "url",
+          "language": "fr"
+        },
+        {
+          "name": "auction_url_en",
+          "data_type": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null,
+          "role": "url",
+          "language": "en"
+        },
+        {
+          "name": "details_status",
+          "data_type": "text",
+          "nullable": false,
+          "default": "'pending'::text",
+          "comment": null,
+          "role": "status",
+          "language": null
+        },
+        {
+          "name": "catalogue_status",
+          "data_type": "text",
+          "nullable": false,
+          "default": "'pending'::text",
+          "comment": null,
+          "role": "status",
+          "language": null
+        },
+        {
+          "name": "last_error",
+          "data_type": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "error",
+          "language": null
+        },
+        {
+          "name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()",
+          "comment": null,
+          "role": "record_timestamp",
+          "language": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_constraints": [
+        {
+          "name": "auctions_source_auction_id_key",
+          "columns": [
+            "source",
+            "auction_id"
+          ]
+        }
+      ],
+      "check_constraints": [],
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "name": "auctions_pkey",
+          "definition": "CREATE UNIQUE INDEX auctions_pkey ON drouot_collector.auctions USING btree (id)"
+        },
+        {
+          "name": "auctions_source_auction_id_key",
+          "definition": "CREATE UNIQUE INDEX auctions_source_auction_id_key ON drouot_collector.auctions USING btree (source, auction_id)"
+        }
+      ],
+      "referenced_by": [
+        "lots(source, auction_id)",
+        "run_auctions(source, auction_id)"
+      ]
+    },
+    {
+      "name": "catalogue_pages",
+      "kind": "table",
+      "comment": null,
+      "row_count": 300,
+      "row_count_is_estimate": false,
+      "total_bytes": 90112,
+      "columns": [
+        {
+          "name": "run_id",
+          "data_type": "bigint",
+          "nullable": false,
+          "default": null,
+          "comment": null,
+          "role": "identifier",
+          "language": null
+        },
+        {
+          "name": "auction_id",
+          "data_type": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null,
+          "role": "identifier",
+          "language": null
+        },
+        {
+          "name": "page_number",
+          "data_type": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null,
+          "role": "other",
+          "language": null
+        },
+        {
+          "name": "status",
+          "data_type": "text",
+          "nullable": false,
+          "default": "'pending'::text",
+          "comment": null,
+          "role": "status",
+          "language": null
+        },
+        {
+          "name": "lot_count",
+          "data_type": "integer",
+          "nullable": false,
+          "default": "0",
+          "comment": null,
+          "role": "count",
+          "language": null
+        },
+        {
+          "name": "last_error",
+          "data_type": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "error",
+          "language": null
+        }
+      ],
+      "primary_key": [
+        "run_id",
+        "auction_id",
+        "page_number"
+      ],
+      "unique_constraints": [],
+      "check_constraints": [],
+      "foreign_keys": [
+        {
+          "name": "catalogue_pages_run_id_fkey",
+          "columns": [
+            "run_id"
+          ],
+          "referred_schema": "drouot_collector",
+          "referred_table": "collection_runs",
+          "referred_columns": [
+            "id"
+          ]
+        }
+      ],
+      "indexes": [
+        {
+          "name": "catalogue_pages_pkey",
+          "definition": "CREATE UNIQUE INDEX catalogue_pages_pkey ON drouot_collector.catalogue_pages USING btree (run_id, auction_id, page_number)"
+        }
+      ],
+      "referenced_by": []
+    },
+    {
+      "name": "collection_runs",
+      "kind": "table",
+      "comment": null,
+      "row_count": 19,
+      "row_count_is_estimate": false,
+      "total_bytes": 81920,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "bigint",
+          "nullable": false,
+          "default": "generated always as identity",
+          "comment": null,
+          "role": "identifier",
+          "language": null
+        },
+        {
+          "name": "source",
+          "data_type": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null,
+          "role": "source",
+          "language": null
+        },
+        {
+          "name": "options",
+          "data_type": "jsonb",
+          "nullable": false,
+          "default": null,
+          "comment": null,
+          "role": "metadata",
+          "language": null
+        },
+        {
+          "name": "status",
+          "data_type": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null,
+          "role": "status",
+          "language": null
+        },
+        {
+          "name": "started_at",
+          "data_type": "timestamp with time zone",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "date",
+          "language": null
+        },
+        {
+          "name": "completed_at",
+          "data_type": "timestamp with time zone",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "date",
+          "language": null
+        },
+        {
+          "name": "lease_until",
+          "data_type": "timestamp with time zone",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "date",
+          "language": null
+        },
+        {
+          "name": "auctions_discovered",
+          "data_type": "integer",
+          "nullable": false,
+          "default": "0",
+          "comment": null,
+          "role": "other",
+          "language": null
+        },
+        {
+          "name": "auctions_processed",
+          "data_type": "integer",
+          "nullable": false,
+          "default": "0",
+          "comment": null,
+          "role": "other",
+          "language": null
+        },
+        {
+          "name": "lots_discovered",
+          "data_type": "integer",
+          "nullable": false,
+          "default": "0",
+          "comment": null,
+          "role": "other",
+          "language": null
+        },
+        {
+          "name": "lots_saved",
+          "data_type": "integer",
+          "nullable": false,
+          "default": "0",
+          "comment": null,
+          "role": "other",
+          "language": null
+        },
+        {
+          "name": "lots_failed",
+          "data_type": "integer",
+          "nullable": false,
+          "default": "0",
+          "comment": null,
+          "role": "other",
+          "language": null
+        },
+        {
+          "name": "last_error",
+          "data_type": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "error",
+          "language": null
+        },
+        {
+          "name": "created_at",
+          "data_type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()",
+          "comment": null,
+          "role": "record_timestamp",
+          "language": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_constraints": [],
+      "check_constraints": [
+        {
+          "name": "collection_runs_source_check",
+          "definition": "source = 'drouot'::text"
+        },
+        {
+          "name": "collection_runs_status_check",
+          "definition": "status = ANY (ARRAY['queued'::text, 'running'::text, 'completed'::text, 'partial'::text, 'failed'::text])"
+        }
+      ],
+      "foreign_keys": [],
+      "indexes": [
+        {
+          "name": "collection_runs_pkey",
+          "definition": "CREATE UNIQUE INDEX collection_runs_pkey ON drouot_collector.collection_runs USING btree (id)"
+        },
+        {
+          "name": "collector_runs_claim_idx",
+          "definition": "CREATE INDEX collector_runs_claim_idx ON drouot_collector.collection_runs USING btree (status, lease_until, id)"
+        }
+      ],
+      "referenced_by": [
+        "catalogue_pages(run_id)",
+        "lots(last_collected_run_id)",
+        "run_auctions(run_id)"
+      ]
+    },
+    {
+      "name": "lots",
+      "kind": "table",
+      "comment": null,
+      "row_count": 20923,
+      "row_count_is_estimate": false,
+      "total_bytes": 35176448,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "bigint",
+          "nullable": false,
+          "default": "generated always as identity",
+          "comment": null,
+          "role": "identifier",
+          "language": null
+        },
+        {
+          "name": "source",
+          "data_type": "text",
+          "nullable": false,
+          "default": "'drouot'::text",
+          "comment": null,
+          "role": "source",
+          "language": null
+        },
+        {
+          "name": "auction_id",
+          "data_type": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null,
+          "role": "identifier",
+          "language": null
+        },
+        {
+          "name": "lot_id",
+          "data_type": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null,
+          "role": "identifier",
+          "language": null
+        },
+        {
+          "name": "lot_number",
+          "data_type": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "lot_number",
+          "language": null
+        },
+        {
+          "name": "title_fr",
+          "data_type": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "title",
+          "language": "fr"
+        },
+        {
+          "name": "description_fr",
+          "data_type": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "description",
+          "language": "fr"
+        },
+        {
+          "name": "title_en",
+          "data_type": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "title",
+          "language": "en"
+        },
+        {
+          "name": "description_en",
+          "data_type": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "description",
+          "language": "en"
+        },
+        {
+          "name": "category_fr",
+          "data_type": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "category",
+          "language": "fr"
+        },
+        {
+          "name": "category_en",
+          "data_type": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "category",
+          "language": "en"
+        },
+        {
+          "name": "currency",
+          "data_type": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "currency",
+          "language": null
+        },
+        {
+          "name": "image_url",
+          "data_type": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "image_url",
+          "language": null
+        },
+        {
+          "name": "lot_url_fr",
+          "data_type": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null,
+          "role": "url",
+          "language": "fr"
+        },
+        {
+          "name": "lot_url_en",
+          "data_type": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null,
+          "role": "url",
+          "language": "en"
+        },
+        {
+          "name": "details_status",
+          "data_type": "text",
+          "nullable": false,
+          "default": "'pending'::text",
+          "comment": null,
+          "role": "status",
+          "language": null
+        },
+        {
+          "name": "last_collected_run_id",
+          "data_type": "bigint",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "identifier",
+          "language": null
+        },
+        {
+          "name": "last_error",
+          "data_type": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "error",
+          "language": null
+        },
+        {
+          "name": "updated_at",
+          "data_type": "timestamp with time zone",
+          "nullable": false,
+          "default": "now()",
+          "comment": null,
+          "role": "record_timestamp",
+          "language": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_constraints": [
+        {
+          "name": "lots_source_lot_id_key",
+          "columns": [
+            "source",
+            "lot_id"
+          ]
+        }
+      ],
+      "check_constraints": [],
+      "foreign_keys": [
+        {
+          "name": "lots_last_collected_run_id_fkey",
+          "columns": [
+            "last_collected_run_id"
+          ],
+          "referred_schema": "drouot_collector",
+          "referred_table": "collection_runs",
+          "referred_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "lots_source_auction_id_fkey",
+          "columns": [
+            "source",
+            "auction_id"
+          ],
+          "referred_schema": "drouot_collector",
+          "referred_table": "auctions",
+          "referred_columns": [
+            "source",
+            "auction_id"
+          ]
+        }
+      ],
+      "indexes": [
+        {
+          "name": "collector_lots_auction_idx",
+          "definition": "CREATE INDEX collector_lots_auction_idx ON drouot_collector.lots USING btree (source, auction_id, id)"
+        },
+        {
+          "name": "lots_pkey",
+          "definition": "CREATE UNIQUE INDEX lots_pkey ON drouot_collector.lots USING btree (id)"
+        },
+        {
+          "name": "lots_source_lot_id_key",
+          "definition": "CREATE UNIQUE INDEX lots_source_lot_id_key ON drouot_collector.lots USING btree (source, lot_id)"
+        }
+      ],
+      "referenced_by": []
+    },
+    {
+      "name": "run_auctions",
+      "kind": "table",
+      "comment": null,
+      "row_count": 136,
+      "row_count_is_estimate": false,
+      "total_bytes": 65536,
+      "columns": [
+        {
+          "name": "run_id",
+          "data_type": "bigint",
+          "nullable": false,
+          "default": null,
+          "comment": null,
+          "role": "identifier",
+          "language": null
+        },
+        {
+          "name": "source",
+          "data_type": "text",
+          "nullable": false,
+          "default": "'drouot'::text",
+          "comment": null,
+          "role": "source",
+          "language": null
+        },
+        {
+          "name": "auction_id",
+          "data_type": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null,
+          "role": "identifier",
+          "language": null
+        },
+        {
+          "name": "status",
+          "data_type": "text",
+          "nullable": false,
+          "default": "'pending'::text",
+          "comment": null,
+          "role": "status",
+          "language": null
+        },
+        {
+          "name": "last_error",
+          "data_type": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null,
+          "role": "error",
+          "language": null
+        }
+      ],
+      "primary_key": [
+        "run_id",
+        "auction_id"
+      ],
+      "unique_constraints": [],
+      "check_constraints": [
+        {
+          "name": "run_auctions_source_check",
+          "definition": "source = 'drouot'::text"
+        }
+      ],
+      "foreign_keys": [
+        {
+          "name": "run_auctions_run_id_fkey",
+          "columns": [
+            "run_id"
+          ],
+          "referred_schema": "drouot_collector",
+          "referred_table": "collection_runs",
+          "referred_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "run_auctions_source_auction_id_fkey",
+          "columns": [
+            "source",
+            "auction_id"
+          ],
+          "referred_schema": "drouot_collector",
+          "referred_table": "auctions",
+          "referred_columns": [
+            "source",
+            "auction_id"
+          ]
+        }
+      ],
+      "indexes": [
+        {
+          "name": "run_auctions_pkey",
+          "definition": "CREATE UNIQUE INDEX run_auctions_pkey ON drouot_collector.run_auctions USING btree (run_id, auction_id)"
+        }
+      ],
+      "referenced_by": []
+    }
+  ],
+  "relationships": [
+    "catalogue_pages(run_id) -> drouot_collector.collection_runs(id)",
+    "lots(last_collected_run_id) -> drouot_collector.collection_runs(id)",
+    "lots(source, auction_id) -> drouot_collector.auctions(source, auction_id)",
+    "run_auctions(run_id) -> drouot_collector.collection_runs(id)",
+    "run_auctions(source, auction_id) -> drouot_collector.auctions(source, auction_id)"
+  ],
+  "detection": {
+    "auction_table": "auctions",
+    "lot_table": "lots",
+    "confident": true,
+    "evidence": [
+      "auction table 'auctions' chosen from candidates auctions(score 5), run_auctions(score 1)",
+      "lot table 'lots' chosen from candidates lots(score 7)",
+      "foreign key lots(source, auction_id) -> auctions(source, auction_id)"
+    ]
+  },
+  "mapping": {
+    "schema": "drouot_collector",
+    "auctions": {
+      "table": "auctions",
+      "primary_key": [
+        "id"
+      ],
+      "columns": {
+        "identifier": [
+          {
+            "name": "id",
+            "language": null
+          },
+          {
+            "name": "auction_id",
+            "language": null
+          }
+        ],
+        "source": [
+          {
+            "name": "source",
+            "language": null
+          }
+        ],
+        "title": [
+          {
+            "name": "title_fr",
+            "language": "fr"
+          },
+          {
+            "name": "title_en",
+            "language": "en"
+          }
+        ],
+        "description": [
+          {
+            "name": "description_fr",
+            "language": "fr"
+          },
+          {
+            "name": "description_en",
+            "language": "en"
+          }
+        ],
+        "date": [
+          {
+            "name": "starts_at",
+            "language": null
+          },
+          {
+            "name": "auction_date",
+            "language": null
+          }
+        ],
+        "auction_house": [
+          {
+            "name": "auction_house",
+            "language": null
+          }
+        ],
+        "count": [
+          {
+            "name": "catalogue_page_count",
+            "language": null
+          }
+        ],
+        "url": [
+          {
+            "name": "auction_url_fr",
+            "language": "fr"
+          },
+          {
+            "name": "auction_url_en",
+            "language": "en"
+          }
+        ],
+        "status": [
+          {
+            "name": "details_status",
+            "language": null
+          },
+          {
+            "name": "catalogue_status",
+            "language": null
+          }
+        ],
+        "error": [
+          {
+            "name": "last_error",
+            "language": null
+          }
+        ],
+        "record_timestamp": [
+          {
+            "name": "updated_at",
+            "language": null
+          }
+        ]
+      }
+    },
+    "lots": {
+      "table": "lots",
+      "primary_key": [
+        "id"
+      ],
+      "columns": {
+        "identifier": [
+          {
+            "name": "id",
+            "language": null
+          },
+          {
+            "name": "auction_id",
+            "language": null
+          },
+          {
+            "name": "lot_id",
+            "language": null
+          },
+          {
+            "name": "last_collected_run_id",
+            "language": null
+          }
+        ],
+        "source": [
+          {
+            "name": "source",
+            "language": null
+          }
+        ],
+        "lot_number": [
+          {
+            "name": "lot_number",
+            "language": null
+          }
+        ],
+        "title": [
+          {
+            "name": "title_fr",
+            "language": "fr"
+          },
+          {
+            "name": "title_en",
+            "language": "en"
+          }
+        ],
+        "description": [
+          {
+            "name": "description_fr",
+            "language": "fr"
+          },
+          {
+            "name": "description_en",
+            "language": "en"
+          }
+        ],
+        "category": [
+          {
+            "name": "category_fr",
+            "language": "fr"
+          },
+          {
+            "name": "category_en",
+            "language": "en"
+          }
+        ],
+        "currency": [
+          {
+            "name": "currency",
+            "language": null
+          }
+        ],
+        "image_url": [
+          {
+            "name": "image_url",
+            "language": null
+          }
+        ],
+        "url": [
+          {
+            "name": "lot_url_fr",
+            "language": "fr"
+          },
+          {
+            "name": "lot_url_en",
+            "language": "en"
+          }
+        ],
+        "status": [
+          {
+            "name": "details_status",
+            "language": null
+          }
+        ],
+        "error": [
+          {
+            "name": "last_error",
+            "language": null
+          }
+        ],
+        "record_timestamp": [
+          {
+            "name": "updated_at",
+            "language": null
+          }
+        ]
+      }
+    },
+    "join_columns": [
+      [
+        "source",
+        "source"
+      ],
+      [
+        "auction_id",
+        "auction_id"
+      ]
+    ],
+    "confident": true,
+    "evidence": [
+      "auction table 'auctions' chosen from candidates auctions(score 5), run_auctions(score 1)",
+      "lot table 'lots' chosen from candidates lots(score 7)",
+      "foreign key lots(source, auction_id) -> auctions(source, auction_id)"
+    ]
+  }
+}

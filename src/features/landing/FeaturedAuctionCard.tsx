@@ -1,6 +1,7 @@
-import { auctionLotsPath, requestBidPath } from '../../app/paths'
+import { auctionLotsPath, auctionPath, requestBidPath } from '../../app/paths'
 import { ButtonLink } from '../../components/ui/Button'
 import { AuctionCard } from '../auctions/AuctionCard'
+import { getSaleStatus } from '../auctions/saleStatus'
 import type { Auction } from '../auctions/types'
 
 type FeaturedAuctionCardProps = {
@@ -16,13 +17,20 @@ export function FeaturedAuctionCard({ auction }: FeaturedAuctionCardProps): Reac
           <ButtonLink variant="link" to={auctionLotsPath(auction.id)} aria-label={`Browse the lots: ${auction.title}`}>
             Browse the lots
           </ButtonLink>
-          <ButtonLink
-            className="auction-card__action"
-            to={requestBidPath(auction.id)}
-            aria-label={`Request a bid: ${auction.title}`}
-          >
-            Request a bid
-          </ButtonLink>
+          {/* Shown while nothing is upcoming, recent sales are over: no bid can be requested. */}
+          {getSaleStatus(auction.auctionDate) === 'upcoming' ? (
+            <ButtonLink
+              className="auction-card__action"
+              to={requestBidPath(auction.id)}
+              aria-label={`Request a bid: ${auction.title}`}
+            >
+              Request a bid
+            </ButtonLink>
+          ) : (
+            <ButtonLink className="auction-card__action" to={auctionPath(auction.id)} aria-label={`View details: ${auction.title}`}>
+              View details
+            </ButtonLink>
+          )}
         </>
       }
     />

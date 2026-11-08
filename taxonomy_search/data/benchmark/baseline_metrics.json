@@ -1,0 +1,56 @@
+{
+  "keyword_raw": {
+    "precision@10": 0.535,
+    "recall@50": 0.453,
+    "ndcg@10": 0.574,
+    "mrr": 0.6,
+    "mean_ms": 2.4,
+    "p95_ms": 12.4,
+    "zero_result_queries": 7
+  },
+  "keyword_content": {
+    "precision@10": 0.525,
+    "recall@50": 0.432,
+    "ndcg@10": 0.582,
+    "mrr": 0.71,
+    "mean_ms": 1.1,
+    "p95_ms": 4.3,
+    "zero_result_queries": 4
+  },
+  "semantic_only": {
+    "precision@10": 0.445,
+    "recall@50": 0.345,
+    "ndcg@10": 0.463,
+    "mrr": 0.642,
+    "mean_ms": 25.4,
+    "p95_ms": 109.7,
+    "zero_result_queries": 0
+  },
+  "taxonomy_only": {
+    "precision@10": 0.6,
+    "recall@50": 0.693,
+    "ndcg@10": 0.678,
+    "mrr": 0.76,
+    "mean_ms": 15.5,
+    "p95_ms": 129.6,
+    "zero_result_queries": 0
+  },
+  "hybrid_exact": {
+    "precision@10": 0.725,
+    "recall@50": 0.662,
+    "ndcg@10": 0.819,
+    "mrr": 0.925,
+    "mean_ms": 19.1,
+    "p95_ms": 69.8,
+    "zero_result_queries": 0
+  },
+  "hybrid_broad": {
+    "precision@10": 0.795,
+    "recall@50": 0.828,
+    "ndcg@10": 0.88,
+    "mrr": 0.967,
+    "mean_ms": 30.7,
+    "p95_ms": 58.0,
+    "zero_result_queries": 0
+  }
+}

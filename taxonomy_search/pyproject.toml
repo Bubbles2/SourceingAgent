@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "auction-search"
+version = "0.1.0"
+description = "Taxonomy-driven natural-language search for auction lots (Drouot data in PostgreSQL)."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "SQLAlchemy>=2.0.30",
+    "psycopg[binary]>=3.2",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+    "alembic>=1.13",          # Phase 2: versioned migrations for the auction_search schema
+    "PyYAML>=6.0",            # Phase 2: human-editable taxonomy seed files
+]
+
+[project.optional-dependencies]
+# Core taxonomy, classification, keyword/taxonomy search and evaluation need only the
+# dependencies above. Extras add the heavier pieces; all of them are installed in this .venv.
+dev = [
+    "pytest>=8.0",
+]
+analysis = ["pandas>=2.2"]                                       # optional notebooks; not used by the code
+embeddings = [                                                   # Phase 5: semantic channel
+    "sentence-transformers>=3.0",                                # pulls torch, numpy, transformers
+    "pgvector>=0.3",
+]
+api = ["fastapi>=0.115", "uvicorn>=0.30", "httpx>=0.27"]         # Phases 6-8: HTTP API (httpx for TestClient)
+all = ["auction-search[dev,embeddings,api]"]
+
+[project.scripts]
+auction-search = "auction_search.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+markers = [
+    "integration: tests that need the live PostgreSQL database (skipped when it is unreachable)",
+]

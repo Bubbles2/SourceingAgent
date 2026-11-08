@@ -85,6 +85,23 @@ export async function listLots(
   return { lots: page.rows, total: count.rows[0]?.total ?? 0 }
 }
 
+/** A lot found by search, with its sale and whether a bid can still be requested */
+export type FoundLotRecord = LotWithAuctionRecord & { saleOpen: boolean }
+
+/** Lots by id with their sale, in the order of `ids` (the search ranking); ids no longer listed are skipped. */
+export async function findLotsByIds(ids: readonly string[]): Promise<FoundLotRecord[]> {
+  if (ids.length === 0) return []
+  const { rows } = await pool.query<FoundLotRecord>(
+    `SELECT ${lotColumns}, a.title AS "auctionTitle", a.starts_at AS "auctionStartsAt", ${parisSaleDate} AS "auctionDate",
+       a.location AS "auctionLocation", ${saleIsOpen} AS "saleOpen"
+     FROM lots l JOIN auctions a ON a.id = l.auction_id
+     WHERE l.id = ANY($1::bigint[])`,
+    [ids],
+  )
+  const byId = new Map(rows.map((row) => [String(row.id), row]))
+  return ids.flatMap((id) => byId.get(id) ?? [])
+}
+
 /** Every lot of one sale (a database id), in catalogue order */
 export async function listLotSummaries(auctionId: string): Promise<LotSummaryRecord[]> {
   const { rows } = await pool.query<LotSummaryRecord>(

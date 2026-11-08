@@ -1,5 +1,6 @@
 // npm run sale:test -- e2e-abc-sale [days ahead, default 7] [lots, default 3] [Paris time, default 14:00]
-// Development only. Adds a sale for automated tests (testSales.ts) and prints its ids as JSON.
+// Development only. Adds a sale for automated tests to test_auctions and test_lots (testSales.ts),
+// where the auctions and lots views show it beside the collector's sales, and prints its ids as JSON.
 // Only test ids are accepted, so npm run test:cleanup -- e2e- removes it again.
 import { config } from '../config/env.ts'
 import { closePool, withTransaction } from '../db/pool.ts'

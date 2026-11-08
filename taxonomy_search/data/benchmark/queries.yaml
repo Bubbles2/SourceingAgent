@@ -1,0 +1,61 @@
+# Search benchmark (Phase 9).
+#
+# Relevance rules were written BEFORE running any system, from the brief's example searches plus
+# common auction queries. They use the Drouot category (assigned by the auction house — independent
+# of this project) and regular expressions on the lot's French/English title and description.
+# They are PROVISIONAL, RULE-BASED labels, not human judgements: data/benchmark/judgements_to_review.csv
+# lists the pooled results for a person to label; data/benchmark/human_labels.csv (columns query_id,
+# lot_id, relevant = 1/0) then overrides these rules wherever it has a label.
+#
+# Rule: a lot is relevant when ALL conditions hold.
+#   categories: Drouot category_fr is one of these
+#   text:       regex (case-insensitive) matches title or description (French or English)
+#   title:      regex matches the French or English title
+#   any:        list of alternative rule sets, one must hold
+
+furniture_categories: &furniture [Mobilier, Commodes, Tables, Fauteuils, Chaises, Bureaux, Bibliothèques, Buffets,
+                                  Consoles, Canapés et banquettes, Lits, Miroirs, Paravents, Tabourets, Sieges, Coffres]
+
+queries:
+  - {id: q01, query: "Find auctions selling shoes", language: en,
+     relevant: {any: [{categories: [Chaussures]},
+                      {title: "\\b(chaussures?|souliers?|bottines?|escarpins?|sandales?|mocassins?|sneakers?|shoes?|loafers?|sandals?|pumps)\\b"}]}}
+  - {id: q02, query: "Find Louis XIV furniture", language: en,
+     relevant: {categories: *furniture, text: "louis\\s*xiv"}}
+  - {id: q03, query: "commode d'époque Louis XIV", language: fr,
+     relevant: {categories: [Commodes], text: "[ée]poque\\s+louis\\s*xiv|louis\\s*xiv[- ](period|era)"}}
+  - {id: q04, query: "Find French eighteenth-century armchairs", language: en,
+     relevant: {any: [{categories: [Fauteuils]}, {title: "\\b(fauteuils?|berg[èe]res?|armchairs?)\\b"}],
+                text: "xviii|18e|18th|eighteenth|louis\\s*xv|r[ée]gence|transition"}}
+  - {id: q05, query: "Find antique furniture with Boulle marquetry", language: en,
+     relevant: {categories: *furniture, text: "boulle|[ée]caille (rouge )?et (de )?laiton|tortoiseshell and brass"}}
+  - {id: q06, query: "Find vintage designer handbags", language: en,
+     relevant: {categories: [Sacs à main]}}
+  - {id: q07, query: "Find French Baroque cabinets", language: en,
+     relevant: {text: "baroque", title: "\\b(cabinets?|meubles?|armoires?|buffets?)\\b"}}
+  - {id: q08, query: "diamond ring in white gold", language: en,
+     relevant: {categories: [Bagues], text: "(or blanc|or gris|white gold).*diamant|diamant.*(or blanc|or gris|white gold)|diamond"}}
+  - {id: q09, query: "Chinese porcelain vase", language: en,
+     relevant: {text: "chin|qing|ming|kangxi", title: "\\bvases?\\b", any: [{text: "porcelaine|porcelain"}]}}
+  - {id: q10, query: "bague en or", language: fr,
+     relevant: {categories: [Bagues], text: "\\bor\\b|\\bgold\\b"}}
+  - {id: q11, query: "montre bracelet", language: fr,
+     relevant: {categories: [Montres, Montres et horlogerie]}}
+  - {id: q12, query: "tapis persan", language: fr,
+     relevant: {categories: [Tapis], text: "pers|iran|ispahan|tabriz|kashan|qom|heriz|bakhtiar"}}
+  - {id: q13, query: "icône russe", language: fr,
+     relevant: {categories: [Icônes], text: "russ"}}
+  - {id: q14, query: "pièces de monnaie en or", language: fr,
+     relevant: {categories: [Pièces et billets], text: "\\bor\\b|\\bgold\\b|ducat|napol[ée]on"}}
+  - {id: q15, query: "Art Deco lamp", language: en,
+     relevant: {categories: [Lampes et lanternes, Luminaires, Lampadaire, Appliques, Lustres], text: "art\\s*d[ée]co"}}
+  - {id: q16, query: "bronze sculpture", language: en,
+     relevant: {any: [{categories: [Bronzes]}, {categories: [Sculptures], text: "bronze"}]}}
+  - {id: q17, query: "mobilier Napoléon III", language: fr,
+     relevant: {categories: *furniture, text: "napol[ée]on\\s*iii|second empire"}}
+  - {id: q18, query: "silver cutlery", language: en,
+     relevant: {any: [{categories: [Ménagères et Couverts]}, {categories: [Argenterie], text: "couverts?|cutlery|ménagère|flatware"}]}}
+  - {id: q19, query: "timbres-poste", language: fr,
+     relevant: {categories: [Timbres-poste]}}
+  - {id: q20, query: "Hermès silk scarf", language: en,
+     relevant: {text: "herm[eè]s", any: [{text: "carr[ée]|foulard|scarf|[ée]charpe"}]}}

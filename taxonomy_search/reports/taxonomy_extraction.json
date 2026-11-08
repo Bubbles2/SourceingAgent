@@ -1,0 +1,1028 @@
+{
+  "extraction": {
+    "started_at": "2026-11-07T19:31:33+00:00",
+    "finished_at": "2026-11-07T19:31:43+00:00",
+    "extractor_version": "3.3",
+    "gazetteer_terms": 512,
+    "lots_total_in_source": 20923,
+    "lots_processed": 20923,
+    "resumed_from_lot_id": 0,
+    "cache_hits": 0,
+    "duplicate_content_reused": 153,
+    "extracted": 20770,
+    "skipped_fields": {
+      "title_fr": 48,
+      "title_en": 220,
+      "description_fr": 433,
+      "description_en": 1003
+    },
+    "mentions_by_extractor": {
+      "gazetteer": 49890,
+      "material_en": 16252,
+      "object_head": 9969,
+      "technique_lexicon": 8297,
+      "region_lexicon": 7605,
+      "century": 4381,
+      "maker_header": 2577,
+      "brand_header": 2497,
+      "object_compound": 2155,
+      "maker_by": 1252,
+      "style": 1122,
+      "maker_attribution": 545,
+      "period_epoque": 487,
+      "material_trigger": 476
+    },
+    "seconds": 10.0,
+    "ai_tokens_used": 0,
+    "output": "/Users/dcfinlay/Development/AI/taxonomy_driven_search/.cache/extraction/lots.jsonl"
+  },
+  "params": {
+    "min_lots": 3,
+    "max_evidence": 5,
+    "min_dice": 0.2,
+    "parent_share": 0.5
+  },
+  "candidates_by_dimension": {
+    "maker": 252,
+    "material": 544,
+    "object_type": 835,
+    "period": 41,
+    "region": 23,
+    "style": 45,
+    "technique": 20
+  },
+  "below_threshold": {
+    "material": 1066,
+    "maker": 3475,
+    "object_type": 2751,
+    "style": 323,
+    "period": 100
+  },
+  "dropped": {
+    "maker: matches an existing concept": 3,
+    "material: matches an existing concept": 14,
+    "region: matches an existing concept": 4,
+    "object_type: is a maker/brand name": 27,
+    "period: matches an existing concept": 8,
+    "maker: capitalised title heading in a single auction only": 115,
+    "material: label belongs to an existing concept of another dimension": 22,
+    "technique: matches an existing concept": 1,
+    "style: matches an existing concept": 6,
+    "maker: label belongs to an existing concept of another dimension": 1
+  },
+  "validation": {
+    "footwear": {
+      "concepts": [
+        {
+          "concept": "fashion.footwear",
+          "lots": 23,
+          "ambiguous_lots": 0,
+          "auctions": 15,
+          "top_categories": [
+            [
+              "Arts d'Asie",
+              5
+            ],
+            [
+              "Tableaux anciens",
+              2
+            ],
+            [
+              "Céramiques",
+              2
+            ]
+          ],
+          "en_labels": [
+            "Footwear",
+            "Shoes"
+          ],
+          "en_alignment": "shoe",
+          "examples": [
+            "lot 1403: Lots de vêtements et chaussures vendu en vrac de 11h à 12h.",
+            "lot 2391: …on executed for the nursery rhyme,1, 2, Buckle My Shoe, (Princeton University Library's children'sbook c…",
+            "lot 2427: …se autour de la taille fine de la jeune mère, les chaussures rouges sur ses pieds gracieux de danseuse, qui s’…"
+          ]
+        },
+        {
+          "concept": "fashion.footwear.ankle_boots",
+          "lots": 1,
+          "ambiguous_lots": 0,
+          "auctions": 1,
+          "top_categories": [
+            [
+              "Chaussures",
+              1
+            ]
+          ],
+          "en_labels": [
+            "Ankle boots",
+            "Booties"
+          ],
+          "en_alignment": null,
+          "examples": [
+            "lot 10343: Zaha Hadid pour Lacoste, bottines pour femme, comme neuves, dans leur boîte d'origi…"
+          ]
+        },
+        {
+          "concept": "fashion.footwear.boots",
+          "lots": 5,
+          "ambiguous_lots": 0,
+          "auctions": 5,
+          "top_categories": [
+            [
+              "Chaussures",
+              2
+            ],
+            [
+              "Photographies",
+              1
+            ],
+            [
+              "Bronzes",
+              1
+            ]
+          ],
+          "en_labels": [
+            "Boots"
+          ],
+          "en_alignment": "boot",
+          "examples": [
+            "lot 7320: Jean PROESS (1896-1978), Bottes de blé.",
+            "lot 10343: Zaha Hadid for Lacoste, women’s boots, as new, in original box, rare!",
+            "lot 16337: …ire. Les deux mains dans les poches, une paire de bottes sous le bras, le garçon se promène. Le drapé très…"
+          ]
+        },
+        {
+          "concept": "fashion.footwear.high_heels",
+          "lots": 51,
+          "ambiguous_lots": 51,
+          "auctions": 6,
+          "top_categories": [
+            [
+              "Armes",
+              43
+            ],
+            [
+              "Chaussures",
+              3
+            ],
+            [
+              "Casques et uniformes",
+              1
+            ]
+          ],
+          "en_labels": [
+            "Heels",
+            "High heels",
+            "High-heeled shoes"
+          ],
+          "en_alignment": "officer",
+          "examples": [
+            "lot 3718: …ne alternating fuller on each side, signed at the heel: “Coulaux” and “Klingenthal,” engraved with the d…",
+            "lot 3741: …ron trigger guard and upper part of the buttstock heel; sturdy buttstock of veined walnut, hallmarked, w…",
+            "lot 3750: …ite-polished blade, with a flat back, flat at the heel, featuring a single groove along half its length,…"
+          ]
+        },
+        {
+          "concept": "fashion.footwear.loafers",
+          "lots": 1,
+          "ambiguous_lots": 0,
+          "auctions": 1,
+          "top_categories": [
+            [
+              "Chaussures",
+              1
+            ]
+          ],
+          "en_labels": [
+            "Loafers",
+            "Moccasins",
+            "Slip-ons"
+          ],
+          "en_alignment": null,
+          "examples": [
+            "lot 18477: Mocassins à mors de cheval en toile à monogramme bleu turqu…"
+          ]
+        },
+        {
+          "concept": "fashion.footwear.pumps",
+          "lots": 14,
+          "ambiguous_lots": 13,
+          "auctions": 12,
+          "top_categories": [
+            [
+              "Voitures, vélos et autres",
+              4
+            ],
+            [
+              "Buffets",
+              1
+            ],
+            [
+              "Livres religieux",
+              1
+            ]
+          ],
+          "en_labels": [
+            "Court shoes",
+            "Pumps"
+          ],
+          "en_alignment": "pump",
+          "examples": [
+            "lot 1322: …🔩 Work performed in 2020: - Timing belt and water pump replacement - Replacement of accessory belts - Re…",
+            "lot 1325: …e is powered by a Bosch mechanical fuel injection pump, and the entire mechanical system was in very goo…",
+            "lot 4721: …TV set (black and white) emerges via a hydraulic pump system. Closed configuration: 56 cm (h) x 56 x 56…"
+          ]
+        },
+        {
+          "concept": "fashion.footwear.sandals",
+          "lots": 5,
+          "ambiguous_lots": 0,
+          "auctions": 3,
+          "top_categories": [
+            [
+              "Chaussures",
+              2
+            ],
+            [
+              "Bronzes",
+              1
+            ],
+            [
+              "Bois",
+              1
+            ]
+          ],
+          "en_labels": [
+            "Sandals"
+          ],
+          "en_alignment": null,
+          "examples": [
+            "lot 9992: …héroïque, vêtu uniquement d’un pagne, chaussé de sandales lacées (talaria) et coiffé d’un chapeau de voyage…",
+            "lot 10015: …l'ourlet laisse apparaître deux pieds chaussés de sandales « romaines ». Sculpture en bois de chêne en ronde…",
+            "lot 18479: Sandales à talons Prada, modèle \"Crystal\" en cuir Saffiano…"
+          ]
+        },
+        {
+          "concept": "fashion.footwear.sneakers",
+          "lots": 5,
+          "ambiguous_lots": 2,
+          "auctions": 4,
+          "top_categories": [
+            [
+              "Chaussures",
+              2
+            ],
+            [
+              "Commodes",
+              1
+            ],
+            [
+              "Chaises",
+              1
+            ]
+          ],
+          "en_labels": [
+            "Sneakers",
+            "Trainers"
+          ],
+          "en_alignment": "sneaker",
+          "examples": [
+            "lot 1227: PAIRE DE SNEAKERS \"ACE\" en toile enduite suprême GG verte et bandes…",
+            "lot 6964: …quetry decoration of ribboned flower and bouquets baskets. It opens to two drawers sans traverse. Ornamenta…",
+            "lot 7047: …of eight armchairs and eight chairs in beech With basket-handle shape backrests, decorated with an openwor…"
+          ]
+        }
+      ],
+      "shoes_category_lots": 12,
+      "shoes_category_lots_with_unambiguous_footwear_term": 9,
+      "shoes_category_lots_without": [
+        3858,
+        4039,
+        4042
+      ],
+      "lots_with_unambiguous_footwear_term": 38,
+      "of_which_outside_shoes_category": 29,
+      "new_candidates": []
+    },
+    "louis_xiv": {
+      "era": [
+        {
+          "name": "louis_xiii",
+          "period_lots": 0,
+          "style_lots": 0,
+          "both": 0
+        },
+        {
+          "name": "louis_xiv",
+          "period_lots": 5,
+          "style_lots": 7,
+          "both": 0
+        },
+        {
+          "name": "regence",
+          "period_lots": 6,
+          "style_lots": 9,
+          "both": 0
+        },
+        {
+          "name": "louis_xv",
+          "period_lots": 14,
+          "style_lots": 90,
+          "both": 0
+        },
+        {
+          "name": "louis_xvi",
+          "period_lots": 36,
+          "style_lots": 95,
+          "both": 1
+        },
+        {
+          "name": "napoleon_iii",
+          "period_lots": 58,
+          "style_lots": 21,
+          "both": 0
+        }
+      ],
+      "period_louis_xiv": {
+        "concept": "period.louis_xiv",
+        "lots": 5,
+        "ambiguous_lots": 0,
+        "auctions": 3,
+        "top_categories": [
+          [
+            "Commodes",
+            2
+          ],
+          [
+            "Médaille historique",
+            1
+          ],
+          [
+            "Tables",
+            1
+          ]
+        ],
+        "en_labels": [
+          "Louis Quatorze period",
+          "Louis XIV period",
+          "Reign of Louis XIV"
+        ],
+        "en_alignment": "xiv period",
+        "examples": [
+          "lot 3672: Époque Louis XIV. Très bon état.",
+          "lot 6928: …aille rouge, laiton et étain par Nicolas Sageot d'époque Louis XIV",
+          "lot 6933: …placage de noyer, d'amarante et de palissandre d'époque Louis XIV"
+        ]
+      },
+      "style_louis_xiv": {
+        "concept": "style.louis_xiv",
+        "lots": 7,
+        "ambiguous_lots": 0,
+        "auctions": 4,
+        "top_categories": [
+          [
+            "Cadres",
+            2
+          ],
+          [
+            "Tableaux anciens",
+            2
+          ],
+          [
+            "Vases",
+            1
+          ]
+        ],
+        "en_labels": [
+          "Louis Quatorze style",
+          "Louis XIV style"
+        ],
+        "en_alignment": "xiv style",
+        "examples": [
+          "lot 6442: …s et stuc peint et patiné, à décor à la Bérain de style Louis XIV. Estampille et étiquette en papier d'origine (acc…",
+          "lot 7059: …rose et monture en bronzé doré par Susse Frères, style Louis XIV de la seconde partie du XIXe siècle",
+          "lot 11346: …Encadré sous verre dans un cadre en stuc doré de style Louis XIV. L'œuvre n'a pas été encadrée. Insensiblement bru…"
+        ]
+      },
+      "boulle_marquetry": {
+        "concept": "technique.boulle_marquetry",
+        "lots": 18,
+        "ambiguous_lots": 12,
+        "auctions": 10,
+        "top_categories": [
+          [
+            "Tables",
+            4
+          ],
+          [
+            "Commodes",
+            3
+          ],
+          [
+            "Coffrets et boîtes",
+            3
+          ]
+        ],
+        "en_labels": [
+          "Boulle",
+          "Boulle marquetry",
+          "Boulle work",
+          "Buhl",
+          "Buhl marquetry",
+          "Buhl work"
+        ],
+        "en_alignment": "boulle",
+        "examples": [
+          "lot 3009: …dans un coffret à décor en marqueterie de style \"Boulle\". Fin du XIXe et XXe siècle. (petits éclats et ma…",
+          "lot 3095: Cartel de forme mouvementée en marqueterie d'écaille et de laiton",
+          "lot 3581: SEMAINIER en bois noirci et marqueterie BOULLE. Dessus de marbre blanc."
+        ]
+      },
+      "boulle_with_louis_xiv_period": [
+        6928
+      ],
+      "boulle_with_louis_xiv_style": [],
+      "related_candidates": [
+        {
+          "key": "period.empire",
+          "label_fr": "Époque Empire",
+          "label_en": "Empire period",
+          "lots": 25,
+          "relationships": []
+        },
+        {
+          "key": "period.louis_philippe",
+          "label_fr": "Époque Louis-Philippe",
+          "label_en": "Louis-Philippe period",
+          "lots": 7,
+          "relationships": []
+        },
+        {
+          "key": "period.premier_empire",
+          "label_fr": "Époque Premier-Empire",
+          "label_en": "Premier-Empire period",
+          "lots": 51,
+          "relationships": []
+        },
+        {
+          "key": "period.second_empire",
+          "label_fr": "Époque Second-Empire",
+          "label_en": "Second-Empire period",
+          "lots": 25,
+          "relationships": []
+        },
+        {
+          "key": "style.empire",
+          "label_fr": "Style Empire",
+          "label_en": "Empire style",
+          "lots": 25,
+          "relationships": [
+            [
+              "originated_in_period",
+              "period.empire"
+            ]
+          ]
+        },
+        {
+          "key": "style.louis_xv_bois",
+          "label_fr": "Style Louis XV Bois",
+          "label_en": "Hardware Alep style",
+          "lots": 5,
+          "relationships": []
+        },
+        {
+          "key": "style.neo_louis_xv",
+          "label_fr": "Style néo Louis XV",
+          "label_en": "néo Louis XV style",
+          "lots": 13,
+          "relationships": []
+        },
+        {
+          "key": "style.neo_transition_louis",
+          "label_fr": "Style néo Transition Louis",
+          "label_en": "néo Transition Louis style",
+          "lots": 3,
+          "relationships": []
+        }
+      ]
+    }
+  },
+  "import": {
+    "version_id": 5,
+    "version_label": "0.2.0",
+    "considered": 1760,
+    "below_min_confidence": 808,
+    "concepts_inserted": 0,
+    "concepts_refreshed": 952,
+    "concepts_kept_reviewed": 0,
+    "terms_inserted": 0,
+    "relationships_inserted": 0,
+    "evidence_inserted": 0,
+    "attestations_recorded": 163,
+    "skipped": {
+      "en label already preferred by another material": 3,
+      "en label already preferred by another object_type": 21
+    },
+    "version_totals": {
+      "taxonomy_concepts": 952,
+      "taxonomy_terms": 1748,
+      "taxonomy_relationships": 290,
+      "taxonomy_evidence (all versions)": 5400
+    }
+  },
+  "import_mode": "committed",
+  "ai_tokens_used": 0,
+  "variant_suggestions": [
+    {
+      "dimension": "material",
+      "a": "material.bois_noir",
+      "b": "material.bois_noirci",
+      "label_a": "bois noir",
+      "label_b": "bois noirci",
+      "ratio": 0.9
+    },
+    {
+      "dimension": "material",
+      "a": "material.differente",
+      "b": "material.different",
+      "label_a": "differentes",
+      "label_b": "differents",
+      "ratio": 0.952
+    },
+    {
+      "dimension": "material",
+      "a": "material.formant",
+      "b": "material.format",
+      "label_a": "formant",
+      "label_b": "format",
+      "ratio": 0.923
+    },
+    {
+      "dimension": "material",
+      "a": "material.plexiglas",
+      "b": "material.plexiglass",
+      "label_a": "plexiglas",
+      "label_b": "plexiglass",
+      "ratio": 0.947
+    },
+    {
+      "dimension": "material",
+      "a": "material.porcelaine_bleu",
+      "b": "material.porcelaine_bleue",
+      "label_a": "porcelaine bleu",
+      "label_b": "porcelaine bleue",
+      "ratio": 0.968
+    },
+    {
+      "dimension": "material",
+      "a": "material.retrait",
+      "b": "material.retraite",
+      "label_a": "retrait",
+      "label_b": "retraite",
+      "ratio": 0.933
+    },
+    {
+      "dimension": "object_type",
+      "a": "object_type.august",
+      "b": "fine_art.prints.lithographs.auguste",
+      "label_a": "august",
+      "label_b": "auguste",
+      "ratio": 0.923
+    },
+    {
+      "dimension": "object_type",
+      "a": "object_type.bernard",
+      "b": "fine_art.prints.lithographs.bernhard",
+      "label_a": "bernard",
+      "label_b": "bernhard",
+      "ratio": 0.933
+    },
+    {
+      "dimension": "object_type",
+      "a": "object_type.bouteille_a_priser",
+      "b": "object_type.bouteille_a_prisse",
+      "label_a": "bouteille a priser",
+      "label_b": "bouteille a prisse",
+      "ratio": 0.944
+    },
+    {
+      "dimension": "object_type",
+      "a": "books_manuscripts.comics.chevalier",
+      "b": "jewellery_watches.jewellery.rings.chevaliere",
+      "label_a": "chevalier",
+      "label_b": "chevaliere",
+      "ratio": 0.947
+    },
+    {
+      "dimension": "object_type",
+      "a": "decorative_arts.silver.cutlery.cuillere",
+      "b": "decorative_arts.silver.cutlery.cuiller",
+      "label_a": "cuilleres",
+      "label_b": "cuillers",
+      "ratio": 0.941
+    },
+    {
+      "dimension": "object_type",
+      "a": "numismatics.medals.etoile",
+      "b": "decorative_arts.textiles.etole",
+      "label_a": "etoile",
+      "label_b": "etole",
+      "ratio": 0.909
+    },
+    {
+      "dimension": "object_type",
+      "a": "decorative_arts.carpets.keschan",
+      "b": "decorative_arts.carpets.keshan",
+      "label_a": "keschan",
+      "label_b": "keshan",
+      "ratio": 0.923
+    },
+    {
+      "dimension": "period",
+      "a": "period.ming",
+      "b": "period.qing",
+      "label_a": "epoque ming",
+      "label_b": "epoque qing",
+      "ratio": 0.909
+    },
+    {
+      "dimension": "period",
+      "a": "period.12th_century",
+      "b": "period.13th_century",
+      "label_a": "xiie siecle",
+      "label_b": "xiiie siecle",
+      "ratio": 0.957
+    },
+    {
+      "dimension": "style",
+      "a": "style.archaique_chinois",
+      "b": "style.archaique_chinoise",
+      "label_a": "style archaique chinois",
+      "label_b": "style archaique chinoise",
+      "ratio": 0.979
+    },
+    {
+      "dimension": "style",
+      "a": "style.neo_classique",
+      "b": "style.neoclassique",
+      "label_a": "style neo classique",
+      "label_b": "style neoclassique",
+      "ratio": 0.973
+    }
+  ],
+  "synonym_suggestions": [
+    {
+      "dimension": "material",
+      "english": "albert wigand",
+      "concepts": [
+        "material.collage",
+        "material.lusace"
+      ]
+    },
+    {
+      "dimension": "material",
+      "english": "burl wood",
+      "concepts": [
+        "material.bois_de_loupe",
+        "material.bois_de_racine"
+      ]
+    },
+    {
+      "dimension": "material",
+      "english": "otto lange",
+      "concepts": [
+        "material.croatie",
+        "material.ile_de_france"
+      ]
+    },
+    {
+      "dimension": "material",
+      "english": "terracotta",
+      "concepts": [
+        "material.terracotta",
+        "material.terre"
+      ]
+    },
+    {
+      "dimension": "material",
+      "english": "token obverse",
+      "concepts": [
+        "material.abrege",
+        "material.exergue"
+      ]
+    },
+    {
+      "dimension": "material",
+      "english": "veit hofmann",
+      "concepts": [
+        "material.bulgarie",
+        "material.pologne"
+      ]
+    },
+    {
+      "dimension": "material",
+      "english": "white porcelain",
+      "concepts": [
+        "material.porcelaine_blanche",
+        "material.porcelaine_bleue"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "ammunition",
+      "concepts": [
+        "arms_militaria.arms.munition",
+        "object_type.munition_de_categorie"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "bottle qing",
+      "concepts": [
+        "object_type.fiole",
+        "object_type.fiole_a_tabac"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "brush pot",
+      "concepts": [
+        "object_type.pot",
+        "object_type.pot_a_pinceau"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "brush washer",
+      "concepts": [
+        "object_type.lavoir",
+        "object_type.lavoir_a_pinceau"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "centrepiece",
+      "concepts": [
+        "object_type.centre",
+        "object_type.centre_de_table"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "champagne bucket",
+      "concepts": [
+        "object_type.seau",
+        "object_type.seau_a_champagne"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "chess set",
+      "concepts": [
+        "object_type.jeu",
+        "object_type.jeu_d_echec"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "cigarette case",
+      "concepts": [
+        "object_type.etui",
+        "object_type.etui_a_cigarette"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "dagger",
+      "concepts": [
+        "arms_militaria.arms.dague",
+        "arms_militaria.arms.poignard"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "ear clip",
+      "concepts": [
+        "jewellery_watches.jewellery.earrings.clip",
+        "object_type.clip_d_oreille"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "fireplace screen",
+      "concepts": [
+        "furniture.screens.ecran",
+        "object_type.ecran_de_cheminee"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "flintlock pistol",
+      "concepts": [
+        "arms_militaria.arms.pistolet",
+        "object_type.pistolet_a_silex"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "guest towel",
+      "concepts": [
+        "decorative_arts.textiles.serviette",
+        "object_type.serviette_d_invite"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "holy week",
+      "concepts": [
+        "books_manuscripts.antiquarian_books.reliure",
+        "object_type.reliure_aux_arme"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "hoop earring",
+      "concepts": [
+        "jewellery_watches.jewellery.earrings.creole",
+        "jewellery_watches.jewellery.earrings.dormeuse"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "hunting knife",
+      "concepts": [
+        "arms_militaria.arms.couteau",
+        "object_type.couteau_de_chasse"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "hunting rifle",
+      "concepts": [
+        "arms_militaria.arms.fusil",
+        "object_type.fusil_de_chasse"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "incense burner",
+      "concepts": [
+        "object_type.bruleur",
+        "object_type.bruleur_d_encen"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "jade disc",
+      "concepts": [
+        "object_type.disque",
+        "object_type.disque_de_jade"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "kitchen utensil",
+      "concepts": [
+        "object_type.ustensile",
+        "object_type.ustensile_de_cuisine"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "kovcheg tempera",
+      "concepts": [
+        "fine_art.paintings.icons.iconostase",
+        "object_type.iconostase_de_voyage"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "lalande",
+      "concepts": [
+        "object_type.lalande_de_pomerol",
+        "wine_spirits.wine.lalande"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "lamp base",
+      "concepts": [
+        "object_type.pied",
+        "object_type.pied_de_lampe"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "liqueur cabinet",
+      "concepts": [
+        "decorative_arts.glass.cave",
+        "object_type.cave_a_liqueur"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "oil vial",
+      "concepts": [
+        "decorative_arts.religious_objects.ampoule",
+        "object_type.ampoule_a_sainte"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "postcard album",
+      "concepts": [
+        "object_type.album",
+        "object_type.album_de_carte"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "radiator cap",
+      "concepts": [
+        "fine_art.sculpture.bronzes.bouchon",
+        "object_type.bouchon_de_radiateur"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "ring setting",
+      "concepts": [
+        "jewellery_watches.jewellery.rings.monture",
+        "object_type.monture_de_bague"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "saber",
+      "concepts": [
+        "arms_militaria.arms.sabre",
+        "object_type.sabre_d_officier"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "scratche stain",
+      "concepts": [
+        "fashion.accessories.ombrelle",
+        "object_type.ombrelle_a_poignee"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "silicone",
+      "concepts": [
+        "jewellery_watches.jewellery.earrings.bouton",
+        "object_type.bouton_d_oreille"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "snuff bottle",
+      "concepts": [
+        "object_type.bouteille",
+        "object_type.bouteille_a_tabac"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "stud earring",
+      "concepts": [
+        "jewellery_watches.jewellery.earrings.clous",
+        "object_type.clous_d_oreille"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "style nightstand",
+      "concepts": [
+        "object_type.chevet",
+        "object_type.chevet_de_style"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "sumba ikat",
+      "concepts": [
+        "decorative_arts.carpets.ikat",
+        "object_type.ikat_de_sumba"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "sunglasse",
+      "concepts": [
+        "fashion.accessories.lunette",
+        "object_type.lunette_de_soleil"
+      ]
+    },
+    {
+      "dimension": "object_type",
+      "english": "typewriter",
+      "concepts": [
+        "object_type.machine",
+        "object_type.machine_a_ecrire"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,225 @@
+{
+  "schema": "drouot_collector",
+  "auctions": {
+    "table": "auctions",
+    "primary_key": [
+      "id"
+    ],
+    "columns": {
+      "identifier": [
+        {
+          "name": "id",
+          "language": null
+        },
+        {
+          "name": "auction_id",
+          "language": null
+        }
+      ],
+      "source": [
+        {
+          "name": "source",
+          "language": null
+        }
+      ],
+      "title": [
+        {
+          "name": "title_fr",
+          "language": "fr"
+        },
+        {
+          "name": "title_en",
+          "language": "en"
+        }
+      ],
+      "description": [
+        {
+          "name": "description_fr",
+          "language": "fr"
+        },
+        {
+          "name": "description_en",
+          "language": "en"
+        }
+      ],
+      "date": [
+        {
+          "name": "starts_at",
+          "language": null
+        },
+        {
+          "name": "auction_date",
+          "language": null
+        }
+      ],
+      "auction_house": [
+        {
+          "name": "auction_house",
+          "language": null
+        }
+      ],
+      "count": [
+        {
+          "name": "catalogue_page_count",
+          "language": null
+        }
+      ],
+      "url": [
+        {
+          "name": "auction_url_fr",
+          "language": "fr"
+        },
+        {
+          "name": "auction_url_en",
+          "language": "en"
+        }
+      ],
+      "status": [
+        {
+          "name": "details_status",
+          "language": null
+        },
+        {
+          "name": "catalogue_status",
+          "language": null
+        }
+      ],
+      "error": [
+        {
+          "name": "last_error",
+          "language": null
+        }
+      ],
+      "record_timestamp": [
+        {
+          "name": "updated_at",
+          "language": null
+        }
+      ]
+    }
+  },
+  "lots": {
+    "table": "lots",
+    "primary_key": [
+      "id"
+    ],
+    "columns": {
+      "identifier": [
+        {
+          "name": "id",
+          "language": null
+        },
+        {
+          "name": "auction_id",
+          "language": null
+        },
+        {
+          "name": "lot_id",
+          "language": null
+        },
+        {
+          "name": "last_collected_run_id",
+          "language": null
+        }
+      ],
+      "source": [
+        {
+          "name": "source",
+          "language": null
+        }
+      ],
+      "lot_number": [
+        {
+          "name": "lot_number",
+          "language": null
+        }
+      ],
+      "title": [
+        {
+          "name": "title_fr",
+          "language": "fr"
+        },
+        {
+          "name": "title_en",
+          "language": "en"
+        }
+      ],
+      "description": [
+        {
+          "name": "description_fr",
+          "language": "fr"
+        },
+        {
+          "name": "description_en",
+          "language": "en"
+        }
+      ],
+      "category": [
+        {
+          "name": "category_fr",
+          "language": "fr"
+        },
+        {
+          "name": "category_en",
+          "language": "en"
+        }
+      ],
+      "currency": [
+        {
+          "name": "currency",
+          "language": null
+        }
+      ],
+      "image_url": [
+        {
+          "name": "image_url",
+          "language": null
+        }
+      ],
+      "url": [
+        {
+          "name": "lot_url_fr",
+          "language": "fr"
+        },
+        {
+          "name": "lot_url_en",
+          "language": "en"
+        }
+      ],
+      "status": [
+        {
+          "name": "details_status",
+          "language": null
+        }
+      ],
+      "error": [
+        {
+          "name": "last_error",
+          "language": null
+        }
+      ],
+      "record_timestamp": [
+        {
+          "name": "updated_at",
+          "language": null
+        }
+      ]
+    }
+  },
+  "join_columns": [
+    [
+      "source",
+      "source"
+    ],
+    [
+      "auction_id",
+      "auction_id"
+    ]
+  ],
+  "confident": true,
+  "evidence": [
+    "auction table 'auctions' chosen from candidates auctions(score 5), run_auctions(score 1)",
+    "lot table 'lots' chosen from candidates lots(score 7)",
+    "foreign key lots(source, auction_id) -> auctions(source, auction_id)"
+  ]
+}

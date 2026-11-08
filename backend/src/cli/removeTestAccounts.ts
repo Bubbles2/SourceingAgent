@@ -1,7 +1,7 @@
 // npm run test:cleanup -- e2e-
-// Development only. Deletes what automated tests created under a prefix: accounts and test sales,
-// with everything that belongs to them (see deleteTestData). Refuses any other prefix, so it can't
-// touch real customers or collected sales.
+// Development only. Deletes what automated tests created under a prefix: accounts and test sales
+// (test_auctions, test_lots), with everything that belongs to them (see deleteTestData). Refuses any
+// other prefix, so it can't touch real customers; collected sales are read-only and never touched.
 import { config } from '../config/env.ts'
 import { closePool, withTransaction } from '../db/pool.ts'
 import { describeError } from '../lib/describeError.ts'

@@ -1,16 +1,8 @@
-// Sales for automated tests, stored the way the auction monitor stores real ones, and the clean-up
-// afterwards. Test sales are filed under their own source and their external ids start with a test
-// prefix, so the clean-up can find them and can never touch a collected sale.
+// Sales for automated tests, and the clean-up afterwards. Real sales are the Drouot collector's,
+// which the app only reads; test sales go into the app's own test_auctions and test_lots tables,
+// which the auctions and lots views add to the collector's. Their external ids start with a test
+// prefix, so the clean-up can find them, and it never touches anything but the test tables.
 import type { Queryable } from '../db/pool.ts'
-
-/** The monitor's real sources start at 1. */
-export const testSourceId = 0
-
-// Disabled, so a collector reading auction_sources never visits it
-const insertTestSource = `INSERT INTO auction_sources (id, name, base_url, discovery_url, enabled)
-  OVERRIDING SYSTEM VALUE
-  VALUES ($1, 'Automated tests', 'https://example.com', 'https://example.com/sales', false)
-  ON CONFLICT (id) DO NOTHING`
 
 /** Prefixes automated tests use for accounts and sales */
 export const testPrefixPattern = /^(e2e|authtest|bidtest)-[a-z0-9-]*$/
@@ -26,25 +18,20 @@ export async function deleteTestData(prefix: string, db: Queryable): Promise<Rec
   const sales = `${prefix}%`
   const testRequests = `SELECT id FROM bid_requests
     WHERE customer_id IN (SELECT id FROM users WHERE email LIKE $1)
-       OR auction_id IN (SELECT id FROM auctions WHERE source_id = $3 AND external_id LIKE $2)`
+       OR auction_id IN (SELECT id FROM test_auctions WHERE external_id LIKE $2)`
 
   await db.query('ALTER TABLE request_status_history DISABLE TRIGGER request_status_history_append_only')
   const history = await db.query(`DELETE FROM request_status_history WHERE bid_request_id IN (${testRequests})`, [
     emails,
     sales,
-    testSourceId,
   ])
   await db.query('ALTER TABLE request_status_history ENABLE TRIGGER request_status_history_append_only')
-  const requests = await db.query(`DELETE FROM bid_requests WHERE id IN (${testRequests})`, [emails, sales, testSourceId])
+  const requests = await db.query(`DELETE FROM bid_requests WHERE id IN (${testRequests})`, [emails, sales])
   const lots = await db.query(
-    'DELETE FROM lots WHERE auction_id IN (SELECT id FROM auctions WHERE source_id = $2 AND external_id LIKE $1)',
-    [sales, testSourceId],
+    'DELETE FROM test_lots WHERE auction_id IN (SELECT id FROM test_auctions WHERE external_id LIKE $1)',
+    [sales],
   )
-  const auctions = await db.query('DELETE FROM auctions WHERE source_id = $2 AND external_id LIKE $1', [sales, testSourceId])
-  // The test source goes once no test sale is left under any prefix.
-  await db.query('DELETE FROM auction_sources WHERE id = $1 AND NOT EXISTS (SELECT 1 FROM auctions WHERE source_id = $1)', [
-    testSourceId,
-  ])
+  const auctions = await db.query('DELETE FROM test_auctions WHERE external_id LIKE $1', [sales])
   const outbox = await db.query('DELETE FROM email_outbox WHERE to_address LIKE $1', [emails])
   // Sessions and one-time tokens go with their users (ON DELETE CASCADE).
   const users = await db.query('DELETE FROM users WHERE email LIKE $1', [emails])
@@ -77,20 +64,19 @@ export async function insertTestSale(
   }: { daysAhead: number; time?: string; lotCount?: number; title?: string },
   db: Queryable,
 ): Promise<TestSale> {
-  const saleDay = `((now() AT TIME ZONE 'Europe/Paris')::date + $4::int)`
-  await db.query(insertTestSource, [testSourceId])
+  const saleDay = `((now() AT TIME ZONE 'Europe/Paris')::date + $3::int)`
   const auctions = await db.query<{ id: string }>(
-    `INSERT INTO auctions (source_id, external_id, title, starts_at, auction_date, location, catalogue_url, source_url)
-     VALUES ($1, $2, $3, (${saleDay} + $6::time) AT TIME ZONE 'Europe/Paris', ${saleDay}, 'Paris', $5, $5)
+    `INSERT INTO test_auctions (external_id, title, starts_at, auction_date, location, catalogue_url, source_url)
+     VALUES ($1, $2, (${saleDay} + $5::time) AT TIME ZONE 'Europe/Paris', ${saleDay}, 'Paris', $4, $4)
      RETURNING id`,
-    [testSourceId, externalId, title, daysAhead, `https://example.com/sales/${externalId}`, time],
+    [externalId, title, daysAhead, `https://example.com/sales/${externalId}`, time],
   )
   const auctionId = auctions.rows[0]?.id
   if (!auctionId) {
-    throw new Error('INSERT INTO auctions returned no row')
+    throw new Error('INSERT INTO test_auctions returned no row')
   }
   const lots = await db.query<{ id: string; lotNumber: string }>(
-    `INSERT INTO lots (auction_id, external_id, lot_number, title, description, titleuk, descriptionuk, category, currency,
+    `INSERT INTO test_lots (auction_id, external_id, lot_number, title, description, titleuk, descriptionuk, category, currency,
        source_url)
      SELECT $1, $2 || '-' || n, n::text, n || ' - Objet ' || n, 'Objet de test ' || n, 'Test object ' || n,
        'A test object, number ' || n || '.', 'Test', 'EUR', 'https://example.com/lots/' || $2 || '-' || n

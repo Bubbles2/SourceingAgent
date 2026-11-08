@@ -11,7 +11,7 @@ import {
   listFeaturedAuctions,
   listOpenAuctions,
 } from '../features/auctions/auctionService'
-import { parseSaleStatus } from '../features/auctions/saleStatus'
+import { parseSaleStatus, type SaleStatus } from '../features/auctions/saleStatus'
 import { loadSession, sessionCheckFailed } from '../features/auth/sessionStore'
 import type { CustomerAccount } from '../features/auth/types'
 import { listMyRequests, listRequestedLots } from '../features/bid-requests/bidRequestService'
@@ -19,15 +19,34 @@ import { getMonthGridRange, parseMonthKey } from '../features/calendar/calendarD
 import { listLots, loadAuctionLots } from '../features/lots/lotService'
 import { parseReviewView } from '../features/request-review/reviewDecisions'
 import { listReviewRequests } from '../features/request-review/reviewService'
-import { searchLots } from '../features/search/searchService'
+import { readSearchMode, searchLots } from '../features/search/searchService'
 import { ApiError } from '../services/apiClient'
-import { parsePageNumber } from '../services/pagination'
+import { parsePageNumber, type Page } from '../services/pagination'
 import { paths, signInPath } from './paths'
 
-/** ?status=upcoming|completed and ?page=, as the auction and lot lists use them */
+/** ?status=upcoming|completed and ?page=, as the auction and lot lists use them; `chosen` when the address names a tab */
 function readListParams(request: Request) {
   const searchParams = new URL(request.url).searchParams
-  return { status: parseSaleStatus(searchParams.get('status')), page: parsePageNumber(searchParams.get('page')) }
+  return {
+    status: parseSaleStatus(searchParams.get('status')),
+    page: parsePageNumber(searchParams.get('page')),
+    chosen: searchParams.has('status'),
+  }
+}
+
+/**
+ * The upcoming list, or, when the visitor didn't choose a tab and nothing is upcoming (for example before the
+ * collector's next run), the completed list instead of an empty page.
+ */
+async function upcomingOrCompleted<Item>(
+  { status, chosen }: { status: SaleStatus; chosen: boolean },
+  load: (status: SaleStatus) => Promise<Page<Item>>,
+): Promise<{ status: SaleStatus; noneUpcoming: boolean; items: Promise<Page<Item>> }> {
+  if (chosen || status !== 'upcoming') return { status, noneUpcoming: false, items: load(status) }
+  const upcoming = await load('upcoming')
+  return upcoming.total > 0
+    ? { status, noneUpcoming: false, items: Promise.resolve(upcoming) }
+    : { status: 'completed', noneUpcoming: true, items: load('completed') }
 }
 
 /** A sale id from the address, or null when it can't be one */
@@ -39,9 +58,10 @@ export function landingLoader() {
   return { featuredAuctions: listFeaturedAuctions() }
 }
 
-export function auctionsLoader({ request }: LoaderFunctionArgs) {
-  const { status, page } = readListParams(request)
-  return { status, page, auctions: listAuctions({ status, page }) }
+export async function auctionsLoader({ request }: LoaderFunctionArgs) {
+  const params = readListParams(request)
+  const { status, noneUpcoming, items } = await upcomingOrCompleted(params, (sale) => listAuctions({ status: sale, page: params.page }))
+  return { status, page: params.page, noneUpcoming, auctions: items }
 }
 
 /** The sale and a page of its lots (?page=), fetched together */
@@ -59,21 +79,21 @@ export function auctionDetailsLoader({ request, params }: LoaderFunctionArgs) {
 }
 
 /** Lots of upcoming or completed sales, or of one sale (?auction=) */
-export function lotsLoader({ request }: LoaderFunctionArgs) {
-  const { status, page } = readListParams(request)
+export async function lotsLoader({ request }: LoaderFunctionArgs) {
+  const params = readListParams(request)
+  const { page } = params
   const auctionId = readAuctionId(new URL(request.url).searchParams.get('auction'))
-  return {
-    status,
-    page,
-    auctionId,
-    auction: auctionId ? getAuction(auctionId) : null,
-    lots: auctionId ? listLots({ auction: auctionId, page }) : listLots({ status, page }),
+  if (auctionId) {
+    return { status: params.status, page, noneUpcoming: false, auctionId, auction: getAuction(auctionId), lots: listLots({ auction: auctionId, page }) }
   }
+  const { status, noneUpcoming, items } = await upcomingOrCompleted(params, (sale) => listLots({ status: sale, page }))
+  return { status, page, noneUpcoming, auctionId, auction: null, lots: items }
 }
 
 export function searchLoader({ request }: LoaderFunctionArgs) {
-  const query = new URL(request.url).searchParams.get('q')?.trim() ?? ''
-  return { query, results: query.length >= 2 && query.length <= 200 ? searchLots(query) : null }
+  const params = new URL(request.url).searchParams
+  const query = params.get('q')?.trim() ?? ''
+  return { query, results: query.length >= 2 && query.length <= 200 ? searchLots(query, readSearchMode(params.get('mode'))) : null }
 }
 
 export function calendarLoader({ request }: LoaderFunctionArgs) {
@@ -138,6 +158,12 @@ async function requireAdministrator(request: Request): Promise<void> {
 export async function adminDashboardLoader({ request }: LoaderFunctionArgs) {
   await requireAdministrator(request)
   return { summary: getAdminSummary() }
+}
+
+/** The taxonomy search's administration (taxonomy_search/web): its panels load their own data. */
+export async function searchAdminLoader({ request }: LoaderFunctionArgs) {
+  await requireAdministrator(request)
+  return null
 }
 
 export async function collectionManagerLoader({ request }: LoaderFunctionArgs) {

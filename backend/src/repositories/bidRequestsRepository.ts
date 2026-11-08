@@ -17,8 +17,10 @@ export type RequestTarget = {
 }
 
 /**
- * The sale and lot a request names, by their database ids. The lot's row is locked until the
- * transaction ends, so two requests for the same lot are checked one after the other.
+ * The sale and lot a request names, by their database ids. Lots are a view over the collector's
+ * data, which can't be locked with FOR UPDATE, so the lot's id is taken as a transaction-level
+ * advisory lock instead: two requests for the same lot are checked one after the other, and the
+ * lock is released when the transaction ends. `db` must be a client inside a transaction.
  */
 export async function findRequestTarget(auctionId: string, lotId: string, db: Queryable): Promise<RequestTarget | null> {
   const auctions = await db.query<{ id: string; saleOpen: boolean }>(
@@ -29,8 +31,9 @@ export async function findRequestTarget(auctionId: string, lotId: string, db: Qu
   if (!auction) {
     return null
   }
+  await db.query('SELECT pg_advisory_xact_lock($1::bigint)', [lotId])
   const lots = await db.query<{ id: string; auctionId: string; lotNumber: string | null }>(
-    'SELECT id, auction_id AS "auctionId", lot_number AS "lotNumber" FROM lots WHERE id = $1 FOR UPDATE',
+    'SELECT id, auction_id AS "auctionId", lot_number AS "lotNumber" FROM lots WHERE id = $1',
     [lotId],
   )
   return { auctionId: auction.id, saleOpen: auction.saleOpen, lot: lots.rows[0] ?? null }

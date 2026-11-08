@@ -5,7 +5,12 @@ import { config } from '../config/env.ts'
 import { describeError } from '../lib/describeError.ts'
 import { logger } from '../lib/logger.ts'
 
-/** Connection settings for pg and node-pg-migrate. Contains the password: never log it. */
+/**
+ * Connection settings for pg and node-pg-migrate. Contains the password: never log it.
+ * The database is shared with the Drouot collector and other apps, so every session works in the
+ * app's own schema: unqualified names (users, bid_requests, the auctions and lots views…) resolve
+ * there and nowhere else. The schema name is validated as a plain identifier in config/env.ts.
+ */
 export const connectionConfig: pg.ClientConfig = {
   host: config.database.host,
   port: config.database.port,
@@ -14,6 +19,7 @@ export const connectionConfig: pg.ClientConfig = {
   password: config.database.password,
   ssl: config.database.ssl ? { rejectUnauthorized: true } : false,
   application_name: 'french-sourcing-agent-api',
+  options: `-c search_path=${config.database.schema}`,
 }
 
 // NUMERIC columns (money) arrive as strings such as "12500.00", never as floating-point numbers.

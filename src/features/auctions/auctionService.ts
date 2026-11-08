@@ -46,10 +46,14 @@ export function listAuctions({ status, page }: { status: SaleStatus; page: numbe
   )
 }
 
-/** The next few sales, for the landing page */
-export async function listFeaturedAuctions(): Promise<readonly Auction[]> {
-  const page = await cachedGet(auctionsPath({ period: 'upcoming', limit: featuredCount }), parseAuctionPage)
-  return page.items
+/** Sales for the landing page: the next few, or the most recent ones while nothing is upcoming */
+export type FeaturedSales = { auctions: readonly Auction[]; upcoming: boolean }
+
+export async function listFeaturedAuctions(): Promise<FeaturedSales> {
+  const next = await cachedGet(auctionsPath({ period: 'upcoming', limit: featuredCount }), parseAuctionPage)
+  if (next.items.length > 0) return { auctions: next.items, upcoming: true }
+  const recent = await cachedGet(auctionsPath({ period: 'completed', limit: featuredCount }), parseAuctionPage)
+  return { auctions: recent.items, upcoming: false }
 }
 
 /** Every upcoming sale, for choosing one in the bid request form */

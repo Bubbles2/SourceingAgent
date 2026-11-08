@@ -1,0 +1,307 @@
+{
+  "generated_at": "2026-11-07T18:34:04+00:00",
+  "seed_path": "data/taxonomy/example_taxonomy.yaml",
+  "seed_statistics": {
+    "version": "0.1.0",
+    "concepts": 176,
+    "concepts_by_dimension": {
+      "category": 11,
+      "subcategory": 61,
+      "object_type": 54,
+      "period": 10,
+      "style": 9,
+      "region": 6,
+      "material": 15,
+      "technique": 5,
+      "maker": 5
+    },
+    "terms": 512,
+    "terms_by_type": {
+      "preferred": 352,
+      "synonym": 150,
+      "spelling_variant": 7,
+      "abbreviation": 3
+    },
+    "terms_by_language": {
+      "fr": 244,
+      "en": 268
+    },
+    "ambiguous_terms": 17,
+    "relationships": 186,
+    "relationships_by_type": {
+      "broader": 140,
+      "originated_in_period": 5,
+      "revival_of": 3,
+      "associated_technique": 6,
+      "associated_material": 8,
+      "named_after": 1,
+      "active_in_period": 1,
+      "characteristic_object": 12,
+      "associated_region": 9,
+      "related": 1
+    },
+    "source_category_mappings": 113,
+    "source_categories": 105,
+    "classification_concepts": 126
+  },
+  "seed_issues": [
+    {
+      "level": "info",
+      "message": "term 'boulle' (en) labels several concepts: maker.andre_charles_boulle, technique.boulle_marquetry"
+    },
+    {
+      "level": "info",
+      "message": "term 'silver' (en) labels several concepts: decorative_arts.silver, material.silver"
+    },
+    {
+      "level": "info",
+      "message": "term 'boulle' (fr) labels several concepts: maker.andre_charles_boulle, technique.boulle_marquetry"
+    }
+  ],
+  "sandbox_schema": "auction_search_sandbox",
+  "sandbox_left_behind": false,
+  "load_inserted": {
+    "concepts": 176,
+    "terms": 512,
+    "relationships": 186,
+    "source_category_mappings": 113
+  },
+  "load_updated_on_reload": {
+    "concepts": 176,
+    "terms": 512,
+    "relationships": 186,
+    "source_category_mappings": 113
+  },
+  "database_issues": [],
+  "example_lots": {
+    "style": {
+      "lot_id": 7059,
+      "source": "drouot",
+      "source_lot_id": "35448881",
+      "title_fr": "Paire de vases en marbre brèche rose et monture en bronzé doré par Susse Frères, style Louis XIV de la seconde partie du XIXe siècle"
+    },
+    "period": {
+      "lot_id": 6928,
+      "source": "drouot",
+      "source_lot_id": "35448750",
+      "title_fr": "Rare et importante commode en bois noirci, placage d'écaille rouge, laiton et étain par Nicolas Sageot d'époque Louis XIV"
+    }
+  },
+  "scenarios": [
+    {
+      "group": "Synonyms and translations",
+      "name": "Translation = preferred labels of ONE concept in two languages",
+      "status": "passed",
+      "detail": "fr 'Bottines' → ['fashion.footwear.ankle_boots']; en 'Ankle boots' → ['fashion.footwear.ankle_boots']"
+    },
+    {
+      "group": "Synonyms and translations",
+      "name": "Synonym = another label of the same concept, same language",
+      "status": "passed",
+      "detail": "'Louis Quatorze style' → [('style.louis_xiv', 'synonym')]"
+    },
+    {
+      "group": "Synonyms and translations",
+      "name": "Spelling variant kept apart from synonyms",
+      "status": "passed",
+      "detail": "'Buhl work' → [('technique.boulle_marquetry', 'spelling_variant')]"
+    },
+    {
+      "group": "Synonyms and translations",
+      "name": "Case and accents are normalised ('HERMES' finds 'Hermès')",
+      "status": "passed",
+      "detail": "'HERMES' → ['Hermès']"
+    },
+    {
+      "group": "Synonyms and translations",
+      "name": "False friends resolved by language (fr chandelier = candlestick)",
+      "status": "passed",
+      "detail": "fr 'chandeliers' → ['decorative_arts.lighting.candlesticks']; en 'chandeliers' → ['decorative_arts.lighting.ceiling_lights']"
+    },
+    {
+      "group": "Parent-child hierarchy",
+      "name": "Footwear expands to its 7 subtypes (transitively)",
+      "status": "passed",
+      "detail": "narrower(fashion.footwear) = ['fashion.footwear.ankle_boots', 'fashion.footwear.boots', 'fashion.footwear.high_heels', 'fashion.footwear.loafers', 'fashion.footwear.pumps', 'fashion.footwear.sandals', 'fashion.footwear.sneakers']"
+    },
+    {
+      "group": "Parent-child hierarchy",
+      "name": "Ankle boots → boots → footwear → fashion",
+      "status": "passed",
+      "detail": "ancestors = ['fashion.footwear.boots', 'fashion.footwear', 'fashion']"
+    },
+    {
+      "group": "Parent-child hierarchy",
+      "name": "18th century contains Régence/Louis XV/Louis XVI, not Louis XIV (1643–1715 spans two)",
+      "status": "passed",
+      "detail": "narrower(18th century) = ['period.louis_xv', 'period.louis_xvi', 'period.regence']"
+    },
+    {
+      "group": "Historical associations are not synonyms",
+      "name": "Louis XIV period and Louis XIV style are separate concepts",
+      "status": "passed",
+      "detail": "period.louis_xiv (1643–1715, dimension period) vs style.louis_xiv (dimension style); shared labels: none"
+    },
+    {
+      "group": "Historical associations are not synonyms",
+      "name": "Style→period link is 'originated_in_period' only (no hierarchy, no synonymy)",
+      "status": "passed",
+      "detail": "links: ['originated_in_period']; hierarchy path: False"
+    },
+    {
+      "group": "Historical associations are not synonyms",
+      "name": "Boulle marquetry: associated technique of the style, named after A.-C. Boulle",
+      "status": "passed",
+      "detail": "with style.louis_xiv: ['associated_technique']; with maker: ['associated_technique', 'named_after']"
+    },
+    {
+      "group": "Historical associations are not synonyms",
+      "name": "Bare 'Boulle' is flagged ambiguous (technique or maker)",
+      "status": "passed",
+      "detail": "'Boulle' (fr) → [('maker.andre_charles_boulle', 'ambiguous'), ('technique.boulle_marquetry', 'ambiguous')]"
+    },
+    {
+      "group": "Historical associations are not synonyms",
+      "name": "Later Louis XIV-style work: Napoleon III style is a revival_of Louis XIV style",
+      "status": "passed",
+      "detail": "style.napoleon_iii ↔ style.louis_xiv: ['revival_of']"
+    },
+    {
+      "group": "Real lots: period vs style",
+      "name": "Assertions recorded for two real lots",
+      "status": "passed",
+      "detail": "lot 7059 «Paire de vases en marbre brèche rose et monture en bronzé doré par Sus…» → in_style_of style.louis_xiv + dated_to period.19th_century; lot 6928 «Rare et importante commode en bois noirci, placage d'écaille rouge, la…» → dated_to period.louis_xiv + classified_as commodes"
+    },
+    {
+      "group": "Real lots: period vs style",
+      "name": "'Made in Louis XIV period' and 'in Louis XIV style' return different lots",
+      "status": "passed",
+      "detail": "dated_to Louis XIV period → [6928]; in_style_of Louis XIV → [7059]"
+    },
+    {
+      "group": "Real lots: period vs style",
+      "name": "A style concept cannot be used as a dating ('dated_to' style.louis_xiv)",
+      "status": "passed",
+      "detail": "rejected by fk_lot_concepts_assertion_concept_dimension_lot_assertion_rules"
+    },
+    {
+      "group": "Database constraints reject invalid data",
+      "name": "'broader' from a style to a period (not an allowed rule)",
+      "status": "passed",
+      "detail": "rejected by fk_taxonomy_relationships_relationship_type_source_dime_eea6"
+    },
+    {
+      "group": "Database constraints reject invalid data",
+      "name": "Relationship row lying about a concept's dimension",
+      "status": "passed",
+      "detail": "rejected by fk_taxonomy_relationships_source_concept_id_source_dime_50a0"
+    },
+    {
+      "group": "Database constraints reject invalid data",
+      "name": "A concept related to itself",
+      "status": "passed",
+      "detail": "rejected by ck_taxonomy_relationships_not_self"
+    },
+    {
+      "group": "Database constraints reject invalid data",
+      "name": "Symmetric 'related' stored in non-canonical order",
+      "status": "passed",
+      "detail": "rejected by ck_taxonomy_relationships_related_canonical_order"
+    },
+    {
+      "group": "Database constraints reject invalid data",
+      "name": "Duplicate concept key",
+      "status": "passed",
+      "detail": "rejected by uq_taxonomy_concepts_concept_key"
+    },
+    {
+      "group": "Database constraints reject invalid data",
+      "name": "Second preferred label in the same language",
+      "status": "passed",
+      "detail": "rejected by uq_taxonomy_terms_one_preferred"
+    },
+    {
+      "group": "Database constraints reject invalid data",
+      "name": "Another object type reusing the preferred label 'Boots'",
+      "status": "passed",
+      "detail": "rejected by uq_taxonomy_terms_preferred_label"
+    },
+    {
+      "group": "Database constraints reject invalid data",
+      "name": "Evidence pointing at two things at once",
+      "status": "passed",
+      "detail": "rejected by ck_taxonomy_evidence_exactly_one_target"
+    },
+    {
+      "group": "Database constraints reject invalid data",
+      "name": "Confidence outside 0–1",
+      "status": "passed",
+      "detail": "rejected by ck_taxonomy_concepts_confidence_range"
+    },
+    {
+      "group": "Versions and publication",
+      "name": "Nothing is visible to search while the version is a draft",
+      "status": "passed",
+      "detail": "while draft: {'published_concepts': 0, 'published_terms': 0, 'published_relationships': 0}"
+    },
+    {
+      "group": "Versions and publication",
+      "name": "After approval and publication the views expose the version",
+      "status": "passed",
+      "detail": "after approve + publish: {'published_concepts': 176, 'published_terms': 512, 'published_relationships': 186}"
+    },
+    {
+      "group": "Versions and publication",
+      "name": "Two published versions at once",
+      "status": "passed",
+      "detail": "rejected by uq_taxonomy_versions_one_published"
+    }
+  ],
+  "database_statistics": {
+    "versions": [
+      {
+        "label": "0.1.0",
+        "status": "published"
+      }
+    ],
+    "concepts_by_dimension": {
+      "category": 11,
+      "maker": 5,
+      "material": 15,
+      "object_type": 54,
+      "period": 10,
+      "region": 6,
+      "style": 9,
+      "subcategory": 61,
+      "technique": 5
+    },
+    "terms_by_language": {
+      "en": 268,
+      "fr": 244
+    },
+    "terms_by_type": {
+      "abbreviation": 3,
+      "preferred": 352,
+      "spelling_variant": 7,
+      "synonym": 150
+    },
+    "relationships_by_type": {
+      "active_in_period": 1,
+      "associated_material": 8,
+      "associated_region": 9,
+      "associated_technique": 6,
+      "broader": 140,
+      "characteristic_object": 12,
+      "named_after": 1,
+      "originated_in_period": 5,
+      "related": 1,
+      "revival_of": 3
+    },
+    "source_category_mappings": 113,
+    "published": {
+      "published_concepts": 176,
+      "published_terms": 512,
+      "published_relationships": 186
+    }
+  }
+}

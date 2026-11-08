@@ -1,0 +1,612 @@
+# Example seed taxonomy — Phase 2.
+#
+# Hand-authored starting point, NOT yet reviewed by a domain expert. It is loaded with
+# review_status "candidate" unless `load-taxonomy --approve` is given, and only becomes visible to
+# search when its version is published.
+#
+# Format (validated by `python -m auction_search.cli validate-taxonomy`):
+#   concepts:            list of concepts
+#     key:               stable id, lower-case dotted path (e.g. fashion.footwear.boots)
+#     dimension:         category | subcategory | object_type | period | style | region |
+#                        material | technique | maker
+#     labels:            preferred label per language (fr and en required)
+#     synonyms / spelling_variants / abbreviations / hidden:  {language: [terms]}
+#                        A term is a string or {text: ..., ambiguous: true}. Ambiguous terms are
+#                        not used alone for classification (e.g. French "or" = gold / "or" = now).
+#     broader:           list of parent concept keys ("broader" relationships)
+#     years:             [start, end] (either may be null) for periods, makers' lives, etc.
+#     note:              {language: scope note}
+#     attributes:        free-form object (e.g. maker kind)
+#   relationships:       [source key, relationship type, target key] (+ optional note)
+#   source_categories:   Drouot categories (lots.category_fr / category_en) → concepts.
+#                        map: a key (= classified_as) or {assertion: key}; confidence optional.
+#
+# Labels for categories, subcategories and object types are plural (as in Drouot and the Getty AAT);
+# singular/plural matching is the matcher's job (Phase 3), not the taxonomy's.
+
+version: "0.1.0"
+description: "Example seed taxonomy: core categories, Drouot category mapping, footwear and Louis XIV examples."
+
+concepts:
+
+  # ==================================================================================
+  # Categories (auction departments)
+  # ==================================================================================
+  - {key: furniture, dimension: category, labels: {fr: Mobilier, en: Furniture}, synonyms: {fr: [Meubles]}}
+  - {key: fine_art, dimension: category, labels: {fr: Beaux-arts, en: Fine art}, synonyms: {en: [Fine arts]}}
+  - {key: decorative_arts, dimension: category, labels: {fr: Arts décoratifs, en: Decorative arts},
+     synonyms: {fr: ["Objets d'art"], en: [Works of art]}}
+  - {key: fashion, dimension: category, labels: {fr: Mode, en: Fashion}}
+  - {key: jewellery_watches, dimension: category, labels: {fr: Bijoux et montres, en: Jewellery and watches},
+     spelling_variants: {en: [Jewelry and watches]}}
+  - {key: collectibles, dimension: category, labels: {fr: Objets de collection, en: Collectibles},
+     synonyms: {en: ["Collectors' items"]}}
+  # Discovered in the Drouot data (Phase 1):
+  - {key: world_arts, dimension: category, labels: {fr: Arts du monde, en: World arts},
+     note: {en: "Departments organised by culture rather than object type: Asian, Islamic, African/Oceanic/American art, archaeology."}}
+  - {key: books_manuscripts, dimension: category, labels: {fr: Livres et manuscrits, en: Books and manuscripts}}
+  - {key: numismatics, dimension: category, labels: {fr: Numismatique, en: Coins and medals},
+     synonyms: {fr: [Monnaies et médailles], en: [Numismatics]}}
+  - {key: wine_spirits, dimension: category, labels: {fr: Vins et spiritueux, en: Wine and spirits},
+     synonyms: {fr: [Vins et alcools], en: [Wines and spirits]}}
+  - {key: arms_militaria, dimension: category, labels: {fr: Armes et militaria, en: Arms and militaria}}
+
+  # ==================================================================================
+  # Furniture
+  # ==================================================================================
+  - {key: furniture.seating, dimension: subcategory, broader: [furniture], labels: {fr: Sièges, en: Seating}}
+  - {key: furniture.seating.armchairs, dimension: object_type, broader: [furniture.seating],
+     labels: {fr: Fauteuils, en: Armchairs}, synonyms: {en: [Fauteuils]}}
+  - {key: furniture.seating.bergeres, dimension: object_type, broader: [furniture.seating.armchairs],
+     labels: {fr: Bergères, en: Bergères},
+     note: {en: "Upholstered armchair with closed, upholstered sides.", fr: "Fauteuil garni à joues pleines."}}
+  - {key: furniture.seating.chairs, dimension: object_type, broader: [furniture.seating], labels: {fr: Chaises, en: Chairs}}
+  - {key: furniture.seating.sofas, dimension: object_type, broader: [furniture.seating],
+     labels: {fr: Canapés, en: Sofas}, synonyms: {fr: [Sofas, Banquettes], en: [Settees, Canapés]}}
+  - {key: furniture.seating.stools, dimension: object_type, broader: [furniture.seating], labels: {fr: Tabourets, en: Stools}}
+  - {key: furniture.tables, dimension: subcategory, broader: [furniture], labels: {fr: Tables, en: Tables}}
+  - {key: furniture.tables.consoles, dimension: object_type, broader: [furniture.tables],
+     labels: {fr: Consoles, en: Console tables}, synonyms: {en: [Consoles]}}
+  - {key: furniture.desks, dimension: object_type, broader: [furniture], labels: {fr: Bureaux, en: Desks}}
+  - {key: furniture.desks.bureau_plat, dimension: object_type, broader: [furniture.desks],
+     labels: {fr: Bureaux plats, en: Bureaux plats}, synonyms: {en: [Writing tables, Flat-top desks]}}
+  - {key: furniture.case_furniture, dimension: subcategory, broader: [furniture],
+     labels: {fr: Meubles de rangement, en: Case furniture}, synonyms: {en: [Storage furniture]}}
+  - {key: furniture.case_furniture.commodes, dimension: object_type, broader: [furniture.case_furniture],
+     labels: {fr: Commodes, en: Commodes}, synonyms: {en: [Chests of drawers]}}
+  - {key: furniture.case_furniture.cabinets, dimension: object_type, broader: [furniture.case_furniture],
+     labels: {fr: Cabinets, en: Cabinets}}
+  - {key: furniture.case_furniture.armoires, dimension: object_type, broader: [furniture.case_furniture],
+     labels: {fr: Armoires, en: Armoires}, synonyms: {en: [Wardrobes]}}
+  - {key: furniture.case_furniture.bookcases, dimension: object_type, broader: [furniture.case_furniture],
+     labels: {fr: {text: Bibliothèques, ambiguous: true}, en: Bookcases}, synonyms: {en: [Bookshelves]},
+     note: {en: "French 'bibliothèque' also means library."}}
+  - {key: furniture.case_furniture.sideboards, dimension: object_type, broader: [furniture.case_furniture],
+     labels: {fr: Buffets, en: Sideboards}, synonyms: {en: [Credenzas, Buffets]}}
+  - {key: furniture.case_furniture.chests, dimension: object_type, broader: [furniture.case_furniture],
+     labels: {fr: Coffres, en: Chests}}
+  - {key: furniture.beds, dimension: object_type, broader: [furniture], labels: {fr: Lits, en: Beds}}
+  - {key: furniture.mirrors, dimension: object_type, broader: [furniture],
+     labels: {fr: Miroirs, en: Mirrors}, synonyms: {fr: [{text: Glaces, ambiguous: true}]}}
+  - {key: furniture.screens, dimension: object_type, broader: [furniture],
+     labels: {fr: Paravents, en: Folding screens}, synonyms: {en: [{text: Screens, ambiguous: true}]}}
+
+  # ==================================================================================
+  # Fine art
+  # ==================================================================================
+  - {key: fine_art.paintings, dimension: subcategory, broader: [fine_art], labels: {fr: Tableaux, en: Paintings},
+     synonyms: {fr: [Peintures]}}
+  - {key: fine_art.paintings.old_masters, dimension: subcategory, broader: [fine_art.paintings],
+     labels: {fr: Tableaux anciens, en: Old Master paintings}, synonyms: {en: [Old Masters]},
+     note: {en: "Drouot defines this department as paintings before 1870."}}
+  - {key: fine_art.paintings.modern, dimension: subcategory, broader: [fine_art.paintings],
+     labels: {fr: Tableaux modernes, en: Modern paintings}, synonyms: {en: [Impressionist and modern paintings]}}
+  - {key: fine_art.paintings.contemporary, dimension: subcategory, broader: [fine_art.paintings],
+     labels: {fr: Tableaux contemporains, en: Contemporary paintings},
+     synonyms: {en: [Post-war and contemporary paintings]}}
+  - {key: fine_art.paintings.icons, dimension: object_type, broader: [fine_art.paintings],
+     labels: {fr: Icônes, en: {text: Icons, ambiguous: true}}}
+  - {key: fine_art.works_on_paper, dimension: subcategory, broader: [fine_art],
+     labels: {fr: Dessins, en: Works on paper}, synonyms: {fr: [Œuvres sur papier], en: [Drawings]}}
+  - {key: fine_art.works_on_paper.watercolours, dimension: object_type, broader: [fine_art.works_on_paper],
+     labels: {fr: Aquarelles, en: Watercolours}, spelling_variants: {en: [Watercolors]}}
+  - {key: fine_art.prints, dimension: subcategory, broader: [fine_art], labels: {fr: Estampes, en: Prints}}
+  - {key: fine_art.prints.lithographs, dimension: object_type, broader: [fine_art.prints],
+     labels: {fr: Lithographies, en: Lithographs}}
+  - {key: fine_art.photography, dimension: subcategory, broader: [fine_art],
+     labels: {fr: Photographies, en: Photographs}, synonyms: {fr: [Photographie], en: [Photography]}}
+  - {key: fine_art.sculpture, dimension: subcategory, broader: [fine_art], labels: {fr: Sculptures, en: Sculpture}}
+  - {key: fine_art.sculpture.bronzes, dimension: subcategory, broader: [fine_art.sculpture],
+     labels: {fr: Bronzes, en: Bronzes}, synonyms: {en: [Bronze sculptures]}}
+  - {key: fine_art.sculpture.marble, dimension: subcategory, broader: [fine_art.sculpture],
+     labels: {fr: Sculptures en marbre, en: Marble sculptures}, synonyms: {fr: [Marbres]}}
+  - {key: fine_art.sculpture.terracotta, dimension: subcategory, broader: [fine_art.sculpture],
+     labels: {fr: Terres cuites, en: Terracotta sculptures}}
+  - {key: fine_art.sculpture.plaster, dimension: subcategory, broader: [fine_art.sculpture],
+     labels: {fr: Plâtres, en: Plaster sculptures}}
+  - {key: fine_art.sculpture.wood, dimension: subcategory, broader: [fine_art.sculpture],
+     labels: {fr: Sculptures en bois, en: Wood sculptures}}
+  - {key: fine_art.street_art, dimension: subcategory, broader: [fine_art],
+     labels: {fr: Street art, en: Street art}, synonyms: {fr: [Graffiti], en: [Graffiti]}}
+
+  # ==================================================================================
+  # Decorative arts
+  # ==================================================================================
+  - {key: decorative_arts.ceramics, dimension: subcategory, broader: [decorative_arts],
+     labels: {fr: Céramiques, en: Ceramics}}
+  - {key: decorative_arts.vases, dimension: object_type, broader: [decorative_arts], labels: {fr: Vases, en: Vases}}
+  - {key: decorative_arts.tableware, dimension: subcategory, broader: [decorative_arts],
+     labels: {fr: Arts de la table, en: Tableware}}
+  - {key: decorative_arts.tableware.table_services, dimension: object_type, broader: [decorative_arts.tableware],
+     labels: {fr: Services de table, en: Table services}, synonyms: {en: [Dinner services, Sets of tableware]}}
+  - {key: decorative_arts.tableware.plates_dishes, dimension: object_type, broader: [decorative_arts.tableware],
+     labels: {fr: Assiettes et plats, en: Plates and dishes}}
+  - {key: decorative_arts.silver, dimension: subcategory, broader: [decorative_arts],
+     labels: {fr: Argenterie, en: Silver}, synonyms: {en: [Silverware]}}
+  - {key: decorative_arts.silver.cutlery, dimension: object_type, broader: [decorative_arts.silver],
+     labels: {fr: Ménagères, en: Canteens of cutlery}, synonyms: {fr: [Couverts], en: [Cutlery, Flatware]}}
+  - {key: decorative_arts.glass, dimension: subcategory, broader: [decorative_arts],
+     labels: {fr: Verreries, en: Glassware}}
+  - {key: decorative_arts.lighting, dimension: subcategory, broader: [decorative_arts],
+     labels: {fr: Luminaires, en: Lighting}}
+  # False friends: French "lustre" = English "chandelier"; French "chandelier" = English "candlestick".
+  - {key: decorative_arts.lighting.ceiling_lights, dimension: object_type, broader: [decorative_arts.lighting],
+     labels: {fr: Lustres, en: Chandeliers}, synonyms: {fr: [Suspensions], en: [Ceiling lights]},
+     note: {en: "Hanging, branched ceiling light. French 'lustre'; NOT French 'chandelier' (= candlestick).",
+            fr: "Luminaire suspendu. En anglais 'chandelier' ; le 'chandelier' français est un 'candlestick'."}}
+  - {key: decorative_arts.lighting.candlesticks, dimension: object_type, broader: [decorative_arts.lighting],
+     labels: {fr: Chandeliers, en: Candlesticks}, synonyms: {fr: [Bougeoirs, Flambeaux], en: [Candleholders]},
+     note: {en: "Single candle holder. French 'chandelier' / 'bougeoir' / 'flambeau'."}}
+  - {key: decorative_arts.lighting.candelabra, dimension: object_type, broader: [decorative_arts.lighting.candlesticks],
+     labels: {fr: Candélabres, en: Candelabra}, synonyms: {en: [Candelabrums]}}
+  - {key: decorative_arts.lighting.wall_lights, dimension: object_type, broader: [decorative_arts.lighting],
+     labels: {fr: Appliques, en: Wall lights}, synonyms: {en: [Sconces, Wall lamps]}}
+  - {key: decorative_arts.lighting.floor_lamps, dimension: object_type, broader: [decorative_arts.lighting],
+     labels: {fr: Lampadaires, en: Floor lamps}, synonyms: {en: [Standard lamps]},
+     note: {en: "Drouot translates 'Lampadaire' as 'lampposts', which is wrong for indoor floor lamps."}}
+  - {key: decorative_arts.lighting.lamps, dimension: object_type, broader: [decorative_arts.lighting],
+     labels: {fr: Lampes, en: Lamps}}
+  - {key: decorative_arts.clocks, dimension: subcategory, broader: [decorative_arts],
+     labels: {fr: Pendules et horloges, en: Clocks}}
+  - {key: decorative_arts.clocks.mantel_clocks, dimension: object_type, broader: [decorative_arts.clocks],
+     labels: {fr: Pendules, en: Mantel clocks}, synonyms: {fr: [Pendules de cheminée]}}
+  - {key: decorative_arts.boxes, dimension: object_type, broader: [decorative_arts],
+     labels: {fr: Boîtes, en: Boxes}, synonyms: {fr: [Coffrets], en: [Caskets]}}
+  - {key: decorative_arts.frames, dimension: object_type, broader: [decorative_arts], labels: {fr: Cadres, en: Frames}}
+  - {key: decorative_arts.textiles, dimension: subcategory, broader: [decorative_arts],
+     labels: {fr: Textiles, en: Textiles}, synonyms: {fr: [Tissus], en: [Fabrics]}}
+  - {key: decorative_arts.textiles.tapestries, dimension: object_type, broader: [decorative_arts.textiles],
+     labels: {fr: Tapisseries, en: Tapestries}}
+  - {key: decorative_arts.carpets, dimension: object_type, broader: [decorative_arts],
+     labels: {fr: Tapis, en: Carpets}, synonyms: {en: [Rugs]}}
+  - {key: decorative_arts.religious_objects, dimension: subcategory, broader: [decorative_arts],
+     labels: {fr: Objets religieux, en: Religious objects}}
+  - {key: decorative_arts.religious_objects.judaica, dimension: subcategory,
+     broader: [decorative_arts.religious_objects], labels: {fr: Judaïca, en: Judaica}}
+
+  # ==================================================================================
+  # Fashion — worked example: footwear
+  # ==================================================================================
+  - {key: fashion.footwear, dimension: subcategory, broader: [fashion],
+     labels: {fr: Chaussures, en: Footwear}, synonyms: {fr: [Souliers], en: [Shoes]}}
+  - {key: fashion.footwear.boots, dimension: object_type, broader: [fashion.footwear],
+     labels: {fr: Bottes, en: Boots}}
+  - {key: fashion.footwear.ankle_boots, dimension: object_type, broader: [fashion.footwear.boots],
+     labels: {fr: Bottines, en: Ankle boots}, synonyms: {en: [Booties]},
+     note: {en: "A kind of boot, so searching 'boots' also finds ankle boots."}}
+  - {key: fashion.footwear.high_heels, dimension: object_type, broader: [fashion.footwear],
+     labels: {fr: Chaussures à talons, en: High heels},
+     synonyms: {fr: [Talons hauts], en: [High-heeled shoes, {text: Heels, ambiguous: true}]}}
+  - {key: fashion.footwear.pumps, dimension: object_type, broader: [fashion.footwear],
+     labels: {fr: Escarpins, en: {text: Pumps, ambiguous: true}}, synonyms: {en: [Court shoes]},
+     note: {en: "Escarpins are usually, not always, high-heeled: linked to High heels by 'related', not 'broader'."}}
+  - {key: fashion.footwear.loafers, dimension: object_type, broader: [fashion.footwear],
+     labels: {fr: Mocassins, en: Loafers}, synonyms: {en: [Moccasins, Slip-ons]}}
+  - {key: fashion.footwear.sneakers, dimension: object_type, broader: [fashion.footwear],
+     labels: {fr: {text: Baskets, ambiguous: true}, en: Sneakers}, synonyms: {fr: [Sneakers], en: [Trainers]},
+     note: {en: "French 'baskets' (sneakers); not English 'baskets'. Ambiguous on its own (basketball)."}}
+  - {key: fashion.footwear.sandals, dimension: object_type, broader: [fashion.footwear],
+     labels: {fr: Sandales, en: Sandals}, synonyms: {fr: [Nu-pieds]}}
+  - {key: fashion.handbags, dimension: subcategory, broader: [fashion],
+     labels: {fr: Sacs à main, en: Handbags}, synonyms: {fr: [Sacs], en: [Bags, Purses]}}
+  - {key: fashion.clothing, dimension: subcategory, broader: [fashion],
+     labels: {fr: Vêtements, en: Clothing}, synonyms: {en: [Clothes]}}
+  - {key: fashion.accessories, dimension: subcategory, broader: [fashion],
+     labels: {fr: Accessoires de mode, en: Fashion accessories}, synonyms: {fr: [Accessoires], en: [Accessories]}}
+  - {key: fashion.accessories.small_leather_goods, dimension: object_type, broader: [fashion.accessories],
+     labels: {fr: Petite maroquinerie, en: Small leather goods}, synonyms: {fr: [Portefeuilles], en: [Wallets]}}
+  - {key: fashion.luggage, dimension: subcategory, broader: [fashion],
+     labels: {fr: Bagages, en: Luggage}, synonyms: {fr: [Malles, Valises], en: [Trunks, Suitcases]}}
+  - {key: fashion.furs, dimension: subcategory, broader: [fashion], labels: {fr: Fourrures, en: Furs}}
+
+  # ==================================================================================
+  # Jewellery and watches
+  # ==================================================================================
+  - {key: jewellery_watches.jewellery, dimension: subcategory, broader: [jewellery_watches],
+     labels: {fr: Bijoux, en: Jewellery}, spelling_variants: {en: [Jewelry]}}
+  - {key: jewellery_watches.jewellery.rings, dimension: object_type, broader: [jewellery_watches.jewellery],
+     labels: {fr: Bagues, en: Rings}}
+  - {key: jewellery_watches.jewellery.necklaces, dimension: object_type, broader: [jewellery_watches.jewellery],
+     labels: {fr: Colliers, en: Necklaces}}
+  - {key: jewellery_watches.jewellery.earrings, dimension: object_type, broader: [jewellery_watches.jewellery],
+     labels: {fr: "Boucles d'oreilles", en: Earrings}}
+  - {key: jewellery_watches.jewellery.bracelets, dimension: object_type, broader: [jewellery_watches.jewellery],
+     labels: {fr: Bracelets, en: Bracelets}}
+  - {key: jewellery_watches.jewellery.brooches, dimension: object_type, broader: [jewellery_watches.jewellery],
+     labels: {fr: Broches, en: Brooches}, synonyms: {fr: [Épingles], en: [Pins]}}
+  - {key: jewellery_watches.jewellery.cufflinks, dimension: object_type, broader: [jewellery_watches.jewellery],
+     labels: {fr: Boutons de manchette, en: Cufflinks}}
+  - {key: jewellery_watches.gemstones, dimension: subcategory, broader: [jewellery_watches],
+     labels: {fr: Pierres précieuses et fines, en: Gemstones}}
+  - {key: jewellery_watches.gemstones.precious, dimension: object_type, broader: [jewellery_watches.gemstones],
+     labels: {fr: Pierres précieuses, en: Precious stones}}
+  - {key: jewellery_watches.gemstones.semi_precious, dimension: object_type, broader: [jewellery_watches.gemstones],
+     labels: {fr: Pierres fines, en: Semi-precious stones}}
+  - {key: jewellery_watches.watches, dimension: subcategory, broader: [jewellery_watches],
+     labels: {fr: Montres, en: Watches}, synonyms: {fr: [Horlogerie]}}
+  - {key: jewellery_watches.watches.wristwatches, dimension: object_type, broader: [jewellery_watches.watches],
+     labels: {fr: Montres-bracelets, en: Wristwatches}}
+  - {key: jewellery_watches.watches.pocket_watches, dimension: object_type, broader: [jewellery_watches.watches],
+     labels: {fr: Montres de poche, en: Pocket watches}, synonyms: {fr: [Montres gousset], en: [Fob watches]}}
+
+  # ==================================================================================
+  # Collectibles, world arts, books, numismatics, wine, arms
+  # ==================================================================================
+  - {key: collectibles.postcards, dimension: subcategory, broader: [collectibles], labels: {fr: Cartes postales, en: Postcards}}
+  - {key: collectibles.toys_models, dimension: subcategory, broader: [collectibles],
+     labels: {fr: Jouets et maquettes, en: Toys and models}}
+  - {key: collectibles.stamps, dimension: subcategory, broader: [collectibles],
+     labels: {fr: Timbres-poste, en: Stamps}, synonyms: {fr: [Philatélie], en: [Postage stamps, Philately]}}
+  - {key: collectibles.vehicles, dimension: subcategory, broader: [collectibles],
+     labels: {fr: Véhicules, en: Vehicles}, synonyms: {fr: [Voitures], en: [Cars]}}
+  - {key: collectibles.natural_history, dimension: subcategory, broader: [collectibles],
+     labels: {fr: Histoire naturelle, en: Natural history}}
+  - {key: collectibles.music, dimension: subcategory, broader: [collectibles], labels: {fr: Musique, en: Music}}
+  - {key: collectibles.sport, dimension: subcategory, broader: [collectibles],
+     labels: {fr: Sport, en: Sports memorabilia}}
+  - {key: collectibles.writing_instruments, dimension: subcategory, broader: [collectibles],
+     labels: {fr: Instruments d'écriture, en: Writing instruments}, synonyms: {fr: [Stylos], en: [Pens]}}
+  - {key: collectibles.posters, dimension: subcategory, broader: [collectibles], labels: {fr: Affiches, en: Posters}}
+
+  - {key: world_arts.asian_art, dimension: subcategory, broader: [world_arts], labels: {fr: "Arts d'Asie", en: Asian art}}
+  - {key: world_arts.islamic_art, dimension: subcategory, broader: [world_arts], labels: {fr: Art islamique, en: Islamic art}}
+  - {key: world_arts.african_oceanic_american, dimension: subcategory, broader: [world_arts],
+     labels: {fr: Arts premiers, en: "Arts of Africa, Oceania and the Americas"}}
+  - {key: world_arts.archaeology, dimension: subcategory, broader: [world_arts],
+     labels: {fr: Archéologie, en: Archaeology}, synonyms: {en: [Antiquities]}}
+
+  - {key: books_manuscripts.antiquarian_books, dimension: subcategory, broader: [books_manuscripts],
+     labels: {fr: Livres anciens, en: Antiquarian books}, synonyms: {en: [Old books, Rare books]}}
+  - {key: books_manuscripts.religious_books, dimension: subcategory, broader: [books_manuscripts],
+     labels: {fr: Livres religieux, en: Religious books}}
+  - {key: books_manuscripts.autographs, dimension: subcategory, broader: [books_manuscripts],
+     labels: {fr: Lettres et autographes, en: Letters and autographs}}
+  - {key: books_manuscripts.maps, dimension: subcategory, broader: [books_manuscripts],
+     labels: {fr: Cartes géographiques, en: Maps}, synonyms: {fr: [Cartes de géographie]}}
+  - {key: books_manuscripts.comics, dimension: subcategory, broader: [books_manuscripts],
+     labels: {fr: Bandes dessinées, en: Comics}, abbreviations: {fr: [{text: BD, ambiguous: true}]},
+     synonyms: {en: [Comic books, Comic strips]}}
+
+  - {key: numismatics.coins_banknotes, dimension: subcategory, broader: [numismatics],
+     labels: {fr: Monnaies et billets, en: Coins and banknotes}, synonyms: {fr: [Pièces et billets], en: [Coins and notes]}}
+  - {key: numismatics.medals, dimension: subcategory, broader: [numismatics], labels: {fr: Médailles, en: Medals}}
+  - {key: numismatics.ingots, dimension: subcategory, broader: [numismatics], labels: {fr: Lingots, en: Ingots}}
+
+  - {key: wine_spirits.wine, dimension: subcategory, broader: [wine_spirits], labels: {fr: Vins, en: Wine}}
+  - {key: wine_spirits.champagne, dimension: object_type, broader: [wine_spirits.wine],
+     labels: {fr: Champagne, en: Champagne}}
+  - {key: wine_spirits.spirits, dimension: subcategory, broader: [wine_spirits], labels: {fr: Spiritueux, en: Spirits}}
+
+  - {key: arms_militaria.arms, dimension: subcategory, broader: [arms_militaria], labels: {fr: Armes, en: Arms},
+     synonyms: {en: [Weapons]}}
+  - {key: arms_militaria.helmets_uniforms, dimension: subcategory, broader: [arms_militaria],
+     labels: {fr: Casques et uniformes, en: Helmets and uniforms}}
+  - {key: arms_militaria.military_medals, dimension: subcategory, broader: [arms_militaria],
+     labels: {fr: Décorations militaires, en: Military medals and orders}, synonyms: {fr: [Médailles militaires]}}
+
+  # ==================================================================================
+  # Periods (dating). Distinct from styles.
+  # ==================================================================================
+  - {key: period.17th_century, dimension: period, years: [1601, 1700],
+     labels: {fr: XVIIe siècle, en: 17th century},
+     synonyms: {fr: [Dix-septième siècle, 17e siècle, XVIIème siècle], en: [Seventeenth century]}}
+  - {key: period.18th_century, dimension: period, years: [1701, 1800],
+     labels: {fr: XVIIIe siècle, en: 18th century},
+     synonyms: {fr: [Dix-huitième siècle, 18e siècle, XVIIIème siècle], en: [Eighteenth century]}}
+  - {key: period.19th_century, dimension: period, years: [1801, 1900],
+     labels: {fr: XIXe siècle, en: 19th century},
+     synonyms: {fr: [Dix-neuvième siècle, 19e siècle, XIXème siècle], en: [Nineteenth century]}}
+  - {key: period.ancien_regime, dimension: period, years: [null, 1789],
+     labels: {fr: Ancien Régime, en: Ancien Régime},
+     note: {en: "French monarchy before the Revolution of 1789; parent of the reign-based French periods."}}
+  - {key: period.louis_xiii, dimension: period, years: [1610, 1643], broader: [period.ancien_regime, period.17th_century],
+     labels: {fr: Époque Louis XIII, en: Louis XIII period}}
+  - key: period.louis_xiv
+    dimension: period
+    years: [1643, 1715]
+    broader: [period.ancien_regime]
+    labels: {fr: Époque Louis XIV, en: Louis XIV period}
+    synonyms: {fr: [Règne de Louis XIV], en: [Reign of Louis XIV, Louis Quatorze period]}
+    note:
+      en: >-
+        Objects actually made during the reign of Louis XIV (1643–1715). Not the same as the
+        Louis XIV style, which was also used by later makers (e.g. under Napoleon III).
+      fr: >-
+        Objets réellement fabriqués sous le règne de Louis XIV (1643–1715), à distinguer du
+        « style Louis XIV » repris ultérieurement.
+  - {key: period.regence, dimension: period, years: [1715, 1723], broader: [period.ancien_regime, period.18th_century],
+     labels: {fr: Époque Régence, en: Régence period}}
+  - {key: period.louis_xv, dimension: period, years: [1723, 1774], broader: [period.ancien_regime, period.18th_century],
+     labels: {fr: Époque Louis XV, en: Louis XV period},
+     note: {en: "Louis XV reigned 1715–1774; in furniture the Régence (1715–1723) is usually treated separately."}}
+  - {key: period.louis_xvi, dimension: period, years: [1774, 1792], broader: [period.ancien_regime, period.18th_century],
+     labels: {fr: Époque Louis XVI, en: Louis XVI period}}
+  - {key: period.napoleon_iii, dimension: period, years: [1852, 1870], broader: [period.19th_century],
+     labels: {fr: Époque Napoléon III, en: Napoleon III period},
+     synonyms: {fr: [Second Empire], en: [Second Empire period]}}
+
+  # ==================================================================================
+  # Styles. A style may be used long after its period.
+  # ==================================================================================
+  - {key: style.baroque, dimension: style, labels: {fr: Baroque, en: Baroque}}
+  - {key: style.french_baroque, dimension: style, broader: [style.baroque],
+     labels: {fr: Baroque français, en: French Baroque}}
+  - key: style.louis_xiv
+    dimension: style
+    broader: [style.french_baroque]
+    labels: {fr: Style Louis XIV, en: Louis XIV style}
+    synonyms: {fr: [Goût Louis XIV], en: [Louis Quatorze style]}
+    note:
+      en: >-
+        The stylistic idiom of Louis XIV's reign. Linked to period.louis_xiv by
+        'originated_in_period': a 'style Louis XIV' piece may date from the 19th century.
+      fr: >-
+        Le style né sous Louis XIV ; un meuble « de style Louis XIV » peut dater du XIXe siècle.
+  - {key: style.regence, dimension: style, labels: {fr: Style Régence, en: Régence style}}
+  - {key: style.rococo, dimension: style, labels: {fr: Rocaille, en: Rococo}, synonyms: {fr: [Rococo, Style rocaille]}}
+  - {key: style.louis_xv, dimension: style, broader: [style.rococo], labels: {fr: Style Louis XV, en: Louis XV style}}
+  - {key: style.neoclassicism, dimension: style, labels: {fr: Néoclassicisme, en: Neoclassicism},
+     synonyms: {fr: [Néoclassique], en: [Neoclassical]}}
+  - {key: style.louis_xvi, dimension: style, broader: [style.neoclassicism], labels: {fr: Style Louis XVI, en: Louis XVI style}}
+  - {key: style.napoleon_iii, dimension: style, labels: {fr: Style Napoléon III, en: Napoleon III style},
+     note: {en: "Eclectic 19th-century style that revived Louis XIV, XV and XVI forms."}}
+
+  # ==================================================================================
+  # Techniques
+  # ==================================================================================
+  - {key: technique.marquetry, dimension: technique, labels: {fr: Marqueterie, en: Marquetry}}
+  - key: technique.boulle_marquetry
+    dimension: technique
+    broader: [technique.marquetry]
+    labels: {fr: Marqueterie Boulle, en: Boulle marquetry}
+    synonyms:
+      fr: ["Marqueterie d'écaille et de laiton", {text: Boulle, ambiguous: true}]
+      en: [Boulle work, {text: Boulle, ambiguous: true}]
+    spelling_variants: {en: [Buhl work, Buhl marquetry, {text: Buhl, ambiguous: true}]}
+    note:
+      en: >-
+        Marquetry of tortoiseshell and brass (or pewter), named after André-Charles Boulle. Associated
+        with the Louis XIV style and revived under Napoleon III — an association, not a synonym of either.
+  - {key: technique.gilding, dimension: technique, labels: {fr: Dorure, en: Gilding}}
+  - {key: technique.lithography, dimension: technique, labels: {fr: Lithographie, en: Lithography}}
+  - {key: technique.watercolour, dimension: technique, labels: {fr: Aquarelle, en: Watercolour},
+     spelling_variants: {en: [Watercolor]}}
+
+  # ==================================================================================
+  # Materials
+  # ==================================================================================
+  - {key: material.wood, dimension: material, labels: {fr: Bois, en: Wood}}
+  - {key: material.ebony, dimension: material, broader: [material.wood], labels: {fr: Ébène, en: Ebony}}
+  - {key: material.metal, dimension: material, labels: {fr: Métal, en: Metal}}
+  - {key: material.bronze, dimension: material, broader: [material.metal], labels: {fr: Bronze, en: Bronze}}
+  - {key: material.gilt_bronze, dimension: material, broader: [material.bronze],
+     labels: {fr: Bronze doré, en: Gilt bronze}, synonyms: {en: [Ormolu]}}
+  - {key: material.brass, dimension: material, broader: [material.metal], labels: {fr: Laiton, en: Brass}}
+  - {key: material.silver, dimension: material, broader: [material.metal],
+     labels: {fr: {text: Argent, ambiguous: true}, en: Silver}, note: {en: "French 'argent' also means money."}}
+  - {key: material.gold, dimension: material, broader: [material.metal],
+     labels: {fr: {text: Or, ambiguous: true}, en: Gold}, note: {en: "French 'or' is also a conjunction."}}
+  - {key: material.tortoiseshell, dimension: material,
+     labels: {fr: Écaille de tortue, en: Tortoiseshell}, synonyms: {fr: [Écaille]}}
+  - {key: material.marble, dimension: material, labels: {fr: Marbre, en: Marble}}
+  - {key: material.terracotta, dimension: material, labels: {fr: Terre cuite, en: Terracotta}}
+  - {key: material.plaster, dimension: material, labels: {fr: Plâtre, en: Plaster}}
+  - {key: material.leather, dimension: material, labels: {fr: Cuir, en: Leather}}
+  - {key: material.porcelain, dimension: material, labels: {fr: Porcelaine, en: Porcelain}}
+  - {key: material.glass, dimension: material, labels: {fr: Verre, en: Glass}}
+
+  # ==================================================================================
+  # Regions
+  # ==================================================================================
+  - {key: region.europe, dimension: region, labels: {fr: Europe, en: Europe}}
+  - {key: region.france, dimension: region, broader: [region.europe], labels: {fr: France, en: France},
+     synonyms: {fr: [Français, Française, Travail français], en: [French]}}
+  - {key: region.italy, dimension: region, broader: [region.europe], labels: {fr: Italie, en: Italy},
+     synonyms: {fr: [Italien, Italienne], en: [Italian]}}
+  - {key: region.asia, dimension: region, labels: {fr: Asie, en: Asia}}
+  - {key: region.china, dimension: region, broader: [region.asia], labels: {fr: Chine, en: China},
+     synonyms: {fr: [Chinois, Chinoise], en: [Chinese]}}
+  - {key: region.japan, dimension: region, broader: [region.asia], labels: {fr: Japon, en: Japan},
+     synonyms: {fr: [Japonais, Japonaise], en: [Japanese]}}
+
+  # ==================================================================================
+  # Makers, artists, brands
+  # ==================================================================================
+  - {key: maker.andre_charles_boulle, dimension: maker, years: [1642, 1732], attributes: {kind: cabinetmaker},
+     labels: {fr: André-Charles Boulle, en: André-Charles Boulle},
+     synonyms: {fr: [{text: Boulle, ambiguous: true}], en: [{text: Boulle, ambiguous: true}]},
+     note: {en: "Ébéniste du roi to Louis XIV."}}
+  - {key: maker.louis_vuitton, dimension: maker, years: [1854, null], attributes: {kind: brand},
+     labels: {fr: Louis Vuitton, en: Louis Vuitton}, abbreviations: {fr: [{text: LV, ambiguous: true}], en: [{text: LV, ambiguous: true}]}}
+  - {key: maker.hermes, dimension: maker, years: [1837, null], attributes: {kind: brand},
+     labels: {fr: Hermès, en: Hermès}}
+  - {key: maker.chanel, dimension: maker, years: [1910, null], attributes: {kind: brand},
+     labels: {fr: Chanel, en: Chanel}}
+  - {key: maker.christian_louboutin, dimension: maker, years: [1991, null], attributes: {kind: brand},
+     labels: {fr: Christian Louboutin, en: Christian Louboutin}, synonyms: {fr: [Louboutin], en: [Louboutin]}}
+
+relationships:
+  # Louis XIV: period, style, technique and maker are linked by typed associations, never synonyms.
+  - [style.louis_xiv, originated_in_period, period.louis_xiv]
+  - [style.regence, originated_in_period, period.regence]
+  - [style.louis_xv, originated_in_period, period.louis_xv]
+  - [style.louis_xvi, originated_in_period, period.louis_xvi]
+  - [style.napoleon_iii, originated_in_period, period.napoleon_iii]
+  - [style.napoleon_iii, revival_of, style.louis_xiv]
+  - [style.napoleon_iii, revival_of, style.louis_xv]
+  - [style.napoleon_iii, revival_of, style.louis_xvi]
+  - [style.louis_xiv, associated_technique, technique.boulle_marquetry]
+  - [period.louis_xiv, associated_technique, technique.boulle_marquetry]
+  - [style.napoleon_iii, associated_technique, technique.boulle_marquetry]
+  - [style.louis_xiv, associated_material, material.gilt_bronze]
+  - [technique.boulle_marquetry, associated_material, material.tortoiseshell]
+  - [technique.boulle_marquetry, associated_material, material.brass]
+  - [technique.boulle_marquetry, named_after, maker.andre_charles_boulle]
+  - [maker.andre_charles_boulle, active_in_period, period.louis_xiv]
+  - [maker.andre_charles_boulle, associated_technique, technique.boulle_marquetry]
+  - [technique.boulle_marquetry, characteristic_object, furniture.case_furniture.cabinets]
+  - [technique.boulle_marquetry, characteristic_object, furniture.case_furniture.commodes]
+  - [technique.boulle_marquetry, characteristic_object, furniture.desks.bureau_plat]
+  - [technique.boulle_marquetry, characteristic_object, decorative_arts.clocks.mantel_clocks]
+  - [style.french_baroque, associated_region, region.france]
+  - [style.louis_xiv, associated_region, region.france]
+  - [period.ancien_regime, associated_region, region.france]
+  - [period.napoleon_iii, associated_region, region.france]
+  - [maker.andre_charles_boulle, associated_region, region.france]
+  # Footwear
+  - [fashion.footwear.pumps, related, fashion.footwear.high_heels]
+  - [maker.christian_louboutin, characteristic_object, fashion.footwear.high_heels]
+  - [maker.christian_louboutin, characteristic_object, fashion.footwear.pumps]
+  # Brands
+  - [maker.louis_vuitton, characteristic_object, fashion.luggage]
+  - [maker.louis_vuitton, characteristic_object, fashion.handbags]
+  - [maker.hermes, characteristic_object, fashion.handbags]
+  - [maker.hermes, characteristic_object, fashion.accessories]
+  - [maker.chanel, characteristic_object, fashion.handbags]
+  - [maker.chanel, characteristic_object, fashion.clothing]
+  - [maker.louis_vuitton, associated_region, region.france]
+  - [maker.hermes, associated_region, region.france]
+  - [maker.chanel, associated_region, region.france]
+  # Object types defined by a technique or material
+  - [fine_art.prints.lithographs, associated_technique, technique.lithography]
+  - [fine_art.works_on_paper.watercolours, associated_technique, technique.watercolour]
+  - [fine_art.sculpture.bronzes, associated_material, material.bronze]
+  - [fine_art.sculpture.marble, associated_material, material.marble]
+  - [fine_art.sculpture.terracotta, associated_material, material.terracotta]
+  - [fine_art.sculpture.plaster, associated_material, material.plaster]
+  - [fine_art.sculpture.wood, associated_material, material.wood]
+  - [world_arts.asian_art, associated_region, region.asia]
+
+# All 105 Drouot categories found in Phase 1 (exact source strings).
+source_categories:
+  - {fr: "Arts d'Asie", en: Asian art, map: [world_arts.asian_art, {originates_from: region.asia}]}
+  - {fr: Pièces et billets, en: Coins and notes, map: [numismatics.coins_banknotes]}
+  - {fr: Tableaux anciens, en: Old Masters (before 1870), map: [fine_art.paintings.old_masters]}
+  - {fr: Bagues, en: Rings, map: [jewellery_watches.jewellery.rings]}
+  - {fr: Tableaux modernes, en: Impressionist and modern paintings, map: [fine_art.paintings.modern]}
+  - {fr: "Colliers, colliers de perles et sautoirs", en: "Necklaces, pearl necklaces and chains",
+     map: [jewellery_watches.jewellery.necklaces]}
+  - {fr: Lithographies, en: Lithographs, map: [fine_art.prints.lithographs, {uses_technique: technique.lithography}]}
+  - {fr: Icônes, en: Icons, map: [fine_art.paintings.icons]}
+  - {fr: Photographies, en: Photographs, map: [fine_art.photography]}
+  - {fr: Cartes postales, en: Postcards, map: [collectibles.postcards]}
+  - {fr: Vases, en: Vases, map: [decorative_arts.vases]}
+  - {fr: Céramiques, en: Ceramics, map: [decorative_arts.ceramics]}
+  - {fr: "Boucles d'oreilles", en: Earrings, map: [jewellery_watches.jewellery.earrings]}
+  - {fr: Armes, en: Arms, map: [arms_militaria.arms]}
+  - {fr: Services de table, en: Sets of tableware, map: [decorative_arts.tableware.table_services]}
+  - {fr: Aquarelles, en: Watercolours, map: [fine_art.works_on_paper.watercolours, {uses_technique: technique.watercolour}]}
+  - {fr: Jouets et maquettes, en: Toys and models, map: [collectibles.toys_models]}
+  - {fr: Tapis, en: Carpets, map: [decorative_arts.carpets]}
+  - {fr: Dessins, en: Works on paper, map: [fine_art.works_on_paper]}
+  - {fr: Bracelets, en: Bracelets, map: [jewellery_watches.jewellery.bracelets]}
+  - {fr: Montres, en: Wristwatches, map: [jewellery_watches.watches.wristwatches]}
+  - {fr: Tableaux contemporains, en: Post-war and contemporary paintings, map: [fine_art.paintings.contemporary]}
+  - {fr: Broches et épingles, en: Brooches and pins, map: [jewellery_watches.jewellery.brooches]}
+  - {fr: Tables, en: Tables, map: [furniture.tables]}
+  - {fr: Bronzes, en: Bronzes, confidence: 0.8, map: [fine_art.sculpture.bronzes, {made_of: material.bronze}],
+     note: "Drouot 'Bronzes' also contains decorative bronzes, not only sculpture."}
+  - {fr: Religions, en: Religions, map: [decorative_arts.religious_objects]}
+  - {fr: Verreries, en: "Glasses, carafes and liquor cabinets", map: [decorative_arts.glass]}
+  - {fr: Bandes dessinées, en: Strip cartoons, map: [books_manuscripts.comics]}
+  - {fr: Lampes et lanternes, en: Lamps and lanterns, map: [decorative_arts.lighting],
+     note: "Mixed lamps and lanterns: mapped to the parent subcategory."}
+  - {fr: Ménagères et Couverts, en: Cutlery and silverware, map: [decorative_arts.silver.cutlery]}
+  - {fr: Fauteuils, en: Armchairs, map: [furniture.seating.armchairs]}
+  - {fr: Médaille historique, en: Histo medals, map: [numismatics.medals]}
+  - {fr: Vin, en: Wine and fortified wine, map: [wine_spirits.wine]}
+  - {fr: Lustres, en: Ceiling and suspended lights, map: [decorative_arts.lighting.ceiling_lights]}
+  - {fr: Cadres, en: Antique and modern frames, map: [decorative_arts.frames]}
+  - {fr: Accessoires, en: Belts and accessories, map: [fashion.accessories]}
+  - {fr: Chandeliers, en: "Chandeliers, candlesticks and candelabra", map: [decorative_arts.lighting.candlesticks],
+     note: "French 'chandeliers' are candlesticks; the English label's 'Chandeliers' is a false friend."}
+  - {fr: Livres anciens, en: Old books, map: [books_manuscripts.antiquarian_books]}
+  - {fr: Appliques, en: Wall lamps, map: [decorative_arts.lighting.wall_lights]}
+  - {fr: Assiettes et Plats, en: Plates and Dishes, map: [decorative_arts.tableware.plates_dishes]}
+  - {fr: "Voitures, vélos et autres", en: "Cars, bicycles and other", map: [collectibles.vehicles]}
+  - {fr: Coffrets et boîtes, en: Caskets and boxes, map: [decorative_arts.boxes]}
+  - {fr: Sculptures, en: Sculptures, map: [fine_art.sculpture]}
+  - {fr: Argenterie, en: Silver, map: [decorative_arts.silver],
+     note: "Not mapped to material.silver: the department also sells silver-plated metal."}
+  - {fr: Sacs à main, en: Handbags, map: [fashion.handbags]}
+  - {fr: Bois, en: Wood sculptures, map: [fine_art.sculpture.wood, {made_of: material.wood}]}
+  - {fr: Miroirs, en: Mirrors, map: [furniture.mirrors]}
+  - {fr: Consoles, en: Consoles and corner furniture, confidence: 0.9, map: [furniture.tables.consoles]}
+  - {fr: Bijoux, en: Jewellery and precious stones, map: [jewellery_watches.jewellery]}
+  - {fr: Chaises, en: Chairs, map: [furniture.seating.chairs]}
+  - {fr: Musique, en: Music, map: [collectibles.music]}
+  - {fr: Commodes, en: Commodes, map: [furniture.case_furniture.commodes]}
+  - {fr: "Textile, dentelles, tissu", en: "Textiles, lace and fabrics", map: [decorative_arts.textiles]}
+  - {fr: Pendules, en: Clocks and mantel clocks, map: [decorative_arts.clocks]}
+  - {fr: Affiches, en: Posters, map: [collectibles.posters]}
+  - {fr: Livres et Manuscrits, en: Books & manuscripts, map: [books_manuscripts]}
+  - {fr: Montres gousset et poche, en: Fob and pocket watches, map: [jewellery_watches.watches.pocket_watches]}
+  - {fr: Bibliothèques, en: Bookshelves, map: [furniture.case_furniture.bookcases]}
+  - {fr: Bureaux, en: Desks, map: [furniture.desks]}
+  - {fr: Pierres précieuses, en: Precious stones, map: [jewellery_watches.gemstones.precious]}
+  - {fr: Lampadaire, en: lampposts, map: [decorative_arts.lighting.floor_lamps]}
+  - {fr: Médaille militaire, en: Militaria medals, map: [arms_militaria.military_medals]}
+  - {fr: Buffets, en: Sideboards and credenzas, map: [furniture.case_furniture.sideboards]}
+  - {fr: Livres religieux, en: Religious books, map: [books_manuscripts.religious_books]}
+  - {fr: Tabourets, en: Stools, map: [furniture.seating.stools]}
+  - {fr: Cartes de géographie, en: Maps, map: [books_manuscripts.maps]}
+  - {fr: Histoire Naturelle, en: Natural history, map: [collectibles.natural_history]}
+  - {fr: Terres cuites, en: Terracotta sculptures, map: [fine_art.sculpture.terracotta, {made_of: material.terracotta}]}
+  - {fr: Casques et uniformes, en: Helmets and uniforms, map: [arms_militaria.helmets_uniforms]}
+  - {fr: Street Art, en: "Street Art, graffiti", map: [fine_art.street_art]}
+  - {fr: Pierres fines, en: Semi-precious stones, map: [jewellery_watches.gemstones.semi_precious]}
+  - {fr: Plâtres, en: Plaster sculptures, map: [fine_art.sculpture.plaster, {made_of: material.plaster}]}
+  - {fr: Vêtements, en: Clothes, map: [fashion.clothing]}
+  - {fr: Paravents, en: Screens, map: [furniture.screens]}
+  - {fr: Stylos, en: "Pens, paperweights and inkwells", map: [collectibles.writing_instruments]}
+  - {fr: Archéologie, en: "Archaeology – Antiquity", map: [world_arts.archaeology]}
+  - {fr: Marbres, en: Marble sculptures, map: [fine_art.sculpture.marble, {made_of: material.marble}]}
+  - {fr: Timbres-poste, en: Stamps, map: [collectibles.stamps]}
+  - {fr: Canapés et banquettes, en: Sofas and benches, map: [furniture.seating.sofas]}
+  - {fr: Objets de collection, en: "Collectors' items", map: [collectibles]}
+  - {fr: Lettres et autographes, en: Letters and autographs, map: [books_manuscripts.autographs]}
+  - {fr: Bagages et accessoires de mode, en: Suitcases and trunks, map: [fashion.luggage]}
+  - {fr: Boutons de manchettes, en: Cufflinks, map: [jewellery_watches.jewellery.cufflinks]}
+  - {fr: Montres et horlogerie, en: Watches and timepieces, map: [jewellery_watches.watches]}
+  - {fr: Sport, en: Sport items, map: [collectibles.sport]}
+  - {fr: "Whisky, rhum et cognac", en: "Whisky, rum and brandy", map: [wine_spirits.spirits]}
+  - {fr: Art islamique, en: Islamic art, map: [world_arts.islamic_art]}
+  - {fr: Tapisseries, en: Tapestries, map: [decorative_arts.textiles.tapestries]}
+  - {fr: Vins et alcools, en: Wines and spirits, map: [wine_spirits]}
+  - {fr: Coffres, en: Chests, map: [furniture.case_furniture.chests]}
+  - {fr: Portefeuilles, en: Wallets, map: [fashion.accessories.small_leather_goods]}
+  - {fr: "Armes, militaria, souvenirs historiques", en: "Arms, hunting weapons and military mementoes",
+     map: [arms_militaria]}
+  - {fr: Champagne, en: Champagne, map: [wine_spirits.champagne]}
+  - {fr: Lits, en: Beds, map: [furniture.beds]}
+  - {fr: Chaussures, en: Shoes, map: [fashion.footwear]}
+  - {fr: Luminaires, en: Lighting, map: [decorative_arts.lighting]}
+  - {fr: Arts premiers, en: "Arts of Africa, America and Oceania", map: [world_arts.african_oceanic_american]}
+  - {fr: Fourrures, en: Furs, map: [fashion.furs]}
+  - {fr: Mode et vintage, en: Fashion and vintage items, map: [fashion]}
+  - {fr: Judaïca, en: Judaica, map: [decorative_arts.religious_objects.judaica]}
+  - {fr: Mobilier, en: Furniture, map: [furniture]}
+  - {fr: Tableaux, en: Paintings, map: [fine_art.paintings]}
+  - {fr: Sieges, en: Seating, map: [furniture.seating]}
+  - {fr: Arts de la table, en: Tableware, map: [decorative_arts.tableware]}
+  - {fr: Lingots, en: Ingots, map: [numismatics.ingots]}

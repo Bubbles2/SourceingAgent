@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router'
+import { SearchAdminPage } from '../../taxonomy_search/web/SearchAdminPage'
 import { PageLoading } from '../components/layout/PageLoading'
 import { SiteLayout } from '../components/layout/SiteLayout'
 import { AdminLayout } from '../features/admin/AdminLayout'
@@ -41,6 +42,7 @@ import {
   reviewRequestsLoader,
   rootLoader,
   searchLoader,
+  searchAdminLoader,
 } from './loaders'
 import { paths } from './paths'
 
@@ -102,6 +104,8 @@ export const router = createBrowserRouter([
               { path: 'requests', loader: reviewRequestsLoader, element: <ReviewRequestsPage />, hydrateFallbackElement: pageLoading },
               { path: 'collections', loader: collectionManagerLoader, element: <CollectionManager />, hydrateFallbackElement: pageLoading },
               { path: 'collection-status', loader: collectionManagerLoader, element: <CollectionStatusPage />, hydrateFallbackElement: pageLoading },
+              // The taxonomy search's administration (taxonomy_search/INTEGRATION.md)
+              { path: 'search', loader: searchAdminLoader, element: <SearchAdminPage />, hydrateFallbackElement: pageLoading },
             ],
           },
           { path: paths.signIn, loader: guestOnlyLoader, element: <SignInPage />, hydrateFallbackElement: pageLoading },

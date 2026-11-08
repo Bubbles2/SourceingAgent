@@ -22,6 +22,7 @@ export const paths = {
   reviewRequests: '/admin/requests',
   collectionManager: '/admin/collections',
   collectionStatus: '/admin/collection-status',
+  searchAdmin: '/admin/search',
   terms: '/terms',
   privacy: '/privacy',
 } as const

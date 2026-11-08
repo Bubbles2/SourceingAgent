@@ -1,9 +1,10 @@
-// Database constraints from the migrations. Everything runs in one transaction that is rolled
-// back at the end, so the database is left as it was. Requires `npm run migrate:up` first.
+// Database constraints from the migrations, and the views over the Drouot collector's sales. Everything
+// runs in one transaction that is rolled back at the end, so the database is left as it was.
+// Requires `npm run migrate:up` first.
 import assert from 'node:assert/strict'
 import { after, before, test } from 'node:test'
 import type pg from 'pg'
-import { insertTestSale, testSourceId } from '../src/cli/testSales.ts'
+import { insertTestSale } from '../src/cli/testSales.ts'
 import { closePool, pool } from '../src/db/pool.ts'
 
 let client: pg.PoolClient
@@ -65,10 +66,12 @@ after(async () => {
   await closePool()
 })
 
-test('request ids are generated UUIDs; sale and lot ids are numbers, as in the auction monitor', () => {
+test('request ids are generated UUIDs; sale and lot ids are numbers, as in the collector', () => {
   assert.match(ids.aliceRequest, /^[0-9a-f-]{36}$/)
   assert.match(ids.auction, /^\d+$/)
   assert.match(ids.lot, /^\d+$/)
+  // Test sales are numbered far above the collector's
+  assert.ok(BigInt(ids.auction) >= 900000000001n && BigInt(ids.lot) >= 900000000001n)
 })
 
 test('maximum bids are stored exactly as NUMERIC and returned as strings', async () => {
@@ -98,11 +101,16 @@ test('a customer cannot open a second request for the same lot', async () => {
   })
 })
 
-test("the lot must belong to the request's auction", async () => {
-  await expectViolation(insertRequest, [ids.bob, ids.otherAuction, ids.lot, '500', 'pending'], {
-    code: '23503',
-    constraint: 'bid_requests_lot_auction_fkey',
-  })
+test('a request names its lot without a foreign key; the API checks the lot belongs to the sale', async () => {
+  const { rows } = await client.query<{ count: number }>(
+    "SELECT count(*)::int AS count FROM pg_constraint WHERE conrelid = 'bid_requests'::regclass AND contype = 'f'",
+  )
+  // Only the customer foreign key is left: lots are a view over the collector's data.
+  assert.equal(rows[0]?.count, 1)
+  const constraint = await client.query(
+    "SELECT 1 FROM pg_constraint WHERE conrelid = 'bid_requests'::regclass AND conname = 'bid_requests_lot_auction_fkey'",
+  )
+  assert.equal(constraint.rowCount, 0)
 })
 
 test('maximum bids must be positive and statuses must be known', async () => {
@@ -136,70 +144,104 @@ test('status history is append-only', async () => {
   await expectViolation('DELETE FROM request_status_history WHERE id = $1', [historyId], { code: '23001' })
 })
 
-test("a sale is stored once per source, and a lot once per sale, by the source website's ids", async () => {
-  await expectViolation(
-    "INSERT INTO auctions (source_id, external_id, title, source_url) VALUES ($1, 'schematest-sale', 'Again', 'https://example.com/again')",
-    [testSourceId],
-    { code: '23505', constraint: 'auctions_source_id_external_id_key' },
+test('auctions and lots are read-only views of the collector, with the test sales added', async () => {
+  const { rows } = await client.query<{ name: string; kind: string }>(
+    `SELECT c.relname AS name, c.relkind AS kind FROM pg_class c
+     WHERE c.relnamespace = current_schema()::regnamespace
+       AND c.relname IN ('auctions', 'lots', 'test_auctions', 'test_lots', 'auction_sources', 'collection_runs')
+     ORDER BY c.relname`,
   )
-  await expectViolation(
-    "INSERT INTO lots (auction_id, external_id, source_url) VALUES ($1, 'schematest-sale-1', 'https://example.com/again')",
-    [ids.auction],
-    { code: '23505', constraint: 'lots_auction_id_external_id_key' },
-  )
-})
-
-test('a sale, and a collection run, must name a known source', async () => {
-  await expectViolation(
-    "INSERT INTO auctions (source_id, external_id, title, source_url) VALUES (999999999, 'schematest-unknown', 'Unknown', 'https://example.com/unknown')",
-    [],
-    { code: '23503', constraint: 'auctions_source_id_fkey' },
-  )
-  await expectViolation('INSERT INTO collection_runs (source_id) VALUES (999999999)', [], {
-    code: '23503',
-    constraint: 'collection_runs_source_id_fkey',
-  })
-})
-
-test('the 30-day purge deletes old sales and their lots, but keeps those with bid requests', async () => {
-  await client.query('SAVEPOINT purge')
-  const oldSale = await insertTestSale('schematest-old-sale', { daysAhead: -40, lotCount: 2 }, client)
-  const requestedSale = await insertTestSale('schematest-old-requested-sale', { daysAhead: -40, lotCount: 2 }, client)
-  // Even a rejected request keeps its sale
-  await client.query(insertRequest, [ids.bob, requestedSale.auctionId, requestedSale.lots[0]?.id, '300', 'rejected'])
-
-  const { rows } = await client.query<{ auctions_deleted: number; lots_deleted: number }>(
-    'SELECT auctions_deleted, lots_deleted FROM purge_old_auctions_30d()',
-  )
-  assert.ok((rows[0]?.auctions_deleted ?? 0) >= 1 && (rows[0]?.lots_deleted ?? 0) >= 2)
-  const left = await client.query<{ id: string; lots: number }>(
-    'SELECT a.id, (SELECT count(*)::int FROM lots l WHERE l.auction_id = a.id) AS lots FROM auctions a WHERE a.id = ANY($1) ORDER BY a.id',
-    [[oldSale.auctionId, requestedSale.auctionId, ids.auction]],
-  )
-  assert.deepEqual(left.rows, [
-    { id: ids.auction, lots: 2 },
-    { id: requestedSale.auctionId, lots: 2 },
+  assert.deepEqual(rows, [
+    { name: 'auctions', kind: 'v' },
+    { name: 'lots', kind: 'v' },
+    { name: 'test_auctions', kind: 'r' },
+    { name: 'test_lots', kind: 'r' },
   ])
-  await client.query('ROLLBACK TO SAVEPOINT purge')
+  const purge = await client.query("SELECT 1 FROM pg_proc WHERE proname = 'purge_old_auctions_30d' AND pronamespace = current_schema()::regnamespace")
+  assert.equal(purge.rowCount, 0, "the monitor's purge is gone: the collector owns its data")
+
+  // The views can't be written, so nothing the app does can change the collector's data.
+  await expectViolation('DELETE FROM lots WHERE id = $1', [ids.lot], { code: '55000' })
+  await expectViolation("UPDATE auctions SET title = 'Changed' WHERE id = $1", [ids.auction], { code: '55000' })
 })
 
-test('a requested lot, and a sale with lots, cannot be deleted', async () => {
-  await expectViolation('DELETE FROM lots WHERE id = $1', [ids.lot], {
-    code: '23503',
-    constraint: 'bid_requests_lot_auction_fkey',
-  })
-  await expectViolation('DELETE FROM auctions WHERE id = $1', [ids.otherAuction], {
-    code: '23503',
-    constraint: 'lots_auction_id_fkey',
-  })
+test("every collector sale and lot is in the views, with the lot's sale given by its id", async () => {
+  const { rows } = await client.query<{ collectorSales: number; viewSales: number; collectorLots: number; matchedLots: number }>(
+    `SELECT
+       (SELECT count(*)::int FROM drouot_collector.auctions) AS "collectorSales",
+       (SELECT count(*)::int FROM auctions v JOIN drouot_collector.auctions a ON a.id = v.id AND a.auction_id = v.external_id) AS "viewSales",
+       (SELECT count(*)::int FROM drouot_collector.lots) AS "collectorLots",
+       (SELECT count(*)::int FROM lots v
+          JOIN drouot_collector.lots l ON l.id = v.id AND l.lot_id = v.external_id
+          JOIN drouot_collector.auctions a ON a.source = l.source AND a.auction_id = l.auction_id AND a.id = v.auction_id) AS "matchedLots"`,
+  )
+  const counts = rows[0]
+  assert.ok(counts)
+  assert.equal(counts.viewSales, counts.collectorSales)
+  assert.equal(counts.matchedLots, counts.collectorLots)
+
+  // Every sale has a title, even those the collector couldn't read
+  const untitled = await client.query('SELECT 1 FROM auctions WHERE title IS NULL')
+  assert.equal(untitled.rowCount, 0)
 })
 
-test("each lot's search documents are generated from its original and English text", async () => {
-  const { rows } = await client.query<{ original: boolean; english: boolean }>(
-    `SELECT search_document @@ to_tsquery('simple', 'objet') AS original,
-            search_document_ai @@ to_tsquery('simple', 'object') AS english
-     FROM lots WHERE id = $1`,
+test('the views keep the types the API returns: bigint ids, exact estimates, three-letter currencies', async () => {
+  await client.query('SAVEPOINT estimates')
+  await client.query(
+    "UPDATE test_lots SET estimate_low = 1500, estimate_high = 2000.5, materials = '{bronze}' WHERE id = $1",
     [ids.lot],
   )
-  assert.deepEqual(rows[0], { original: true, english: true })
+  const { rows } = await client.query<Record<string, unknown>>(
+    'SELECT id, auction_id, estimate_low, estimate_high, currency, materials FROM lots WHERE id = $1',
+    [ids.lot],
+  )
+  assert.deepEqual(rows[0], {
+    id: ids.lot,
+    auction_id: ids.auction,
+    estimate_low: '1500.00',
+    estimate_high: '2000.50',
+    currency: 'EUR',
+    materials: ['bronze'],
+  })
+  await client.query('ROLLBACK TO SAVEPOINT estimates')
+  const types = await client.query<{ column: string; type: string }>(
+    `SELECT attname AS column, format_type(atttypid, atttypmod) AS type FROM pg_attribute
+     WHERE attrelid = 'lots'::regclass AND attname IN ('id', 'auction_id', 'estimate_low', 'currency') ORDER BY attnum`,
+  )
+  assert.deepEqual(types.rows, [
+    { column: 'id', type: 'bigint' },
+    { column: 'auction_id', type: 'bigint' },
+    { column: 'estimate_low', type: 'numeric(14,2)' },
+    { column: 'currency', type: 'character(3)' },
+  ])
+})
+
+test('a test sale is stored once, and a test lot once per sale, by their external ids', async () => {
+  await expectViolation(
+    "INSERT INTO test_auctions (external_id, title, source_url) VALUES ('schematest-sale', 'Again', 'https://example.com/again')",
+    [],
+    { code: '23505', constraint: 'test_auctions_external_id_key' },
+  )
+  await expectViolation(
+    "INSERT INTO test_lots (auction_id, external_id, source_url) VALUES ($1, 'schematest-sale-1', 'https://example.com/again')",
+    [ids.auction],
+    { code: '23505', constraint: 'test_lots_auction_id_external_id_key' },
+  )
+})
+
+test("a test lot must name a test sale, and test ids can't take the collector's", async () => {
+  await expectViolation(
+    "INSERT INTO test_lots (auction_id, external_id, source_url) VALUES (5, 'schematest-unknown', 'https://example.com/unknown')",
+    [],
+    { code: '23503', constraint: 'test_lots_auction_id_fkey' },
+  )
+  await expectViolation(
+    "INSERT INTO test_auctions (id, external_id, title, source_url) VALUES (5, 'schematest-low-id', 'Low', 'https://example.com/low')",
+    [],
+    { code: '23514', constraint: 'test_auctions_id_range' },
+  )
+  await expectViolation('DELETE FROM test_auctions WHERE id = $1', [ids.otherAuction], {
+    code: '23503',
+    constraint: 'test_lots_auction_id_fkey',
+  })
 })

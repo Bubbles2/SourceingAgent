@@ -1,0 +1,1784 @@
+{
+  "generated_at": "2026-11-07T17:43:20+00:00",
+  "target": "postgresql://(libpq default user)@localhost:5432/events_monitor_db schema=drouot_collector",
+  "schema": "drouot_collector",
+  "auction_table": "auctions",
+  "lot_table": "lots",
+  "lot_limit": null,
+  "lots_analysed": 20923,
+  "orphan_lots": 0,
+  "column_profiles": {
+    "lots": [
+      {
+        "column": "id",
+        "data_type": "bigint",
+        "role": "identifier",
+        "language": null,
+        "nulls": 0,
+        "blanks": null,
+        "distinct": 20923
+      },
+      {
+        "column": "source",
+        "data_type": "text",
+        "role": "source",
+        "language": null,
+        "nulls": 0,
+        "blanks": 0,
+        "distinct": 1
+      },
+      {
+        "column": "auction_id",
+        "data_type": "text",
+        "role": "identifier",
+        "language": null,
+        "nulls": 0,
+        "blanks": 0,
+        "distinct": 96
+      },
+      {
+        "column": "lot_id",
+        "data_type": "text",
+        "role": "identifier",
+        "language": null,
+        "nulls": 0,
+        "blanks": 0,
+        "distinct": 20923
+      },
+      {
+        "column": "lot_number",
+        "data_type": "text",
+        "role": "lot_number",
+        "language": null,
+        "nulls": 9,
+        "blanks": 0,
+        "distinct": 3787
+      },
+      {
+        "column": "title_fr",
+        "data_type": "text",
+        "role": "title",
+        "language": "fr",
+        "nulls": 3,
+        "blanks": 0,
+        "distinct": 19287
+      },
+      {
+        "column": "description_fr",
+        "data_type": "text",
+        "role": "description",
+        "language": "fr",
+        "nulls": 3,
+        "blanks": 0,
+        "distinct": 20759
+      },
+      {
+        "column": "title_en",
+        "data_type": "text",
+        "role": "title",
+        "language": "en",
+        "nulls": 3,
+        "blanks": 0,
+        "distinct": 19264
+      },
+      {
+        "column": "description_en",
+        "data_type": "text",
+        "role": "description",
+        "language": "en",
+        "nulls": 3,
+        "blanks": 0,
+        "distinct": 20761
+      },
+      {
+        "column": "category_fr",
+        "data_type": "text",
+        "role": "category",
+        "language": "fr",
+        "nulls": 15,
+        "blanks": 0,
+        "distinct": 105
+      },
+      {
+        "column": "category_en",
+        "data_type": "text",
+        "role": "category",
+        "language": "en",
+        "nulls": 15,
+        "blanks": 0,
+        "distinct": 105
+      },
+      {
+        "column": "currency",
+        "data_type": "text",
+        "role": "currency",
+        "language": null,
+        "nulls": 2,
+        "blanks": 0,
+        "distinct": 4
+      },
+      {
+        "column": "image_url",
+        "data_type": "text",
+        "role": "image_url",
+        "language": null,
+        "nulls": 2,
+        "blanks": 0,
+        "distinct": 20827
+      },
+      {
+        "column": "lot_url_fr",
+        "data_type": "text",
+        "role": "url",
+        "language": "fr",
+        "nulls": 0,
+        "blanks": 0,
+        "distinct": 20923
+      },
+      {
+        "column": "lot_url_en",
+        "data_type": "text",
+        "role": "url",
+        "language": "en",
+        "nulls": 0,
+        "blanks": 0,
+        "distinct": 20923
+      },
+      {
+        "column": "details_status",
+        "data_type": "text",
+        "role": "status",
+        "language": null,
+        "nulls": 0,
+        "blanks": 0,
+        "distinct": 3
+      },
+      {
+        "column": "last_collected_run_id",
+        "data_type": "bigint",
+        "role": "identifier",
+        "language": null,
+        "nulls": 0,
+        "blanks": null,
+        "distinct": 12
+      },
+      {
+        "column": "last_error",
+        "data_type": "text",
+        "role": "error",
+        "language": null,
+        "nulls": 20920,
+        "blanks": 0,
+        "distinct": 3
+      },
+      {
+        "column": "updated_at",
+        "data_type": "timestamp with time zone",
+        "role": "record_timestamp",
+        "language": null,
+        "nulls": 0,
+        "blanks": null,
+        "distinct": 20923
+      }
+    ],
+    "auctions": [
+      {
+        "column": "id",
+        "data_type": "bigint",
+        "role": "identifier",
+        "language": null,
+        "nulls": 0,
+        "blanks": null,
+        "distinct": 122
+      },
+      {
+        "column": "source",
+        "data_type": "text",
+        "role": "source",
+        "language": null,
+        "nulls": 0,
+        "blanks": 0,
+        "distinct": 1
+      },
+      {
+        "column": "auction_id",
+        "data_type": "text",
+        "role": "identifier",
+        "language": null,
+        "nulls": 0,
+        "blanks": 0,
+        "distinct": 122
+      },
+      {
+        "column": "title_fr",
+        "data_type": "text",
+        "role": "title",
+        "language": "fr",
+        "nulls": 26,
+        "blanks": 0,
+        "distinct": 96
+      },
+      {
+        "column": "description_fr",
+        "data_type": "text",
+        "role": "description",
+        "language": "fr",
+        "nulls": 0,
+        "blanks": 0,
+        "distinct": 105
+      },
+      {
+        "column": "title_en",
+        "data_type": "text",
+        "role": "title",
+        "language": "en",
+        "nulls": 26,
+        "blanks": 0,
+        "distinct": 96
+      },
+      {
+        "column": "description_en",
+        "data_type": "text",
+        "role": "description",
+        "language": "en",
+        "nulls": 0,
+        "blanks": 0,
+        "distinct": 108
+      },
+      {
+        "column": "starts_at",
+        "data_type": "timestamp with time zone",
+        "role": "date",
+        "language": null,
+        "nulls": 26,
+        "blanks": null,
+        "distinct": 39
+      },
+      {
+        "column": "auction_date",
+        "data_type": "date",
+        "role": "date",
+        "language": null,
+        "nulls": 26,
+        "blanks": null,
+        "distinct": 7
+      },
+      {
+        "column": "auction_house",
+        "data_type": "text",
+        "role": "auction_house",
+        "language": null,
+        "nulls": 26,
+        "blanks": 0,
+        "distinct": 85
+      },
+      {
+        "column": "catalogue_page_count",
+        "data_type": "integer",
+        "role": "count",
+        "language": null,
+        "nulls": 0,
+        "blanks": null,
+        "distinct": 11
+      },
+      {
+        "column": "auction_url_fr",
+        "data_type": "text",
+        "role": "url",
+        "language": "fr",
+        "nulls": 0,
+        "blanks": 0,
+        "distinct": 122
+      },
+      {
+        "column": "auction_url_en",
+        "data_type": "text",
+        "role": "url",
+        "language": "en",
+        "nulls": 0,
+        "blanks": 0,
+        "distinct": 122
+      },
+      {
+        "column": "details_status",
+        "data_type": "text",
+        "role": "status",
+        "language": null,
+        "nulls": 0,
+        "blanks": 0,
+        "distinct": 1
+      },
+      {
+        "column": "catalogue_status",
+        "data_type": "text",
+        "role": "status",
+        "language": null,
+        "nulls": 0,
+        "blanks": 0,
+        "distinct": 2
+      },
+      {
+        "column": "last_error",
+        "data_type": "text",
+        "role": "error",
+        "language": null,
+        "nulls": 92,
+        "blanks": 0,
+        "distinct": 1
+      },
+      {
+        "column": "updated_at",
+        "data_type": "timestamp with time zone",
+        "role": "record_timestamp",
+        "language": null,
+        "nulls": 0,
+        "blanks": null,
+        "distinct": 122
+      }
+    ]
+  },
+  "lengths": [
+    {
+      "table": "lots",
+      "column": "title_fr",
+      "non_empty": 20920,
+      "min": 3,
+      "p10": 25,
+      "median": 93,
+      "p90": 341,
+      "max": 6184,
+      "avg": 153.2,
+      "shorter_than_20": 1479
+    },
+    {
+      "table": "lots",
+      "column": "title_en",
+      "non_empty": 20920,
+      "min": 3,
+      "p10": 24,
+      "median": 87,
+      "p90": 310,
+      "max": 4983,
+      "avg": 139.6,
+      "shorter_than_20": 1568
+    },
+    {
+      "table": "lots",
+      "column": "description_fr",
+      "non_empty": 20920,
+      "min": 8,
+      "p10": 102,
+      "median": 241,
+      "p90": 752,
+      "max": 6185,
+      "avg": 392.8,
+      "shorter_than_20": 9
+    },
+    {
+      "table": "lots",
+      "column": "description_en",
+      "non_empty": 20920,
+      "min": 8,
+      "p10": 98,
+      "median": 228,
+      "p90": 681,
+      "max": 5117,
+      "avg": 354.0,
+      "shorter_than_20": 9
+    },
+    {
+      "table": "auctions",
+      "column": "title_fr",
+      "non_empty": 96,
+      "min": 14,
+      "p10": 21,
+      "median": 49,
+      "p90": 100,
+      "max": 170,
+      "avg": 54.6,
+      "shorter_than_20": 7
+    },
+    {
+      "table": "auctions",
+      "column": "title_en",
+      "non_empty": 96,
+      "min": 10,
+      "p10": 19,
+      "median": 42,
+      "p90": 101,
+      "max": 196,
+      "avg": 52.3,
+      "shorter_than_20": 10
+    },
+    {
+      "table": "auctions",
+      "column": "description_fr",
+      "non_empty": 122,
+      "min": 31,
+      "p10": 63,
+      "median": 72,
+      "p90": 91,
+      "max": 122,
+      "avg": 74.5,
+      "shorter_than_20": 0
+    },
+    {
+      "table": "auctions",
+      "column": "description_en",
+      "non_empty": 122,
+      "min": 49,
+      "p10": 53,
+      "median": 63,
+      "p90": 83,
+      "max": 112,
+      "avg": 66.3,
+      "shorter_than_20": 0
+    }
+  ],
+  "duplicates": [
+    {
+      "check": "same lot number within an auction (source, auction_id, lot_number)",
+      "groups": 216,
+      "rows": 469,
+      "examples": [
+        {
+          "source": "drouot",
+          "auction_id": "182469",
+          "lot_number": "192",
+          "n": 4
+        },
+        {
+          "source": "drouot",
+          "auction_id": "187114",
+          "lot_number": "71",
+          "n": 4
+        },
+        {
+          "source": "drouot",
+          "auction_id": "182469",
+          "lot_number": "120",
+          "n": 4
+        },
+        {
+          "source": "drouot",
+          "auction_id": "183769",
+          "lot_number": "301",
+          "n": 4
+        },
+        {
+          "source": "drouot",
+          "auction_id": "186559",
+          "lot_number": "86",
+          "n": 4
+        }
+      ]
+    },
+    {
+      "check": "identical title_fr shared by several lots (36 groups span >1 auction)",
+      "groups": 647,
+      "rows": 2280,
+      "examples": [
+        {
+          "count": 127,
+          "auctions": 1,
+          "text": "Raymond THIBÉSART (1874-1968)"
+        },
+        {
+          "count": 43,
+          "auctions": 5,
+          "text": "LOUIS VUITTON"
+        },
+        {
+          "count": 29,
+          "auctions": 1,
+          "text": "BIBLIOTHEQUE DE LA PLEIADE"
+        },
+        {
+          "count": 29,
+          "auctions": 1,
+          "text": "VDL. Réunion de 50 photographies de la ville de Luxembourg ville prises dans les années 70."
+        },
+        {
+          "count": 25,
+          "auctions": 1,
+          "text": "HERMÈS"
+        }
+      ]
+    },
+    {
+      "check": "identical title_en shared by several lots (39 groups span >1 auction)",
+      "groups": 677,
+      "rows": 2333,
+      "examples": [
+        {
+          "count": 127,
+          "auctions": 1,
+          "text": "Raymond THIBÉSART (1874–1968)"
+        },
+        {
+          "count": 43,
+          "auctions": 5,
+          "text": "LOUIS VUITTON"
+        },
+        {
+          "count": 29,
+          "auctions": 1,
+          "text": "VDL. A collection of 50 photographs of Luxembourg City taken in the 1970s."
+        },
+        {
+          "count": 29,
+          "auctions": 1,
+          "text": "LA PLEIADE LIBRARY"
+        },
+        {
+          "count": 25,
+          "auctions": 1,
+          "text": "HERMÈS"
+        }
+      ]
+    },
+    {
+      "check": "identical description_fr shared by several lots (1 groups span >1 auction)",
+      "groups": 84,
+      "rows": 245,
+      "examples": [
+        {
+          "count": 29,
+          "auctions": 1,
+          "text": "VDL. Réunion de 50 photographies de la ville de Luxembourg ville prises dans les années 70.\nOn y voit des dégradations des routes, des travaux en cours, des inf"
+        },
+        {
+          "count": 8,
+          "auctions": 1,
+          "text": "GDL. Réunion de 50 photographies de divers endroits du pays prises dans les années 70.\nOn y voit des dégradations des routes, des travaux en cours, des infracti"
+        },
+        {
+          "count": 8,
+          "auctions": 1,
+          "text": "Raymond THIBÉSART (1874-1968)\nEtude de nu masculin debout.\nRéunion de deux dessins sur papier au graphite noir.\n\nHaut. : 63,5 cm\nLong. : 48 cm\n\nPliures, tâches,"
+        },
+        {
+          "count": 7,
+          "auctions": 6,
+          "text": "Lot non venu"
+        },
+        {
+          "count": 7,
+          "auctions": 1,
+          "text": "Raymond THIBÉSART (1874-1968)\nEtude de nu masculin debout.\nDessin sur papier au graphite noir.\n\nHaut. : 63,5 cm\nLong. : 48 cm\n\nPliures, tâches, rousseurs et déc"
+        }
+      ]
+    },
+    {
+      "check": "identical description_en shared by several lots (2 groups span >1 auction)",
+      "groups": 84,
+      "rows": 243,
+      "examples": [
+        {
+          "count": 29,
+          "auctions": 1,
+          "text": "VDL. A collection of 50 photographs of Luxembourg City taken in the 1970s.\nThe images depict deteriorating roads, construction sites, traffic violations, storef"
+        },
+        {
+          "count": 8,
+          "auctions": 1,
+          "text": "GDL. A collection of 50 photographs from various parts of the country taken in the 1970s.\nThe images show road damage, construction in progress, traffic violati"
+        },
+        {
+          "count": 8,
+          "auctions": 1,
+          "text": "Raymond THIBÉSART (1874–1968)\nStudy of a Standing Male Nude.\nA pair of drawings on paper in black graphite.\n\nHeight: 63.5 cm\nLength: 48 cm\n\nCreases, stains, fox"
+        },
+        {
+          "count": 7,
+          "auctions": 1,
+          "text": "Raymond THIBÉSART (1874–1968)\nStudy of a Standing Male Nude.\nDrawing on paper in black graphite.\n\nHeight: 63.5 cm\nLength: 48 cm\n\nCreases, stains, foxing, and te"
+        },
+        {
+          "count": 6,
+          "auctions": 1,
+          "text": "VDL. A collection of 50 photographs of the city of Luxembourg taken in the 1970s.\nThe images depict deteriorating roads, construction in progress, traffic viola"
+        }
+      ]
+    },
+    {
+      "check": "identical title+description (fr) — possible re-listed lots",
+      "groups": 82,
+      "rows": 241,
+      "examples": []
+    }
+  ],
+  "hygiene": [
+    {
+      "column": "description_fr",
+      "check": "starts with the full title_fr text",
+      "rows": 18805,
+      "non_empty": 20920
+    },
+    {
+      "column": "description_en",
+      "check": "starts with the full title_en text",
+      "rows": 18970,
+      "non_empty": 20920
+    },
+    {
+      "column": "title_fr",
+      "check": "HTML entities (e.g. `&amp;`)",
+      "rows": 195,
+      "non_empty": 20920
+    },
+    {
+      "column": "title_fr",
+      "check": "HTML tags",
+      "rows": 0,
+      "non_empty": 20920
+    },
+    {
+      "column": "title_fr",
+      "check": "leading sub-lot numbering ('1 - ...')",
+      "rows": 192,
+      "non_empty": 20920
+    },
+    {
+      "column": "title_en",
+      "check": "HTML entities (e.g. `&amp;`)",
+      "rows": 208,
+      "non_empty": 20920
+    },
+    {
+      "column": "title_en",
+      "check": "HTML tags",
+      "rows": 0,
+      "non_empty": 20920
+    },
+    {
+      "column": "title_en",
+      "check": "leading sub-lot numbering ('1 - ...')",
+      "rows": 192,
+      "non_empty": 20920
+    },
+    {
+      "column": "description_fr",
+      "check": "HTML entities (e.g. `&amp;`)",
+      "rows": 258,
+      "non_empty": 20920
+    },
+    {
+      "column": "description_fr",
+      "check": "HTML tags",
+      "rows": 0,
+      "non_empty": 20920
+    },
+    {
+      "column": "description_fr",
+      "check": "leading sub-lot numbering ('1 - ...')",
+      "rows": 0,
+      "non_empty": 20920
+    },
+    {
+      "column": "description_en",
+      "check": "HTML entities (e.g. `&amp;`)",
+      "rows": 316,
+      "non_empty": 20920
+    },
+    {
+      "column": "description_en",
+      "check": "HTML tags",
+      "rows": 0,
+      "non_empty": 20920
+    },
+    {
+      "column": "description_en",
+      "check": "leading sub-lot numbering ('1 - ...')",
+      "rows": 0,
+      "non_empty": 20920
+    }
+  ],
+  "language_pairs": [
+    {
+      "table": "lots",
+      "role": "title",
+      "columns": {
+        "fr": "title_fr",
+        "en": "title_en"
+      },
+      "rows": 20923,
+      "both": 20920,
+      "only": {
+        "fr": 0,
+        "en": 0
+      },
+      "neither": 3,
+      "identical": 1501
+    },
+    {
+      "table": "lots",
+      "role": "description",
+      "columns": {
+        "fr": "description_fr",
+        "en": "description_en"
+      },
+      "rows": 20923,
+      "both": 20920,
+      "only": {
+        "fr": 0,
+        "en": 0
+      },
+      "neither": 3,
+      "identical": 14
+    },
+    {
+      "table": "lots",
+      "role": "category",
+      "columns": {
+        "fr": "category_fr",
+        "en": "category_en"
+      },
+      "rows": 20923,
+      "both": 20908,
+      "only": {
+        "fr": 0,
+        "en": 0
+      },
+      "neither": 15,
+      "identical": 1813
+    },
+    {
+      "table": "auctions",
+      "role": "title",
+      "columns": {
+        "fr": "title_fr",
+        "en": "title_en"
+      },
+      "rows": 122,
+      "both": 96,
+      "only": {
+        "fr": 0,
+        "en": 0
+      },
+      "neither": 26,
+      "identical": 3
+    },
+    {
+      "table": "auctions",
+      "role": "description",
+      "columns": {
+        "fr": "description_fr",
+        "en": "description_en"
+      },
+      "rows": 122,
+      "both": 122,
+      "only": {
+        "fr": 0,
+        "en": 0
+      },
+      "neither": 0,
+      "identical": 9
+    }
+  ],
+  "language_checks": [
+    {
+      "table": "lots",
+      "column": "title_fr",
+      "declared": "fr",
+      "sampled": 20920,
+      "detected": {
+        "fr": 13623,
+        "unknown": 7249,
+        "en": 33,
+        "de": 7,
+        "nl": 5,
+        "es": 2,
+        "it": 1
+      },
+      "mismatch_examples": [
+        {
+          "id": 2212,
+          "detected": "en",
+          "text": "Hugh Moss, Victor Graham et Ka Bo Tsang, *A Treasury of Chinese Snuff Bottles : The Mary &amp; George Bloch Collection*, 7 vol. Hong Kong, 2009."
+        },
+        {
+          "id": 8941,
+          "detected": "en",
+          "text": "DÖRING, JÖRG (Essen, 1965) : A Woman to Die for"
+        },
+        {
+          "id": 6556,
+          "detected": "nl",
+          "text": "DINH VAN, Epinglette cœur ajouré en or jaune 750°/°°(18K). Signée. 0.85 g. Longueur: 13.7 mm. Ecrin"
+        },
+        {
+          "id": 10076,
+          "detected": "de",
+          "text": "J.W. von Goethe, *Die natürliche Tochter* (La fille naturelle), tragédie, première édition, Tübingen 1803"
+        },
+        {
+          "id": 9429,
+          "detected": "en",
+          "text": "Kitaro «The light of the spirit», REF: 924 163-1, pochette: VG+, disque: VG-, inner sleeve, pressage: Europe 1987"
+        }
+      ]
+    },
+    {
+      "table": "lots",
+      "column": "title_en",
+      "declared": "en",
+      "sampled": 20920,
+      "detected": {
+        "en": 12751,
+        "unknown": 7949,
+        "de": 157,
+        "fr": 63
+      },
+      "mismatch_examples": [
+        {
+          "id": 21063,
+          "detected": "fr",
+          "text": "Domaine Hubert Lignier, Clos de la Roche Grand Cru, 1991 (1 x 750ml)"
+        },
+        {
+          "id": 11327,
+          "detected": "de",
+          "text": "Ludwig von Hofmann, Pomeranzenzweig / \"Reigen mit zwei Grazien\". Wohl um 1900 /1926."
+        },
+        {
+          "id": 21062,
+          "detected": "fr",
+          "text": "Domaine Hubert Lignier, Clos de la Roche Grand Cru, 1982 (1 x 750ml)"
+        },
+        {
+          "id": 11683,
+          "detected": "de",
+          "text": "Paar Tassen mit Untertassen mit Blumenbuketts mit sehr seltener Ausführung der Punkt-Schwerter. Meissen. Wohl um 1730–1740."
+        },
+        {
+          "id": 8229,
+          "detected": "fr",
+          "text": "La Nuit Tous les Chats Sont Gris Cellier des Chartreux 2025 Rosé Gard, a 1.5-liter magnum"
+        }
+      ]
+    },
+    {
+      "table": "lots",
+      "column": "description_fr",
+      "declared": "fr",
+      "sampled": 20920,
+      "detected": {
+        "fr": 18740,
+        "unknown": 1745,
+        "en": 421,
+        "nl": 8,
+        "de": 4,
+        "es": 2
+      },
+      "mismatch_examples": [
+        {
+          "id": 7024,
+          "detected": "en",
+          "text": "Pendule de cheminée Louis XVI en marbre blanc et monture en bronze doré et patiné par La Croix\n\nA Louis XVI ormolu-mounted patinated bronze and white marble man"
+        },
+        {
+          "id": 21063,
+          "detected": "en",
+          "text": "Domaine Hubert Lignier, Clos de la Roche Grand Cru, 1991 (1 x 750ml)\nRegion: Burgundy\nFill Level: excellent\nCapsule: ok\nCork: ok\nLabel: excellent appearance \n\nD"
+        },
+        {
+          "id": 6918,
+          "detected": "en",
+          "text": "Paire de jarres d'apothicaire à deux anses en majolique de Montelupo, fin XVIe siècle\n\nA pair of Montelupo maiolica two-handled drug jars, late 16th century\n\nPa"
+        },
+        {
+          "id": 21062,
+          "detected": "en",
+          "text": "Domaine Hubert Lignier, Clos de la Roche Grand Cru, 1982 (1 x 750ml)\nRegion: Burgundy\nFill Level: excellent\nCapsule: ok\nCork: ok\nLabel: excellent appearance \n\nD"
+        },
+        {
+          "id": 2822,
+          "detected": "en",
+          "text": "Attribué à John Hoppner R.A. (1758-1810)\nPortrait présumé d'une noble dame à mi-buste \nhuile sur toile\n\noil on canvas\n76.6 x 63.7cm (30 3/16 x 25 1/16in).\nFootn"
+        }
+      ]
+    },
+    {
+      "table": "lots",
+      "column": "description_en",
+      "declared": "en",
+      "sampled": 20920,
+      "detected": {
+        "en": 18021,
+        "unknown": 2037,
+        "de": 703,
+        "nl": 124,
+        "fr": 35
+      },
+      "mismatch_examples": [
+        {
+          "id": 11610,
+          "detected": "de",
+          "text": "Günther Uecker \"Feldarbeit – Arbeitsfelder\". 1996.\nGünther Uecker 1930 Wendorf, Mecklenburg – lebt in Düsseldorf / St. Gallen\n\nFour collotype prints auf festem "
+        },
+        {
+          "id": 17684,
+          "detected": "nl",
+          "text": "mounted impala head - Aepyceros melampus\n\nOpgezette kop van een impala - Aepyceros melampus  -  hoogte : 73 cm"
+        },
+        {
+          "id": 11205,
+          "detected": "de",
+          "text": "Ingo Kraft, Komposition. 1991/1992.\nIngo Kraft 1949 Siegmar-Schönau – lebt in Dresden\n\nOil on canvas. Signiert und datiert \"I.Kraft 91/92\" sowie nummeriert \"/3\""
+        },
+        {
+          "id": 11348,
+          "detected": "de",
+          "text": "Käthe Kollwitz \"Weberzug\". 1893–1897. Späterer Abzug von 1931-1941.\nKäthe Kollwitz 1867 Königsberg – 1945 Moritzburg\nBuch- und Kunsthandlung Engewald 1928 Leipz"
+        },
+        {
+          "id": 11327,
+          "detected": "de",
+          "text": "Ludwig von Hofmann, Pomeranzenzweig / \"Reigen mit zwei Grazien\". Wohl um 1900 /1926.\nLudwig von Hofmann 1861 Darmstadt – 1945 Pillnitz bei Dresden\n\nKohlestiftze"
+        }
+      ]
+    },
+    {
+      "table": "auctions",
+      "column": "title_fr",
+      "declared": "fr",
+      "sampled": 96,
+      "detected": {
+        "unknown": 61,
+        "fr": 32,
+        "en": 3
+      },
+      "mismatch_examples": [
+        {
+          "id": 134,
+          "detected": "en",
+          "text": "Direct from the Cellar of Domaine Hubert Lignier – Clos de la Roche and Beyond"
+        },
+        {
+          "id": 72,
+          "detected": "en",
+          "text": "From Antwerp to Bruges, the Collection of a Flemish Connoisseur"
+        },
+        {
+          "id": 76,
+          "detected": "en",
+          "text": "Old Master and 19th Century Paintings"
+        }
+      ]
+    },
+    {
+      "table": "auctions",
+      "column": "title_en",
+      "declared": "en",
+      "sampled": 96,
+      "detected": {
+        "unknown": 58,
+        "en": 38
+      },
+      "mismatch_examples": []
+    },
+    {
+      "table": "auctions",
+      "column": "description_fr",
+      "declared": "fr",
+      "sampled": 122,
+      "detected": {
+        "fr": 115,
+        "en": 3,
+        "de": 2,
+        "es": 1,
+        "unknown": 1
+      },
+      "mismatch_examples": [
+        {
+          "id": 62,
+          "detected": "de",
+          "text": "Entdecken Sie den Katalog und die Ergebnisse der Auktion von Ader"
+        },
+        {
+          "id": 91,
+          "detected": "de",
+          "text": "Entdecken Sie den Katalog und die Ergebnisse der Auktion von Le Brech & Associés"
+        },
+        {
+          "id": 58,
+          "detected": "en",
+          "text": "Discover the catalog and results of the Lots Road sale"
+        },
+        {
+          "id": 95,
+          "detected": "en",
+          "text": "Discover the catalog and results of the Pierre Bergé & Associés sale"
+        },
+        {
+          "id": 86,
+          "detected": "es",
+          "text": "Descubre el catálogo y los resultados de la venta de Leducq Maison de ventes aux enchères"
+        }
+      ]
+    },
+    {
+      "table": "auctions",
+      "column": "description_en",
+      "declared": "en",
+      "sampled": 122,
+      "detected": {
+        "en": 108,
+        "fr": 7,
+        "de": 4,
+        "es": 2,
+        "unknown": 1
+      },
+      "mismatch_examples": [
+        {
+          "id": 59,
+          "detected": "es",
+          "text": "Descubre el catálogo y los resultados de la venta de Mont de piété Bruxelles"
+        },
+        {
+          "id": 96,
+          "detected": "fr",
+          "text": "Découvrez le catalogue et les résultats de la vente de Daguerre Val de Loire"
+        },
+        {
+          "id": 66,
+          "detected": "de",
+          "text": "Entdecken Sie den Katalog und die Ergebnisse der Auktion von L'Huillier & Associés"
+        },
+        {
+          "id": 91,
+          "detected": "de",
+          "text": "Entdecken Sie den Katalog und die Ergebnisse der Auktion von Le Brech & Associés"
+        },
+        {
+          "id": 58,
+          "detected": "fr",
+          "text": "Découvrez le catalogue et les résultats de la vente de Lots Road"
+        }
+      ]
+    }
+  ],
+  "categories": {
+    "columns": {
+      "fr": "category_fr",
+      "en": "category_en"
+    },
+    "distinct": {
+      "fr": 105,
+      "en": 105
+    },
+    "uncategorised": 15,
+    "categories": [
+      {
+        "fr": "Arts d'Asie",
+        "en": "Asian art",
+        "lots": 1508
+      },
+      {
+        "fr": "Pièces et billets",
+        "en": "Coins and notes",
+        "lots": 1384
+      },
+      {
+        "fr": "Tableaux anciens",
+        "en": "Old Masters (before 1870)",
+        "lots": 1180
+      },
+      {
+        "fr": "Bagues",
+        "en": "Rings",
+        "lots": 1077
+      },
+      {
+        "fr": "Tableaux modernes",
+        "en": "Impressionist and modern paintings",
+        "lots": 1006
+      },
+      {
+        "fr": "Colliers, colliers de perles et sautoirs",
+        "en": "Necklaces, pearl necklaces and chains",
+        "lots": 829
+      },
+      {
+        "fr": "Lithographies",
+        "en": "Lithographs",
+        "lots": 745
+      },
+      {
+        "fr": "Icônes",
+        "en": "Icons",
+        "lots": 680
+      },
+      {
+        "fr": "Photographies",
+        "en": "Photographs",
+        "lots": 640
+      },
+      {
+        "fr": "Cartes postales",
+        "en": "Postcards",
+        "lots": 544
+      },
+      {
+        "fr": "Vases",
+        "en": "Vases",
+        "lots": 503
+      },
+      {
+        "fr": "Céramiques",
+        "en": "Ceramics",
+        "lots": 430
+      },
+      {
+        "fr": "Boucles d'oreilles",
+        "en": "Earrings",
+        "lots": 400
+      },
+      {
+        "fr": "Armes",
+        "en": "Arms",
+        "lots": 391
+      },
+      {
+        "fr": "Services de table",
+        "en": "Sets of tableware",
+        "lots": 387
+      },
+      {
+        "fr": "Aquarelles",
+        "en": "Watercolours",
+        "lots": 376
+      },
+      {
+        "fr": "Jouets et maquettes",
+        "en": "Toys and models",
+        "lots": 368
+      },
+      {
+        "fr": "Tapis",
+        "en": "Carpets",
+        "lots": 366
+      },
+      {
+        "fr": "Dessins",
+        "en": "Works on paper",
+        "lots": 335
+      },
+      {
+        "fr": "Bracelets",
+        "en": "Bracelets",
+        "lots": 315
+      },
+      {
+        "fr": "Montres",
+        "en": "Wristwatches",
+        "lots": 311
+      },
+      {
+        "fr": "Tableaux contemporains",
+        "en": "Post-war and contemporary paintings",
+        "lots": 310
+      },
+      {
+        "fr": "Broches et épingles",
+        "en": "Brooches and pins",
+        "lots": 266
+      },
+      {
+        "fr": "Tables",
+        "en": "Tables",
+        "lots": 264
+      },
+      {
+        "fr": "Bronzes",
+        "en": "Bronzes",
+        "lots": 246
+      },
+      {
+        "fr": "Religions",
+        "en": "Religions",
+        "lots": 234
+      },
+      {
+        "fr": "Verreries",
+        "en": "Glasses, carafes and liquor cabinets",
+        "lots": 222
+      },
+      {
+        "fr": "Bandes dessinées",
+        "en": "Strip cartoons",
+        "lots": 217
+      },
+      {
+        "fr": "Lampes et lanternes",
+        "en": "Lamps and lanterns",
+        "lots": 192
+      },
+      {
+        "fr": "Ménagères et Couverts",
+        "en": "Cutlery and silverware",
+        "lots": 191
+      },
+      {
+        "fr": "Fauteuils",
+        "en": "Armchairs",
+        "lots": 185
+      },
+      {
+        "fr": "Médaille historique",
+        "en": "Histo medals",
+        "lots": 181
+      },
+      {
+        "fr": "Vin",
+        "en": "Wine and fortified wine",
+        "lots": 180
+      },
+      {
+        "fr": "Lustres",
+        "en": "Ceiling and suspended lights",
+        "lots": 173
+      },
+      {
+        "fr": "Cadres",
+        "en": "Antique and modern frames",
+        "lots": 162
+      },
+      {
+        "fr": "Accessoires",
+        "en": "Belts and accessories",
+        "lots": 161
+      },
+      {
+        "fr": "Chandeliers",
+        "en": "Chandeliers, candlesticks and candelabra",
+        "lots": 160
+      },
+      {
+        "fr": "Livres anciens",
+        "en": "Old books",
+        "lots": 158
+      },
+      {
+        "fr": "Appliques",
+        "en": "Wall lamps",
+        "lots": 151
+      },
+      {
+        "fr": "Assiettes et Plats",
+        "en": "Plates and Dishes",
+        "lots": 148
+      },
+      {
+        "fr": "Voitures, vélos et autres",
+        "en": "Cars, bicycles and other",
+        "lots": 143
+      },
+      {
+        "fr": "Coffrets et boîtes",
+        "en": "Caskets and boxes",
+        "lots": 142
+      },
+      {
+        "fr": "Sculptures",
+        "en": "Sculptures",
+        "lots": 138
+      },
+      {
+        "fr": "Argenterie",
+        "en": "Silver",
+        "lots": 134
+      },
+      {
+        "fr": "Sacs à main",
+        "en": "Handbags",
+        "lots": 123
+      },
+      {
+        "fr": "Bois",
+        "en": "Wood sculptures",
+        "lots": 121
+      },
+      {
+        "fr": "Miroirs",
+        "en": "Mirrors",
+        "lots": 121
+      },
+      {
+        "fr": "Consoles",
+        "en": "Consoles and corner furniture",
+        "lots": 117
+      },
+      {
+        "fr": "Bijoux",
+        "en": "Jewellery and precious stones",
+        "lots": 115
+      },
+      {
+        "fr": "Chaises",
+        "en": "Chairs",
+        "lots": 108
+      },
+      {
+        "fr": "Musique",
+        "en": "Music",
+        "lots": 103
+      },
+      {
+        "fr": "Commodes",
+        "en": "Commodes",
+        "lots": 99
+      },
+      {
+        "fr": "Textile, dentelles, tissu",
+        "en": "Textiles, lace and fabrics",
+        "lots": 99
+      },
+      {
+        "fr": "Pendules",
+        "en": "Clocks and mantel clocks",
+        "lots": 97
+      },
+      {
+        "fr": "Affiches",
+        "en": "Posters",
+        "lots": 86
+      },
+      {
+        "fr": "Livres et Manuscrits",
+        "en": "Books & manuscripts",
+        "lots": 76
+      },
+      {
+        "fr": "Montres gousset et poche",
+        "en": "Fob and pocket watches",
+        "lots": 74
+      },
+      {
+        "fr": "Bibliothèques",
+        "en": "Bookshelves",
+        "lots": 66
+      },
+      {
+        "fr": "Bureaux",
+        "en": "Desks",
+        "lots": 66
+      },
+      {
+        "fr": "Pierres précieuses",
+        "en": "Precious stones",
+        "lots": 63
+      },
+      {
+        "fr": "Lampadaire",
+        "en": "lampposts",
+        "lots": 61
+      },
+      {
+        "fr": "Médaille militaire",
+        "en": "Militaria medals",
+        "lots": 48
+      },
+      {
+        "fr": "Buffets",
+        "en": "Sideboards and credenzas",
+        "lots": 47
+      },
+      {
+        "fr": "Livres religieux",
+        "en": "Religious books",
+        "lots": 47
+      },
+      {
+        "fr": "Tabourets",
+        "en": "Stools",
+        "lots": 47
+      },
+      {
+        "fr": "Cartes de géographie",
+        "en": "Maps",
+        "lots": 46
+      },
+      {
+        "fr": "Histoire Naturelle",
+        "en": "Natural history",
+        "lots": 45
+      },
+      {
+        "fr": "Terres cuites",
+        "en": "Terracotta sculptures",
+        "lots": 45
+      },
+      {
+        "fr": "Casques et uniformes",
+        "en": "Helmets and uniforms",
+        "lots": 44
+      },
+      {
+        "fr": "Street Art",
+        "en": "Street Art, graffiti",
+        "lots": 42
+      },
+      {
+        "fr": "Pierres fines",
+        "en": "Semi-precious stones",
+        "lots": 41
+      },
+      {
+        "fr": "Plâtres",
+        "en": "Plaster sculptures",
+        "lots": 40
+      },
+      {
+        "fr": "Vêtements",
+        "en": "Clothes",
+        "lots": 39
+      },
+      {
+        "fr": "Paravents",
+        "en": "Screens",
+        "lots": 38
+      },
+      {
+        "fr": "Stylos",
+        "en": "Pens, paperweights and inkwells",
+        "lots": 38
+      },
+      {
+        "fr": "Archéologie",
+        "en": "Archaeology – Antiquity",
+        "lots": 37
+      },
+      {
+        "fr": "Marbres",
+        "en": "Marble sculptures",
+        "lots": 37
+      },
+      {
+        "fr": "Timbres-poste",
+        "en": "Stamps",
+        "lots": 37
+      },
+      {
+        "fr": "Canapés et banquettes",
+        "en": "Sofas and benches",
+        "lots": 34
+      },
+      {
+        "fr": "Objets de collection",
+        "en": "Collectors' items",
+        "lots": 33
+      },
+      {
+        "fr": "Lettres et autographes",
+        "en": "Letters and autographs",
+        "lots": 32
+      },
+      {
+        "fr": "Bagages et accessoires de mode",
+        "en": "Suitcases and trunks",
+        "lots": 30
+      },
+      {
+        "fr": "Boutons de manchettes",
+        "en": "Cufflinks",
+        "lots": 30
+      },
+      {
+        "fr": "Montres et horlogerie",
+        "en": "Watches and timepieces",
+        "lots": 28
+      },
+      {
+        "fr": "Sport",
+        "en": "Sport items",
+        "lots": 26
+      },
+      {
+        "fr": "Whisky, rhum et cognac",
+        "en": "Whisky, rum and brandy",
+        "lots": 26
+      },
+      {
+        "fr": "Art islamique",
+        "en": "Islamic art",
+        "lots": 23
+      },
+      {
+        "fr": "Tapisseries",
+        "en": "Tapestries",
+        "lots": 22
+      },
+      {
+        "fr": "Vins et alcools",
+        "en": "Wines and spirits",
+        "lots": 21
+      },
+      {
+        "fr": "Coffres",
+        "en": "Chests",
+        "lots": 20
+      },
+      {
+        "fr": "Portefeuilles",
+        "en": "Wallets",
+        "lots": 19
+      },
+      {
+        "fr": "Armes, militaria, souvenirs historiques",
+        "en": "Arms, hunting weapons and military mementoes",
+        "lots": 17
+      },
+      {
+        "fr": null,
+        "en": null,
+        "lots": 15
+      },
+      {
+        "fr": "Champagne",
+        "en": "Champagne",
+        "lots": 14
+      },
+      {
+        "fr": "Lits",
+        "en": "Beds",
+        "lots": 14
+      },
+      {
+        "fr": "Chaussures",
+        "en": "Shoes",
+        "lots": 12
+      },
+      {
+        "fr": "Luminaires",
+        "en": "Lighting",
+        "lots": 11
+      },
+      {
+        "fr": "Arts premiers",
+        "en": "Arts of Africa, America and Oceania",
+        "lots": 9
+      },
+      {
+        "fr": "Fourrures",
+        "en": "Furs",
+        "lots": 9
+      },
+      {
+        "fr": "Mode et vintage",
+        "en": "Fashion and vintage items",
+        "lots": 7
+      },
+      {
+        "fr": "Judaïca",
+        "en": "Judaica",
+        "lots": 6
+      },
+      {
+        "fr": "Mobilier",
+        "en": "Furniture",
+        "lots": 6
+      },
+      {
+        "fr": "Tableaux",
+        "en": "Paintings",
+        "lots": 6
+      },
+      {
+        "fr": "Sieges",
+        "en": "Seating",
+        "lots": 5
+      },
+      {
+        "fr": "Arts de la table",
+        "en": "Tableware",
+        "lots": 1
+      },
+      {
+        "fr": "Lingots",
+        "en": "Ingots",
+        "lots": 1
+      }
+    ],
+    "inconsistent_translations": []
+  },
+  "auctions": {
+    "auctions": 122,
+    "auctions_with_lots": 96,
+    "auctions_without_lots": 26,
+    "lots_per_auction": {
+      "min": 3,
+      "avg": 217.9,
+      "median": 152,
+      "max": 1164
+    },
+    "date_ranges": [
+      {
+        "column": "starts_at",
+        "min": "2026-11-01T18:00:00+01:00",
+        "max": "2026-11-07T15:00:00+01:00",
+        "nulls": 26
+      },
+      {
+        "column": "auction_date",
+        "min": "2026-11-01",
+        "max": "2026-11-07",
+        "nulls": 26
+      }
+    ],
+    "auction_houses_distinct": 85,
+    "top_auction_houses": [
+      {
+        "auction_house": null,
+        "auctions": 26
+      },
+      {
+        "auction_house": "Bonhams - Cornette de Saint Cyr maison de ventes",
+        "auctions": 4
+      },
+      {
+        "auction_house": "Art Research Paris",
+        "auctions": 2
+      },
+      {
+        "auction_house": "Chiswick Auctions",
+        "auctions": 2
+      },
+      {
+        "auction_house": "De Baecque et Associés",
+        "auctions": 2
+      },
+      {
+        "auction_house": "Haynault Maison de Ventes aux Enchères",
+        "auctions": 2
+      },
+      {
+        "auction_house": "Historia Auktionshaus",
+        "auctions": 2
+      },
+      {
+        "auction_house": "Hôtel des ventes Giraudeau",
+        "auctions": 2
+      },
+      {
+        "auction_house": "Pousse-Cornet",
+        "auctions": 2
+      },
+      {
+        "auction_house": "Rossini",
+        "auctions": 2
+      },
+      {
+        "auction_house": "A.Blanchy | E.Lacombe - Bordeaux Chartrons - Bordeaux Enchères",
+        "auctions": 1
+      },
+      {
+        "auction_house": "AB Philea",
+        "auctions": 1
+      },
+      {
+        "auction_house": "Acacia Enchères",
+        "auctions": 1
+      },
+      {
+        "auction_house": "Alastair Gibson Auctions",
+        "auctions": 1
+      },
+      {
+        "auction_house": "Aplanos - Hôtel des ventes de Dieppe",
+        "auctions": 1
+      },
+      {
+        "auction_house": "Aponem",
+        "auctions": 1
+      },
+      {
+        "auction_house": "Arles Enchères",
+        "auctions": 1
+      },
+      {
+        "auction_house": "Art Richelieu",
+        "auctions": 1
+      },
+      {
+        "auction_house": "Artcurial",
+        "auctions": 1
+      },
+      {
+        "auction_house": "Artenchères",
+        "auctions": 1
+      },
+      {
+        "auction_house": "Artesia",
+        "auctions": 1
+      },
+      {
+        "auction_house": "Aste di Antiquariato Boetto",
+        "auctions": 1
+      },
+      {
+        "auction_house": "Audap & Associés",
+        "auctions": 1
+      },
+      {
+        "auction_house": "Auktionshaus Pari",
+        "auctions": 1
+      },
+      {
+        "auction_house": "Auktionshaus Schreiber",
+        "auctions": 1
+      }
+    ]
+  },
+  "status_values": {
+    "lots.details_status": [
+      {
+        "value": "completed",
+        "rows": 20920
+      },
+      {
+        "value": "failed",
+        "rows": 2
+      },
+      {
+        "value": "partial",
+        "rows": 1
+      }
+    ],
+    "auctions.details_status": [
+      {
+        "value": "completed",
+        "rows": 122
+      }
+    ],
+    "auctions.catalogue_status": [
+      {
+        "value": "completed",
+        "rows": 92
+      },
+      {
+        "value": "partial",
+        "rows": 30
+      }
+    ]
+  },
+  "error_counts": {
+    "lots.last_error": 3,
+    "auctions.last_error": 30
+  },
+  "timings_seconds": {
+    "column_profiles_lots": 1.575,
+    "column_profiles_auctions": 0.005,
+    "lengths": 0.308,
+    "duplicates": 0.515,
+    "hygiene": 0.272,
+    "language_pairs": 0.192,
+    "language_checks": 0.9,
+    "categories": 0.079,
+    "auctions": 0.019,
+    "statuses": 0.006,
+    "orphan_lots": 0.002,
+    "samples": 0.109
+  }
+}

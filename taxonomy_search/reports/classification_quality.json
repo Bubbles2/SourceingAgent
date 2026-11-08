@@ -1,0 +1,251 @@
+{
+  "run": {
+    "started_at": "2026-11-08T18:18:15+00:00",
+    "taxonomy_scope": "draft",
+    "taxonomy_fingerprint": "draft:3e6e7571bf1a9586",
+    "classifier_version": "4.3",
+    "lots_seen": 20923,
+    "unchanged_skipped": 0,
+    "classified": 6308,
+    "assertions_written": 26082,
+    "needs_review": 1190,
+    "by_assertion": {
+      "classified_as": 10321,
+      "made_of": 7973,
+      "mentions": 3447,
+      "originates_from": 1669,
+      "dated_to": 1558,
+      "uses_technique": 588,
+      "in_style_of": 436,
+      "made_by": 90
+    },
+    "by_method": {
+      "rule": 18747,
+      "source_category": 7335
+    },
+    "review_reasons": {
+      "Drouot category and text disagree": 718,
+      "ambiguous term only": 456,
+      "conflicting dating": 16,
+      "no object classification": 2
+    },
+    "seconds": 3.8,
+    "dry_run": false,
+    "ai_tokens_used": 0
+  },
+  "figures": {
+    "lots_classified": 20923,
+    "needs_review": 3220,
+    "assertions_by_dimension": {
+      "subcategory / classified_as": 16944,
+      "object_type / classified_as": 12816,
+      "material / made_of": 11797,
+      "region / originates_from": 4986,
+      "period / dated_to": 2609,
+      "subcategory / mentions": 2211,
+      "object_type / mentions": 1763,
+      "technique / uses_technique": 1460,
+      "material / mentions": 814,
+      "category / mentions": 601,
+      "region / mentions": 600,
+      "style / in_style_of": 468,
+      "category / classified_as": 353,
+      "period / mentions": 179,
+      "maker / made_by": 175,
+      "technique / mentions": 37,
+      "style / mentions": 29,
+      "maker / mentions": 2
+    },
+    "lots_with_text_object_type": 6918,
+    "lots_with_both_object_sources": 6232,
+    "text_and_category_agree": 3604,
+    "attributions": {},
+    "review_reasons": {
+      "Drouot category and text disagree": 1710,
+      "ambiguous term only": 1475,
+      "conflicting dating": 30,
+      "no object classification": 13
+    },
+    "louis_xiv": {
+      "dated_to_period": [
+        3672,
+        6928,
+        6933,
+        6934
+      ],
+      "in_style_of_style": [
+        6442,
+        7059,
+        11346,
+        11417,
+        11829,
+        17758,
+        18024
+      ]
+    },
+    "footwear_classified_lots": {
+      "fashion.footwear": 26,
+      "fashion.footwear.ankle_boots": 1,
+      "fashion.footwear.boots": 4,
+      "fashion.footwear.high_heels": 0,
+      "fashion.footwear.loafers": 1,
+      "fashion.footwear.pumps": 1,
+      "fashion.footwear.sandals": 4,
+      "fashion.footwear.sneakers": 3
+    },
+    "sample": [
+      {
+        "lot_id": 5329,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "fine_art.paintings.modern classified_as 0.950 [category]"
+      },
+      {
+        "lot_id": 1970,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "world_arts.asian_art classified_as 0.950 [category]; region.asia originates_from 0.950 [category]; region.china originates_from 0.900 [title]"
+      },
+      {
+        "lot_id": 20074,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "fine_art.paintings.modern classified_as 0.950 [category]; fine_art.paintings classified_as 0.900 [title]; material.wood made_of 0.800 [lead]; material.glass made_of 0.800 [lead]; decorative_arts.frames mentions 0.400 [note]"
+      },
+      {
+        "lot_id": 18829,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "jewellery_watches.jewellery.rings classified_as 0.950 [category]"
+      },
+      {
+        "lot_id": 9700,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "fine_art.prints.lithographs classified_as 0.950 [category]; technique.lithography uses_technique 0.950 [category]"
+      },
+      {
+        "lot_id": 4612,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "furniture.case_furniture.commodes classified_as 0.950 [category]; furniture.tables classified_as 0.900 [title]; decorative_arts.lighting.wall_lights classified_as 0.800 [lead]; material.wood made_of 0.800 [lead]; material.brass made_of 0.800 [lead]; material.glass made_of 0.800 [lead]"
+      },
+      {
+        "lot_id": 6095,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "jewellery_watches.jewellery.rings classified_as 0.950 [category]"
+      },
+      {
+        "lot_id": 11610,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "fine_art.prints.lithographs classified_as 0.950 [category]; technique.lithography uses_technique 0.950 [category]; fine_art mentions 0.400 [note]; fine_art.paintings mentions 0.400 [note]"
+      },
+      {
+        "lot_id": 16774,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "jewellery_watches.gemstones.semi_precious classified_as 0.950 [category]"
+      },
+      {
+        "lot_id": 4897,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "decorative_arts.lighting.wall_lights classified_as 0.950 [category]; material.brass made_of 0.800 [lead]"
+      },
+      {
+        "lot_id": 12977,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "decorative_arts.tableware.plates_dishes classified_as 0.950 [category]; furniture.tables classified_as 0.900 [title]; decorative_arts.frames classified_as 0.900 [title]; period.19th_century dated_to 0.900 [title]; material.gold made_of 0.900 [title]; material.glass made_of 0.900 [title]"
+      },
+      {
+        "lot_id": 21461,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "fine_art.sculpture.plaster classified_as 0.950 [category]; material.plaster made_of 0.950 [category]; fine_art.sculpture classified_as 0.800 [lead]; decorative_arts.frames classified_as 0.800 [lead]; material.metal made_of 0.800 [lead]"
+      },
+      {
+        "lot_id": 10013,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "fine_art.prints.lithographs classified_as 0.950 [category]; technique.lithography uses_technique 0.950 [category]; fine_art.prints classified_as 0.900 [title]"
+      },
+      {
+        "lot_id": 17684,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "collectibles.natural_history classified_as 0.950 [category]"
+      },
+      {
+        "lot_id": 20435,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "jewellery_watches.gemstones.precious classified_as 0.950 [category]"
+      },
+      {
+        "lot_id": 18363,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "world_arts.asian_art classified_as 0.950 [category]; region.asia originates_from 0.950 [category]"
+      },
+      {
+        "lot_id": 11205,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "fine_art.paintings.modern classified_as 0.950 [category]; material.wood made_of 0.800 [lead]; fine_art mentions 0.400 [note]; decorative_arts.frames mentions 0.400 [note]; region.france mentions 0.400 [note]; region.italy mentions 0.400 [note]"
+      },
+      {
+        "lot_id": 17591,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "fine_art.prints.lithographs classified_as 0.950 [category]; technique.lithography uses_technique 0.950 [category]; fine_art.prints classified_as 0.800 [lead]"
+      },
+      {
+        "lot_id": 17793,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "furniture.screens classified_as 0.950 [category]; period.19th_century dated_to 0.900 [title]; material.wood made_of 0.900 [title]"
+      },
+      {
+        "lot_id": 12880,
+        "needs_review": true,
+        "reasons": [
+          "ambiguous term only: fine_art.sculpture.marble"
+        ],
+        "assertions": "material.brass made_of 0.900 [title]; material.marble made_of 0.900 [title]; furniture.tables.consoles classified_as 0.855 [category]"
+      },
+      {
+        "lot_id": 17382,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "decorative_arts.tableware.table_services classified_as 0.950 [category]"
+      },
+      {
+        "lot_id": 9491,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "books_manuscripts.comics classified_as 0.950 [category]"
+      },
+      {
+        "lot_id": 8206,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "fine_art.photography classified_as 0.950 [category]; period.19th_century dated_to 0.900 [title]"
+      },
+      {
+        "lot_id": 8878,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "fine_art.paintings.modern classified_as 0.950 [category]; fine_art.paintings classified_as 0.900 [title]"
+      },
+      {
+        "lot_id": 8006,
+        "needs_review": false,
+        "reasons": [],
+        "assertions": "fine_art.photography classified_as 0.950 [category]"
+      }
+    ]
+  }
+}

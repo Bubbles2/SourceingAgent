@@ -1,0 +1,1400 @@
+{
+  "summary": {
+    "keyword_raw": {
+      "precision@10": 0.535,
+      "recall@50": 0.453,
+      "ndcg@10": 0.574,
+      "mrr": 0.6,
+      "mean_ms": 2.1,
+      "p95_ms": 11.7,
+      "zero_result_queries": 7
+    },
+    "keyword_content": {
+      "precision@10": 0.525,
+      "recall@50": 0.432,
+      "ndcg@10": 0.582,
+      "mrr": 0.71,
+      "mean_ms": 1.2,
+      "p95_ms": 3.6,
+      "zero_result_queries": 4
+    },
+    "semantic_only": {
+      "precision@10": 0.445,
+      "recall@50": 0.345,
+      "ndcg@10": 0.463,
+      "mrr": 0.642,
+      "mean_ms": 22.1,
+      "p95_ms": 123.1,
+      "zero_result_queries": 0
+    },
+    "taxonomy_only": {
+      "precision@10": 0.6,
+      "recall@50": 0.693,
+      "ndcg@10": 0.678,
+      "mrr": 0.76,
+      "mean_ms": 15.2,
+      "p95_ms": 128.6,
+      "zero_result_queries": 0
+    },
+    "hybrid_exact": {
+      "precision@10": 0.725,
+      "recall@50": 0.662,
+      "ndcg@10": 0.819,
+      "mrr": 0.925,
+      "mean_ms": 21.1,
+      "p95_ms": 68.3,
+      "zero_result_queries": 0
+    },
+    "hybrid_broad": {
+      "precision@10": 0.795,
+      "recall@50": 0.828,
+      "ndcg@10": 0.88,
+      "mrr": 0.967,
+      "mean_ms": 33.8,
+      "p95_ms": 61.7,
+      "zero_result_queries": 0
+    }
+  },
+  "analysis": {
+    "unresolved_terms": {
+      "antique": 1,
+      "vintage": 1,
+      "designer": 1,
+      "diamond": 1,
+      "white": 1,
+      "persan": 1,
+      "russe": 1,
+      "monnaie": 1,
+      "art": 1,
+      "deco": 1,
+      "silk": 1,
+      "scarf": 1
+    },
+    "concepts_in_wrong_direct_hits": {
+      "fashion.handbags": 5,
+      "material.gold": 5,
+      "jewellery_watches.jewellery.rings": 2,
+      "fine_art.sculpture.bronzes": 2,
+      "period.napoleon_iii": 2,
+      "fashion.footwear": 1,
+      "furniture.desks": 1,
+      "technique.boulle_marquetry": 1,
+      "furniture.mirrors": 1,
+      "furniture.case_furniture.cabinets": 1,
+      "collectibles.stamps": 1
+    },
+    "missed_relevant_examples": {
+      "q01": [
+        "12742: 2 feuilles de dessins à l'encre de Chine représentant le Jardin zoolo…"
+      ],
+      "q02": [],
+      "q03": [],
+      "q04": [
+        "3084: Paire de fauteuils à dossier plat dit \"à la reine\" en bois sculpté et…",
+        "3568: FAUTEUIL en acajou accotoirs crosses, FAUTEUIL de style Louis XVI gar…",
+        "5862: Petite banquette en bois doré mouluré et sculpté de motifs floraux, s…"
+      ],
+      "q05": [
+        "6928: Rare et importante commode en bois noirci, placage d'écaille rouge, l…",
+        "17204: 19ème siècle. Vitrine à une porte de style baroque français Napoléon…",
+        "17205: Table de jeu du XIXe siècle, bien conservée, vraisemblablement frança…"
+      ],
+      "q06": [
+        "1249: LOUIS VUITTON",
+        "1403: Lots de vêtements et chaussures vendu en vrac de 11h à 12h.",
+        "1405: HERMÈS Paris"
+      ],
+      "q07": [
+        "11839: Meuble-bar « Modèle 1263 ». Aldo Tura pour TURA, Milan. Fin des année…",
+        "17167: Armoire antique de style baroque, alliant les formes traditionnelles…",
+        "17196: Armoire à pieds croisés de style baroque néerlandais du début du XVII…"
+      ],
+      "q08": [
+        "1398: Bague en émail sertie de brillants, GG 750/000, avec émail bleu, légè…",
+        "2920: VAN CLEEF ARPELS",
+        "5431: Une collection de huit bagues, comprenant une bague à diamants en gra…"
+      ],
+      "q09": [
+        "7083: Paire de grands vases en porcelaine de la famille rose, fin de la Dyn…",
+        "12080: MEISSEN. ROSENTHAL. Mélange de porcelaine de 5 pièces. 1er + 2e choix…",
+        "18131: UNE RARE BOUTEILLE À TABAC EN PORCELAINE BLEUE ET BLANCHE DE FORME «…"
+      ],
+      "q10": [
+        "6108: Bague \"tank nœud\" en or jaune (750) sertie de trois petits diamants t…",
+        "6109: Bague ovale en or gris (750) ornée d'un cabochon d'onyx (usures) flan…",
+        "6110: Alliance en or gris (750) sertie de 19 diamants taille brillant."
+      ],
+      "q11": [
+        "2948: Trois montres de dames en or 18k dont une Jaeger-LeCoultre.",
+        "2952: MOVADO",
+        "2957: Ensemble de quatre montres d'homme de marque Omega, POP, Yema et Herb…"
+      ],
+      "q12": [
+        "10291: Tapis oriental ancien Gaswin, Perse, vers 1925, avec certificat",
+        "10292: Tapis d'Orient et pont d'Orient Tabriz Mahi, Perse, âgé d'environ 40…",
+        "10293: Grand tapis d'Orient Bakhtiar, Perse, âgé de 40 à 50 ans"
+      ],
+      "q13": [
+        "10423: UNE BELLE ICÔNE REPRÉSENTANT SOPHIA – LA SAGESSE DE DIEU. Russie, ate…",
+        "10424: UNE ICÔNE MINIATURE REPRÉSENTANT « L'ŒIL DE DIEU QUI VOIT TOUT » Russ…",
+        "10426: ICÔNE REPRÉSENTANT SOPHIE – LA SAGESSE DE DIEU Russie, XIXe siècle. T…"
+      ],
+      "q14": [
+        "2884: Royaume de France, atelier indéterminé",
+        "5423: Un souverain d'or de l'époque victorienne, 1853",
+        "5911: GRECE - Calabre - Tarente - Règne de Pyrrhus d’Épire (280-272 av J.C)"
+      ],
+      "q15": [
+        "9757: Deux suspensions Art Déco début XX ème en pâte de verre l’une est sig…",
+        "17397: Lustre Art déco en bronze argenté et verre opalescent - attribué à",
+        "17405: Lustre Art déco belge en verre satiné épais, orné d'un décor floral ;…"
+      ],
+      "q16": [
+        "2298: Un presse-papier chinois en bronze représentant un buffle d'eau",
+        "2300: Un presse-papier chinois en bronze représentant une « bête mythique »…",
+        "2665: ENCENSOIR CHINOIS EN BRONZE EN FORME D'HOMME SUR UN BUFFLE, DYNASTIE…"
+      ],
+      "q17": [
+        "17204: 19ème siècle. Vitrine à une porte de style baroque français Napoléon…",
+        "19427: Bonheur du jour en placage de palissandre, marqueterie de nacre et la…",
+        "21599: Meuble d'appui Napoléon III en marqueterie, facade et cotés violonnés…"
+      ],
+      "q18": [
+        "2989: Ensemble comprenant deux louches et une cuillère à punch (manche en c…",
+        "2997: Ensemble en argent 1er titre 950‰ comprenant cuillères et fourchettes…",
+        "3187: LUC LANEL - CHRISTOPHLE"
+      ],
+      "q19": [
+        "9392: 2 albums contenant plus de 250 Flammes avec de nombreuses villes comm…",
+        "10341: Grande collection de vignettes publicitaires datant des environs de 1…",
+        "12776: Lot d'environ 250 étiquettes, datant pour la plupart de la France du…"
+      ],
+      "q20": []
+    }
+  },
+  "human_labels": 0,
+  "relevant_counts": {
+    "q01": 21,
+    "q02": 4,
+    "q03": 2,
+    "q04": 39,
+    "q05": 12,
+    "q06": 123,
+    "q07": 7,
+    "q08": 690,
+    "q09": 39,
+    "q10": 986,
+    "q11": 339,
+    "q12": 208,
+    "q13": 569,
+    "q14": 189,
+    "q15": 31,
+    "q16": 260,
+    "q17": 24,
+    "q18": 195,
+    "q19": 37,
+    "q20": 37
+  },
+  "per_query": [
+    {
+      "system": "keyword_raw",
+      "query_id": "q01",
+      "ms": 11.7,
+      "precision@10": 0.0,
+      "recall@50": 0.0,
+      "ndcg@10": 0.0,
+      "mrr": 0.0,
+      "returned": 0.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q01",
+      "ms": 3.3,
+      "precision@10": 0.8,
+      "recall@50": 0.38095238095238093,
+      "ndcg@10": 0.8630152897016882,
+      "mrr": 1.0,
+      "returned": 19.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q01",
+      "ms": 123.1,
+      "precision@10": 0.0,
+      "recall@50": 0.0,
+      "ndcg@10": 0.0,
+      "mrr": 0.0,
+      "returned": 40.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q01",
+      "ms": 20.2,
+      "precision@10": 1.0,
+      "recall@50": 0.9523809523809523,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 31.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q01",
+      "ms": 10.4,
+      "precision@10": 0.9,
+      "recall@50": 0.9523809523809523,
+      "ndcg@10": 0.9363792118010481,
+      "mrr": 1.0,
+      "returned": 37.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q01",
+      "ms": 24.8,
+      "precision@10": 0.9,
+      "recall@50": 0.9523809523809523,
+      "ndcg@10": 0.8611375561264454,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_raw",
+      "query_id": "q02",
+      "ms": 0.6,
+      "precision@10": 0.0,
+      "recall@50": 0.0,
+      "ndcg@10": 0.0,
+      "mrr": 0.0,
+      "returned": 0.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q02",
+      "ms": 0.6,
+      "precision@10": 0.0,
+      "recall@50": 0.0,
+      "ndcg@10": 0.0,
+      "mrr": 0.0,
+      "returned": 0.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q02",
+      "ms": 16.9,
+      "precision@10": 0.0,
+      "recall@50": 0.25,
+      "ndcg@10": 0.0,
+      "mrr": 0.08333333333333333,
+      "returned": 40.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q02",
+      "ms": 23.6,
+      "precision@10": 0.4,
+      "recall@50": 1.0,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q02",
+      "ms": 16.5,
+      "precision@10": 0.4,
+      "recall@50": 1.0,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 4.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q02",
+      "ms": 48.7,
+      "precision@10": 0.4,
+      "recall@50": 1.0,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_raw",
+      "query_id": "q03",
+      "ms": 0.7,
+      "precision@10": 0.2,
+      "recall@50": 1.0,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 2.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q03",
+      "ms": 0.6,
+      "precision@10": 0.2,
+      "recall@50": 1.0,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 2.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q03",
+      "ms": 14.4,
+      "precision@10": 0.0,
+      "recall@50": 0.0,
+      "ndcg@10": 0.0,
+      "mrr": 0.0,
+      "returned": 40.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q03",
+      "ms": 2.8,
+      "precision@10": 0.2,
+      "recall@50": 1.0,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q03",
+      "ms": 3.0,
+      "precision@10": 0.2,
+      "recall@50": 1.0,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 2.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q03",
+      "ms": 14.7,
+      "precision@10": 0.2,
+      "recall@50": 1.0,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_raw",
+      "query_id": "q04",
+      "ms": 0.6,
+      "precision@10": 0.0,
+      "recall@50": 0.0,
+      "ndcg@10": 0.0,
+      "mrr": 0.0,
+      "returned": 0.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q04",
+      "ms": 0.6,
+      "precision@10": 0.0,
+      "recall@50": 0.0,
+      "ndcg@10": 0.0,
+      "mrr": 0.0,
+      "returned": 0.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q04",
+      "ms": 13.6,
+      "precision@10": 0.5,
+      "recall@50": 0.358974358974359,
+      "ndcg@10": 0.5360735436824435,
+      "mrr": 1.0,
+      "returned": 40.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q04",
+      "ms": 128.6,
+      "precision@10": 1.0,
+      "recall@50": 0.5641025641025641,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q04",
+      "ms": 68.3,
+      "precision@10": 0.1,
+      "recall@50": 0.02564102564102564,
+      "ndcg@10": 0.22009176629808017,
+      "mrr": 1.0,
+      "returned": 1.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q04",
+      "ms": 60.1,
+      "precision@10": 1.0,
+      "recall@50": 0.5641025641025641,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_raw",
+      "query_id": "q05",
+      "ms": 0.7,
+      "precision@10": 0.0,
+      "recall@50": 0.0,
+      "ndcg@10": 0.0,
+      "mrr": 0.0,
+      "returned": 0.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q05",
+      "ms": 0.6,
+      "precision@10": 0.0,
+      "recall@50": 0.0,
+      "ndcg@10": 0.0,
+      "mrr": 0.0,
+      "returned": 0.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q05",
+      "ms": 15.6,
+      "precision@10": 0.0,
+      "recall@50": 0.0,
+      "ndcg@10": 0.0,
+      "mrr": 0.0,
+      "returned": 40.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q05",
+      "ms": 19.6,
+      "precision@10": 0.7,
+      "recall@50": 0.5833333333333334,
+      "ndcg@10": 0.8006937664098819,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q05",
+      "ms": 21.4,
+      "precision@10": 0.3,
+      "recall@50": 0.25,
+      "ndcg@10": 0.4690000933206748,
+      "mrr": 1.0,
+      "returned": 3.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q05",
+      "ms": 56.7,
+      "precision@10": 0.7,
+      "recall@50": 0.6666666666666666,
+      "ndcg@10": 0.7917267193679838,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_raw",
+      "query_id": "q06",
+      "ms": 0.7,
+      "precision@10": 0.0,
+      "recall@50": 0.0,
+      "ndcg@10": 0.0,
+      "mrr": 0.0,
+      "returned": 0.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q06",
+      "ms": 0.6,
+      "precision@10": 0.0,
+      "recall@50": 0.0,
+      "ndcg@10": 0.0,
+      "mrr": 0.0,
+      "returned": 3.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q06",
+      "ms": 13.0,
+      "precision@10": 0.4,
+      "recall@50": 0.32,
+      "ndcg@10": 0.31298349214690074,
+      "mrr": 0.25,
+      "returned": 40.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q06",
+      "ms": 2.3,
+      "precision@10": 1.0,
+      "recall@50": 1.0,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q06",
+      "ms": 15.2,
+      "precision@10": 0.0,
+      "recall@50": 0.0,
+      "ndcg@10": 0.0,
+      "mrr": 0.0,
+      "returned": 3.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q06",
+      "ms": 26.0,
+      "precision@10": 0.5,
+      "recall@50": 0.72,
+      "ndcg@10": 0.5116508161747901,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_raw",
+      "query_id": "q07",
+      "ms": 0.6,
+      "precision@10": 0.0,
+      "recall@50": 0.0,
+      "ndcg@10": 0.0,
+      "mrr": 0.0,
+      "returned": 0.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q07",
+      "ms": 0.6,
+      "precision@10": 0.1,
+      "recall@50": 0.14285714285714285,
+      "ndcg@10": 0.27487633291429087,
+      "mrr": 1.0,
+      "returned": 1.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q07",
+      "ms": 12.7,
+      "precision@10": 0.3,
+      "recall@50": 0.5714285714285714,
+      "ndcg@10": 0.4679268424386405,
+      "mrr": 1.0,
+      "returned": 40.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q07",
+      "ms": 2.9,
+      "precision@10": 0.1,
+      "recall@50": 0.14285714285714285,
+      "ndcg@10": 0.27487633291429087,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q07",
+      "ms": 3.0,
+      "precision@10": 0.1,
+      "recall@50": 0.14285714285714285,
+      "ndcg@10": 0.27487633291429087,
+      "mrr": 1.0,
+      "returned": 1.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q07",
+      "ms": 14.9,
+      "precision@10": 0.2,
+      "recall@50": 0.5714285714285714,
+      "ndcg@10": 0.3727892582642587,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_raw",
+      "query_id": "q08",
+      "ms": 6.4,
+      "precision@10": 1.0,
+      "recall@50": 0.92,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q08",
+      "ms": 3.0,
+      "precision@10": 1.0,
+      "recall@50": 0.92,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q08",
+      "ms": 16.2,
+      "precision@10": 1.0,
+      "recall@50": 0.72,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 40.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q08",
+      "ms": 17.5,
+      "precision@10": 0.2,
+      "recall@50": 0.5,
+      "ndcg@10": 0.13961814555374907,
+      "mrr": 0.14285714285714285,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q08",
+      "ms": 52.4,
+      "precision@10": 1.0,
+      "recall@50": 0.8,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q08",
+      "ms": 57.5,
+      "precision@10": 0.8,
+      "recall@50": 0.94,
+      "ndcg@10": 0.8553475075669356,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_raw",
+      "query_id": "q09",
+      "ms": 0.8,
+      "precision@10": 1.0,
+      "recall@50": 0.3076923076923077,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 12.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q09",
+      "ms": 0.7,
+      "precision@10": 1.0,
+      "recall@50": 0.3076923076923077,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 12.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q09",
+      "ms": 28.1,
+      "precision@10": 0.5,
+      "recall@50": 0.3076923076923077,
+      "ndcg@10": 0.6055047656192208,
+      "mrr": 1.0,
+      "returned": 40.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q09",
+      "ms": 15.3,
+      "precision@10": 0.9,
+      "recall@50": 0.8717948717948718,
+      "ndcg@10": 0.7799082337019198,
+      "mrr": 0.5,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q09",
+      "ms": 40.5,
+      "precision@10": 1.0,
+      "recall@50": 0.8717948717948718,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 44.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q09",
+      "ms": 40.0,
+      "precision@10": 1.0,
+      "recall@50": 0.9230769230769231,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_raw",
+      "query_id": "q10",
+      "ms": 7.2,
+      "precision@10": 0.7,
+      "recall@50": 0.94,
+      "ndcg@10": 0.5914640815742044,
+      "mrr": 0.5,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q10",
+      "ms": 3.6,
+      "precision@10": 0.3,
+      "recall@50": 0.42,
+      "ndcg@10": 0.38113435412201996,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q10",
+      "ms": 13.3,
+      "precision@10": 0.9,
+      "recall@50": 0.74,
+      "ndcg@10": 0.9216017310213246,
+      "mrr": 1.0,
+      "returned": 40.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q10",
+      "ms": 15.9,
+      "precision@10": 1.0,
+      "recall@50": 1.0,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q10",
+      "ms": 64.8,
+      "precision@10": 1.0,
+      "recall@50": 0.8,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q10",
+      "ms": 61.7,
+      "precision@10": 1.0,
+      "recall@50": 0.98,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_raw",
+      "query_id": "q11",
+      "ms": 2.0,
+      "precision@10": 1.0,
+      "recall@50": 0.98,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q11",
+      "ms": 2.2,
+      "precision@10": 0.7,
+      "recall@50": 0.4,
+      "ndcg@10": 0.6563033086078545,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q11",
+      "ms": 19.4,
+      "precision@10": 0.9,
+      "recall@50": 0.56,
+      "ndcg@10": 0.8611375561264454,
+      "mrr": 1.0,
+      "returned": 40.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q11",
+      "ms": 2.5,
+      "precision@10": 1.0,
+      "recall@50": 1.0,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q11",
+      "ms": 3.3,
+      "precision@10": 1.0,
+      "recall@50": 1.0,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q11",
+      "ms": 13.5,
+      "precision@10": 1.0,
+      "recall@50": 1.0,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_raw",
+      "query_id": "q12",
+      "ms": 0.9,
+      "precision@10": 1.0,
+      "recall@50": 0.9,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 46.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q12",
+      "ms": 0.7,
+      "precision@10": 1.0,
+      "recall@50": 0.9,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 46.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q12",
+      "ms": 23.3,
+      "precision@10": 0.0,
+      "recall@50": 0.0,
+      "ndcg@10": 0.0,
+      "mrr": 0.0,
+      "returned": 40.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q12",
+      "ms": 2.6,
+      "precision@10": 0.0,
+      "recall@50": 0.3,
+      "ndcg@10": 0.0,
+      "mrr": 0.06666666666666667,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q12",
+      "ms": 4.3,
+      "precision@10": 1.0,
+      "recall@50": 0.92,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 47.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q12",
+      "ms": 15.0,
+      "precision@10": 1.0,
+      "recall@50": 0.92,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_raw",
+      "query_id": "q13",
+      "ms": 3.1,
+      "precision@10": 1.0,
+      "recall@50": 0.96,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q13",
+      "ms": 2.5,
+      "precision@10": 1.0,
+      "recall@50": 0.96,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q13",
+      "ms": 21.3,
+      "precision@10": 0.7,
+      "recall@50": 0.54,
+      "ndcg@10": 0.5914640815742044,
+      "mrr": 0.5,
+      "returned": 40.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q13",
+      "ms": 3.7,
+      "precision@10": 0.6,
+      "recall@50": 0.9,
+      "ndcg@10": 0.5925846332364243,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q13",
+      "ms": 8.6,
+      "precision@10": 1.0,
+      "recall@50": 1.0,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q13",
+      "ms": 21.1,
+      "precision@10": 1.0,
+      "recall@50": 1.0,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_raw",
+      "query_id": "q14",
+      "ms": 1.1,
+      "precision@10": 0.5,
+      "recall@50": 0.1,
+      "ndcg@10": 0.5072380780124417,
+      "mrr": 0.5,
+      "returned": 6.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q14",
+      "ms": 0.8,
+      "precision@10": 0.1,
+      "recall@50": 0.24,
+      "ndcg@10": 0.08514311764162098,
+      "mrr": 0.2,
+      "returned": 50.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q14",
+      "ms": 19.5,
+      "precision@10": 0.1,
+      "recall@50": 0.22,
+      "ndcg@10": 0.13886244387355454,
+      "mrr": 0.5,
+      "returned": 40.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q14",
+      "ms": 13.1,
+      "precision@10": 0.0,
+      "recall@50": 0.0,
+      "ndcg@10": 0.0,
+      "mrr": 0.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q14",
+      "ms": 42.8,
+      "precision@10": 0.7,
+      "recall@50": 0.26,
+      "ndcg@10": 0.6378891765242927,
+      "mrr": 0.5,
+      "returned": 16.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q14",
+      "ms": 55.6,
+      "precision@10": 0.7,
+      "recall@50": 0.34,
+      "ndcg@10": 0.5716145678915879,
+      "mrr": 0.3333333333333333,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_raw",
+      "query_id": "q15",
+      "ms": 0.7,
+      "precision@10": 1.0,
+      "recall@50": 0.7741935483870968,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 25.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q15",
+      "ms": 0.7,
+      "precision@10": 1.0,
+      "recall@50": 0.7741935483870968,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 25.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q15",
+      "ms": 17.3,
+      "precision@10": 0.7,
+      "recall@50": 0.5161290322580645,
+      "ndcg@10": 0.702728403557943,
+      "mrr": 1.0,
+      "returned": 41.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q15",
+      "ms": 2.8,
+      "precision@10": 0.0,
+      "recall@50": 0.0,
+      "ndcg@10": 0.0,
+      "mrr": 0.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q15",
+      "ms": 10.7,
+      "precision@10": 1.0,
+      "recall@50": 0.7741935483870968,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 25.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q15",
+      "ms": 23.0,
+      "precision@10": 1.0,
+      "recall@50": 0.7741935483870968,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_raw",
+      "query_id": "q16",
+      "ms": 1.2,
+      "precision@10": 0.8,
+      "recall@50": 0.82,
+      "ndcg@10": 0.7951657524814091,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q16",
+      "ms": 1.1,
+      "precision@10": 0.8,
+      "recall@50": 0.82,
+      "ndcg@10": 0.7951657524814091,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q16",
+      "ms": 19.3,
+      "precision@10": 0.9,
+      "recall@50": 0.58,
+      "ndcg@10": 0.9216017310213246,
+      "mrr": 1.0,
+      "returned": 40.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q16",
+      "ms": 2.5,
+      "precision@10": 1.0,
+      "recall@50": 0.8,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q16",
+      "ms": 7.6,
+      "precision@10": 1.0,
+      "recall@50": 0.8,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q16",
+      "ms": 18.3,
+      "precision@10": 0.8,
+      "recall@50": 0.78,
+      "ndcg@10": 0.8579809428223729,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_raw",
+      "query_id": "q17",
+      "ms": 0.6,
+      "precision@10": 0.0,
+      "recall@50": 0.0,
+      "ndcg@10": 0.0,
+      "mrr": 0.0,
+      "returned": 0.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q17",
+      "ms": 0.6,
+      "precision@10": 0.0,
+      "recall@50": 0.0,
+      "ndcg@10": 0.0,
+      "mrr": 0.0,
+      "returned": 0.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q17",
+      "ms": 14.5,
+      "precision@10": 0.4,
+      "recall@50": 0.375,
+      "ndcg@10": 0.35687885840597894,
+      "mrr": 0.5,
+      "returned": 40.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q17",
+      "ms": 20.7,
+      "precision@10": 0.8,
+      "recall@50": 0.7916666666666666,
+      "ndcg@10": 0.8364586133797036,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q17",
+      "ms": 17.4,
+      "precision@10": 0.8,
+      "recall@50": 0.7916666666666666,
+      "ndcg@10": 0.8364586133797036,
+      "mrr": 1.0,
+      "returned": 21.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q17",
+      "ms": 58.8,
+      "precision@10": 0.8,
+      "recall@50": 0.875,
+      "ndcg@10": 0.8482378089219645,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_raw",
+      "query_id": "q18",
+      "ms": 0.8,
+      "precision@10": 1.0,
+      "recall@50": 0.96,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q18",
+      "ms": 0.7,
+      "precision@10": 1.0,
+      "recall@50": 0.96,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q18",
+      "ms": 13.7,
+      "precision@10": 0.8,
+      "recall@50": 0.52,
+      "ndcg@10": 0.8572048559638626,
+      "mrr": 1.0,
+      "returned": 40.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q18",
+      "ms": 3.7,
+      "precision@10": 1.0,
+      "recall@50": 1.0,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q18",
+      "ms": 19.1,
+      "precision@10": 1.0,
+      "recall@50": 0.98,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q18",
+      "ms": 29.7,
+      "precision@10": 1.0,
+      "recall@50": 0.98,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_raw",
+      "query_id": "q19",
+      "ms": 0.6,
+      "precision@10": 0.5,
+      "recall@50": 0.13513513513513514,
+      "ndcg@10": 0.5766882048947064,
+      "mrr": 1.0,
+      "returned": 8.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q19",
+      "ms": 0.5,
+      "precision@10": 0.5,
+      "recall@50": 0.13513513513513514,
+      "ndcg@10": 0.5766882048947064,
+      "mrr": 1.0,
+      "returned": 8.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q19",
+      "ms": 11.7,
+      "precision@10": 0.5,
+      "recall@50": 0.1891891891891892,
+      "ndcg@10": 0.5670429581667766,
+      "mrr": 1.0,
+      "returned": 40.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q19",
+      "ms": 2.3,
+      "precision@10": 1.0,
+      "recall@50": 1.0,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q19",
+      "ms": 8.0,
+      "precision@10": 1.0,
+      "recall@50": 0.5945945945945946,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q19",
+      "ms": 18.5,
+      "precision@10": 0.9,
+      "recall@50": 0.5675675675675675,
+      "ndcg@10": 0.9305687780632227,
+      "mrr": 1.0,
+      "returned": 50.0
+    },
+    {
+      "system": "keyword_raw",
+      "query_id": "q20",
+      "ms": 0.5,
+      "precision@10": 1.0,
+      "recall@50": 0.2702702702702703,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 10.0
+    },
+    {
+      "system": "keyword_content",
+      "query_id": "q20",
+      "ms": 0.5,
+      "precision@10": 1.0,
+      "recall@50": 0.2702702702702703,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 10.0
+    },
+    {
+      "system": "semantic_only",
+      "query_id": "q20",
+      "ms": 14.4,
+      "precision@10": 0.3,
+      "recall@50": 0.13513513513513514,
+      "ndcg@10": 0.41528076708874123,
+      "mrr": 1.0,
+      "returned": 40.0
+    },
+    {
+      "system": "taxonomy_only",
+      "query_id": "q20",
+      "ms": 1.9,
+      "precision@10": 0.1,
+      "recall@50": 0.4594594594594595,
+      "ndcg@10": 0.13886244387355454,
+      "mrr": 0.5,
+      "returned": 50.0
+    },
+    {
+      "system": "hybrid_exact",
+      "query_id": "q20",
+      "ms": 4.3,
+      "precision@10": 1.0,
+      "recall@50": 0.2702702702702703,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 10.0
+    },
+    {
+      "system": "hybrid_broad",
+      "query_id": "q20",
+      "ms": 16.8,
+      "precision@10": 1.0,
+      "recall@50": 1.0,
+      "ndcg@10": 1.0,
+      "mrr": 1.0,
+      "returned": 50.0
+    }
+  ]
+}

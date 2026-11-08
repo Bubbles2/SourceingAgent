@@ -217,7 +217,7 @@ describe('status transitions', () => {
     assert.equal(early.status, 409)
     assert.equal(errorCode(early), 'sale_not_started')
 
-    await pool.query("UPDATE auctions SET starts_at = now() - interval '1 minute' WHERE id = $1", [sales.results.auctionId])
+    await pool.query("UPDATE test_auctions SET starts_at = now() - interval '1 minute' WHERE id = $1", [sales.results.auctionId])
     const won = await moveTo(id, 'placed', 'won', 'Hammer at 2,200 €.')
     assert.deepEqual(won.nextStatuses, [])
 
@@ -288,11 +288,11 @@ describe('status transitions', () => {
     assert.equal(errorCode(await change(closedId, 'pending', 'accepted')), 'sale_closed')
 
     const id = await submit(alice, 14)
-    await pool.query("UPDATE auctions SET starts_at = starts_at - interval '40 days' WHERE id = $1", [sales.open.auctionId])
+    await pool.query("UPDATE test_auctions SET starts_at = starts_at - interval '40 days' WHERE id = $1", [sales.open.auctionId])
     try {
       assert.equal(errorCode(await change(id, 'pending', 'accepted')), 'sale_closed')
     } finally {
-      await pool.query("UPDATE auctions SET starts_at = starts_at + interval '40 days' WHERE id = $1", [sales.open.auctionId])
+      await pool.query("UPDATE test_auctions SET starts_at = starts_at + interval '40 days' WHERE id = $1", [sales.open.auctionId])
     }
   })
 })

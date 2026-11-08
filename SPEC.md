@@ -56,6 +56,15 @@ Auctions and their lots come from the auction monitor, a separate collector that
 - Prevent conflicting accepted requests for the same lot.
 - Never disclose customer identities or maximum bid amounts.
 
+### Lot Search
+- Search every lot in French or English from the header search box.
+- Answered by the taxonomy search (`taxonomy_search/`, see `taxonomy_search/INTEGRATION.md`): the query is
+  understood with a bilingual auction taxonomy (synonyms, translations, sub-types, period versus style), then
+  matched against lot classifications, the lots' text and their meaning.
+- Lots that match every part of the query come first, then related suggestions; each lot shows why it matched.
+- Results are the site's own lot cards, so lots in upcoming sales link to the bid request form.
+- Exact, broad (default) and exploratory searches; administrators choose the default.
+
 ### My Requests
 - Customers can view their submitted bidding requests.
 - Display the auction, the lot (number and title), maximum bid, and request status.
@@ -73,6 +82,9 @@ Auctions and their lots come from the auction monitor, a separate collector that
 - Update bidding outcomes.
 - View counts of upcoming and completed auctions, lots in upcoming sales, and requests by status.
 - Maintain an audit history of important status changes.
+- Search administration (Administration → Search): keep the taxonomy search up to date after each collection
+  run, review and publish the taxonomy behind it (every change previewed first), try queries and see the keywords
+  they produce for any search engine or API, and check search quality. See `taxonomy_search/INTEGRATION.md`.
 
 ## 3. Technology Stack
 
@@ -92,24 +104,25 @@ Auctions and their lots come from the auction monitor, a separate collector that
 | HTTP Security | Helmet, CORS, and API rate limiting |
 | Calendar | Custom month grid and agenda (no calendar library) |
 | Testing | Vitest (unit), Node's test runner (backend), Playwright (end-to-end) |
+| Search | Taxonomy search service in Python (FastAPI) in `taxonomy_search/`, on 127.0.0.1:8000; only the backend calls it, with a shared token |
 
 ## 4. Database
 
-PostgreSQL stores the application's persistent data.
+PostgreSQL stores the application's persistent data, in the local database `events_monitor_db`, which it shares with the Drouot collector and other projects. The app's own tables and views live in their own schema, `sourcing_agent` (`DB_SCHEMA`), which every connection uses as its `search_path`; migrations run there too. The app never writes to the collector's schema, `drouot_collector`, and never touches `public` (another app's tables) or `auction_search`, which belongs to the taxonomy search service (`taxonomy_search/`) that answers the site search.
 
-Main tables:
+Main tables and views (in `sourcing_agent`):
 
 - **Users:** Customer accounts and authentication.
-- **Auctions:** Sales collected by the auction monitor: source and external id, title, start and end times, sale date, location, catalogue and source links, and the raw collected data.
-- **Lots:** The lots in each auction: lot number, title and description with English translations, category, maker, materials, estimates and currency, image and source links, and the monitor's AI category and summary.
-- **Auction Sources:** The websites the auction monitor collects from, with its collection settings.
-- **Collection Runs:** A log of each collection run: when it ran, its status, and how many auctions and lots it saw.
+- **Sessions, Auth Tokens, Email Outbox:** Server-side sessions, one-time email verification and password reset tokens, and outgoing email.
+- **Auctions (view):** The collector's sales from `drouot_collector.auctions`: Drouot's sale id, title (English, else French), start time, sale date, auction house (shown as the location), catalogue and source links, and collection status.
+- **Lots (view):** The collector's lots from `drouot_collector.lots`, each linked to its sale's id: lot number, French title and description with English translations, category, currency, image and source links. The collector provides no estimates, maker, materials or AI analysis, so these are always empty.
+- **Test Auctions, Test Lots:** Sales and lots for automated tests only, added to the two views. Their ids start at 900000000001, so they never meet the collector's; they are empty outside test runs.
 - **Bid Requests:** Customer requests for a lot in an auction, maximum bids, and statuses.
 - **Request Status History:** Audit trail of bidding request changes.
 
-The auctions, lots, auction sources, and collection runs tables are the same as in the auction monitor's database, so collected data can be loaded without conversion. The monitor's 30-day purge function deletes sales more than 30 days old with their lots, but here it keeps any sale with bid requests. [AUCTION_MONITOR.md](AUCTION_MONITOR.md) lists every difference from the monitor's database.
+The views read the collector's tables live, so new sales and lots appear as soon as an administrator runs the collector from the Collections pages. The views are read-only. [AUCTION_MONITOR.md](AUCTION_MONITOR.md) documents the column mapping, the fields the collector doesn't provide, and the test tables.
 
-Use foreign keys, appropriate indexes, and database constraints to maintain data integrity and prevent conflicting accepted requests. A bid request's lot must belong to the auction it names.
+Use foreign keys, appropriate indexes, and database constraints to maintain data integrity and prevent conflicting accepted requests: unique indexes allow one reserving request per lot and one open request per customer and lot. A bid request's lot must belong to the auction it names. Lots are a view, so no foreign key can enforce this: the API checks it in the request's transaction, under a per-lot advisory lock, so simultaneous requests for one lot are checked one after the other.
 
 ## 5. Application Architecture
 

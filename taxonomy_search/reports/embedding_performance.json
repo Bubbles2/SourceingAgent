@@ -1,0 +1,132 @@
+{
+  "stats": {
+    "started_at": "2026-11-08T18:18:23+00:00",
+    "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+    "device": "mps",
+    "dims": 384,
+    "lots_seen": 20923,
+    "unchanged_skipped": 20923,
+    "embedded": 0,
+    "seconds_encoding": 0.0,
+    "seconds_total": 1.21,
+    "docs_per_second": 0.0,
+    "model_load_seconds": 1.34,
+    "table_bytes": 87433216,
+    "index_bytes": 44531712.0,
+    "dry_run": false,
+    "ai_tokens_used": 0,
+    "notes": []
+  },
+  "probes": [
+    {
+      "query": "pair of women's ankle boots",
+      "ms": 67.2,
+      "top": [
+        "3323 (0.51) 2 - LOT DE CHAUSSURES DE FEMME comprenant Tods, Salvator Ferragamo, H…",
+        "16160 (0.41) Montre-bracelet Rolex pour femme, Lady-Datejust, référence 69173, 1991",
+        "3322 (0.39) 1 - LOT DE MODE FEMININE comprenant vestes, pantalons, chemisiers don…",
+        "3321 (0.37) LOT DE MODE FEMININE comprenant :",
+        "13719 (0.37) Deux bracelets en argent dont un serti de cabochons d'ambre."
+      ]
+    },
+    {
+      "query": "Louis XIV period commode with Boulle marquetry",
+      "ms": 26.4,
+      "top": [
+        "21601 (0.69) Meuble d'appui Napoléon III de style Louis XVI en marqueterie Boulle,…",
+        "7025 (0.68) Pendule Louis XVI en bronze doré et marbre blanc, début XIXe siècle",
+        "21584 (0.67) Suite de quatre appliques Napoléon III de style Louis XVI en bronze c…",
+        "7015 (0.66) Pendule lyre Louis XVI à mouvement squelette en marbre blanc et bronz…",
+        "21586 (0.66) Paire de bougeoirs Napoléon III de style Louis XV en bronze argenté,…"
+      ]
+    },
+    {
+      "query": "Chinese blue and white porcelain vase",
+      "ms": 24.7,
+      "top": [
+        "9853 (0.83) Vase décoratif bleu et blanc posé au sol, Chine, fin du XXe siècle.",
+        "17333 (0.82) Plat de service chinois en porcelaine du XVIIIe siècle, décoré en ble…",
+        "17334 (0.82) Plat chinois en porcelaine du XVIIIe siècle, à décor bleu et blanc, p…",
+        "4271 (0.82) Ensemble de céramiques chinoises bleues et blanches. XVIIIe/XIXe sièc…",
+        "1462 (0.82) Petit vase chinois bleu et blanc en pâte molle, dynastie Qing, périod…"
+      ]
+    },
+    {
+      "query": "French eighteenth-century armchair",
+      "ms": 19.4,
+      "top": [
+        "19405 (0.77) HENIN Ainé - Paris. Epoque 1880-1900",
+        "6962 (0.74) Fauteuil en bois relaqué blanc par Tilliard, d'époque Louis XV",
+        "19495 (0.74) Chaise à assise basse et tabouret en bois très richement mouluré et s…",
+        "17800 (0.73) Réunion de DEUX FAUTEUILS en noyer mouluré et sculpté à dossier plat…",
+        "3124 (0.72) Fauteuil en bois tourné et sculpté, les accotoirs en forme de crosse."
+      ]
+    },
+    {
+      "query": "vintage designer handbag",
+      "ms": 12.5,
+      "top": [
+        "18470 (0.65) LOUIS VUITTON",
+        "18494 (0.64) OSCAR DE LA RENTA",
+        "18536 (0.64) CARTIER",
+        "18390 (0.64) LOUIS VUITTON",
+        "18422 (0.64) CHRISTIAN DIOR"
+      ]
+    },
+    {
+      "query": "diamond ring in white gold",
+      "ms": 17.5,
+      "top": [
+        "16044 (0.83) Bague en onyx en or jaune avec un diamant en or blanc",
+        "16150 (0.82) Bague avec diamant en or jaune et or blanc 585",
+        "15959 (0.81) Bague classique en or blanc 585 sertie d'un brillant d'environ 0,25 c…",
+        "15985 (0.81) Élégante bague pour homme en or jaune 14 carats avec un diamant solit…",
+        "15856 (0.79) Bague en or jaune 585, partiellement rhodiée, avec diamants octogonaux"
+      ]
+    },
+    {
+      "query": "landscape oil painting",
+      "ms": 24.5,
+      "top": [
+        "17221 (0.70) Peinture à l'huile du XIXe siècle sur carton représentant un paysage…",
+        "3057 (0.70) Ecole moderne de paysage.",
+        "17366 (0.68) Paire de peintures à l'huile sur toile belges - vers 1900",
+        "9599 (0.67) 2 huiles sur toile et une huile sur panneau, 2 natures mortes et un p…",
+        "9793 (0.66) Trois huiles sur toile, comprenant deux paysages champêtres animés de…"
+      ]
+    },
+    {
+      "query": "silver tea set",
+      "ms": 13.8,
+      "top": [
+        "4655 (0.69) LINO SABATTINI ARGENTERIE SABATTINI années 60.",
+        "7117 (0.67) Service à thé en argent 800°/°°, travail allemand, début XXe siècle",
+        "3506 (0.67) PARTIE DE SERVICE A THE ET A CAFE en Sarreguemines, décor Minton.",
+        "4726 (0.67) AVANT DE DORMIR 1978.",
+        "10188 (0.66) Service à café et à thé, bol, plateau, etc., argenté, à partir de 1920"
+      ]
+    },
+    {
+      "query": "bronze sculpture of a horse",
+      "ms": 17.4,
+      "top": [
+        "18214 (0.75) BOUTEILLE À TABAC EN CALCÉDONIE SCULPTÉE REPRÉSENTANT UN « CHEVAL ATT…",
+        "9841 (0.74) Un cheval en terre cuite sellé de la dynastie Tang, Chine, VIIe-IXe s…",
+        "2612 (0.72) SCULPTURE CHINOISE EN JADEITE REPRÉSENTANT UN CHEVAL, DYNASTIE QING,…",
+        "2232 (0.71) Sculpture chinoise en céladon réticulé et jade roux représentant un c…",
+        "16352 (0.71) Figurine chinoise en bois avec un cheval, début du XXe siècle."
+      ]
+    },
+    {
+      "query": "Persian carpet",
+      "ms": 14.1,
+      "top": [
+        "10293 (0.71) Grand tapis d'Orient Bakhtiar, Perse, âgé de 40 à 50 ans",
+        "18012 (0.68) TAPIS D'IRAN à motif géométrique dans les teintes beige et verte. 120…",
+        "10299 (0.67) Réplique moderne d'un tapis d'Orient, nouée d'après un modèle antique…",
+        "17751 (0.64) GRAND TAPIS D'IRAN ancien en laine à décor floral géométrique rouge e…",
+        "10298 (0.64) Réplique moderne d'un tapis d'Orient, nouée d'après un modèle antique…"
+      ]
+    }
+  ]
+}

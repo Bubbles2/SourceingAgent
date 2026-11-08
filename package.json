@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "taxonomy": "cd taxonomy_search && .venv/bin/python -m auction_search.cli serve-api --port 8000"
   },
   "dependencies": {
     "lucide-react": "^1.62.0",

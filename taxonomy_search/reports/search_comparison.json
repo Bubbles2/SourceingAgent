@@ -1,0 +1,452 @@
+[
+  {
+    "query": "Find auctions selling shoes",
+    "hybrid_direct": 42,
+    "hybrid_related": 39,
+    "keyword_raw": 0,
+    "keyword_cleaned": 19,
+    "cleaned_query": "shoes",
+    "took_ms": 148,
+    "top_direct": [
+      [
+        4374,
+        "A pair of Chinese silk embroidered 'flowerpot' shoes, early 20th century 二十世紀初 刺繡花卉紋鞋一對 The slender shoes embroidered with foliate and geometric motifs and shou medallions Size:(24.5cm long) Qty: (2) Notes: See a comparable shoe in the Metropolitan Museum of Art, New York, no. 53.84.4. 同類鞋款可參見紐約大都會藝術博物館珍藏，館藏編號：53.84.4。 This lot is offered with no reserve 無底價",
+        [
+          "taxonomy: fashion.footwear classified_as"
+        ]
+      ],
+      [
+        22022,
+        "RAFAEL SALEM",
+        [
+          "taxonomy: fashion.footwear classified_as",
+          "semantic similarity 0.37"
+        ]
+      ],
+      [
+        10343,
+        "Zaha Hadid for Lacoste, women’s boots, as new, in original box, rare!",
+        [
+          "taxonomy: fashion.footwear classified_as, fashion.footwear.ankle_boots classified_as, fashion.footwear.boots classified_as"
+        ]
+      ],
+      [
+        1403,
+        "Batches of clothing and shoes sold in bulk from 11 a.m. to 12 p.m.",
+        [
+          "taxonomy: fashion.footwear classified_as"
+        ]
+      ],
+      [
+        3323,
+        "2 - SET OF WOMEN'S SHOES including Tod's, Salvatore Ferragamo, Hasley/",
+        [
+          "taxonomy: fashion.footwear classified_as"
+        ]
+      ],
+      [
+        1227,
+        "GUCCI",
+        [
+          "taxonomy: fashion.footwear classified_as, fashion.footwear.sneakers classified_as"
+        ]
+      ],
+      [
+        4253,
+        "A fine Chinese export famille-rose figure of a seated man and lady, Qing dynasty, Qianlong period 清乾隆 粉彩人物坐像擺件 | Santos Collection The very finely modelled figural group depicting a seated man besides a lady, he is depicting with his arm resting on her shoulder, seating on a pierced rockwork base in blue, the man wearing open yellow robes revealing his stomach and red trousers, the lady wearing robes of turquoise, green and blue tones and lotus shoes Size:(17cm high) Qty: (1) Provenance: Santos Collection 來源： 桑托斯收藏 Notes: Please refer to a similar group illustrated in David S. Howard. The Choice of the Private Trader, the Private Market in Chinese Export Porcelain Illustrated from the Hodroff Collection, no. 306, p. 257, also illustrated in Michael Cohen & William Motley. Mandarin and Menagerie, Chinese and Japanese Export Ceramic Figures, Volume I: The James E. Sowell Collection, no. 6.3, p. 117. 同類瓷塑作品可參閱David S. Howard著 《私商之選：霍德羅夫藏中國外銷瓷》，編號 306，頁 257；麥可·柯恩與威廉·莫特利著 《滿大人與禽獸：詹姆斯·索威爾藏中日外銷瓷塑（卷一）》，編號 6.3，頁 117。 Restoration to the hands in places. An area of the robe with possible restoration, although this could be a painting error. The lady with some evidence of restoration around the neck. See images.",
+        [
+          "taxonomy: fashion.footwear classified_as"
+        ]
+      ],
+      [
+        2391,
+        "SIMEON SOLOMON (BRITISH 1840-1905)SOMNUS; AMOR, VOLUPTAS; AND MORSColoured chalks over pencil, four sheets framed as oneEach inscribed with their titles (to the lower draperies)Overall 74 x 152.5cm (29 x 60in.), each individually 51 x 29.5cm (20 x 11½in.)In the original frameProvenance:Mrs Abrahams and by bequest to the mother of the presentowner.Simeon Solomon was the last of eight children born into anaffluent, artistically inclined middle-class Jewish family. His father was aprosperous hat importer, his mother Kate Levy Solomon an amateur artist whopainted miniatures. Other members of the family were professional artists, hisbrother Abraham (1823-1862) was famous for social commentary genre scenes) andhis sister Rebecca (1832-1886) a successful female artist who exhibitedfrequently.After initial study at Cary’s Art School, Solomon enteredthe Royal Academy Schools in 1856, exhibiting there for the first time in 1858.By 1859 Solomon had met Dante Gabriel Rossetti (1828-1882) and EdwardBurne-Jones (1833-1898) and formed close ties with the Pre-Raphaelites and byextension others in their circle such as the writer Algernon Swinburne(1837-1909), the essayist and art critic Walter Pater (1839-1894) and historianand educationalist Oscar Browning (1837-1923), with whom he travelled to Romein 1867. These men were noted aesthetes and through their influence Solomon wasreceived into likeminded ascetic and homosexual circles.In 1871 Solomon penned his own prose poem – A Vision ofLove Revealed in Sleep, privately printed with a dedication to Burne-Jones.In this dreamlike narrative the artist engages in sporadic conversations withhis Soul and encounters personified emotions including Love, Hope and Despairof which he made allegorical drawings.The defining moment in Solomon’s personal and professionallife occurred in February of 1873, Solomon was arrested in a public lavatory inLondon with a stable hand called George Roberts and charged with indecentexposure and ‘attempting to commit sodomy’. He was found guilty, fined £100 andsentenced to six weeks in the Clerkenwell House of Correction: his publicreputation was ruined, and it resulted in a downwards spiral of hisprofessional and personal life.After 1872 we see a stylistic change in his work, painting mainlyheads, sometimes a single head or the compositional device of placing two headson either side of the pictorial plane, a format which offered considerablecompositional and thematic possibilities. His subject matter was oftenallegorical depictions of abstract concepts or personifications of emotions, thethemes explored in Solomon’s 1871 poem, alongside drawings of Night, Sleep,Death, which often reflected his inner turmoil and personal thoughts on elicitlove.Followinghis public shaming Solomon found difficulty selling his work. He continued toexhibited in provincial galleries such as Liverpool, Manchester, and Birminghamand occasionally in London and there were periods of chronic poverty,alcoholism and in and out of St. Giles Workhouse in London. Solomon becameincreasing dependent on alcohol and died in the workhouse on 14 August 1905,aged 65.The present set of four drawings date from circa 1880 and thecherubic putti are the embodiment of some of his favourite motifs, Sleep, Love,Desire and Death. Stylistically the drawings are similar to the unpublished illustrationsSolomon executed for the nursery rhyme,1, 2, Buckle My Shoe, (Princeton University Library's children'sbook collection). Although treated by society as an outcast Solomon was though still supported by family and somefriends, and the present work may be an example of this having descendedthrough the Abraham family, who were relatives of the Solomons.The four putti each embody a fundamental facet of the human condition: Desire, Sleep, Death, and Pleasure and Solomon has bestowed them with classical attributes. Amor (Desire) grips a bow intertwined with myrtle, a plant sacred to his mother Venus, the arrow is pointed toward his own midsection, symbolizing the profound, self-inflicted vulnerability of desire. Somnus (Sleep) is distinguished by two large wings sprouting from his brow which differentiates him from Cupid and symbolizes how sleep silently sweeps down upon the human mind. Across his chest, he holds a stalk of poppies evoking dreams, sedation, and the narcotic ease of slumber. Mors (Death) is personified as a solemn, draped, angelic putti. This treatment mirrors the ancient concept of Death as the twin brother of Sleep. He holds a downward-pointing trumpet toward the earth, representing the final summons. To his side, a shrouded funerary amphora stands which signifies mortality and the physical remains left behind, the hand placed over the vase holds a dried sprig, serving as a poignant reminder of the short span of human life and the withered nature of the flesh. Voluptas (Pleasure) carries a basket overflowing with flowers and roses, representing the flowering of passion. The flo",
+        [
+          "taxonomy: fashion.footwear classified_as"
+        ]
+      ],
+      [
+        4369,
+        "A group of Chinese textiles, Qing dynasty, 19th century 清十九世紀 各式刺繡織品一組 Comprising a later suitcase, holding various silk vests, robes and other accessories including hats and shoes, together all in a leather suitcase Provenance: British private collection, by descent from the great grandfather who was a missionary in Wuhan from 1865-1885 來源： 英國私人珍藏，此後由曾祖父（於1865年至1885年間曾任武漢傳教士）家族傳承",
+        [
+          "taxonomy: fashion.footwear classified_as"
+        ]
+      ],
+      [
+        18477,
+        "GUCCI",
+        [
+          "taxonomy: fashion.footwear classified_as, fashion.footwear.loafers classified_as"
+        ]
+      ]
+    ],
+    "top_keyword_cleaned": [
+      4374,
+      2391,
+      3323,
+      1403,
+      4253,
+      4369,
+      4582,
+      13565,
+      21627,
+      6953
+    ]
+  },
+  {
+    "query": "Find Louis XIV furniture",
+    "hybrid_direct": 5,
+    "hybrid_related": 1991,
+    "keyword_raw": 0,
+    "keyword_cleaned": 0,
+    "cleaned_query": "Louis XIV furniture",
+    "took_ms": 79,
+    "top_direct": [
+      [
+        6934,
+        "An important and rare gilt and carved wooden Louis XIV pier table from the early 18th century",
+        [
+          "taxonomy: period.louis_xiv dated_to",
+          "taxonomy: furniture.tables classified_as, furniture.tables.consoles classified_as",
+          "semantic similarity 0.64"
+        ]
+      ],
+      [
+        6928,
+        "Rare and important commode in ebonized wood, red tortoiseshell veneer, brass, and tin by Nicolas Sageot, Louis XIV period",
+        [
+          "taxonomy: period.louis_xiv dated_to",
+          "taxonomy: furniture.case_furniture.commodes classified_as"
+        ]
+      ],
+      [
+        6933,
+        "Louis XIV-era “Mazarine” chest of drawers in walnut, amaranth, and rosewood veneer",
+        [
+          "taxonomy: period.louis_xiv dated_to",
+          "taxonomy: furniture.case_furniture.commodes classified_as"
+        ]
+      ],
+      [
+        18024,
+        "Louis XIV-style MIRROR WITH HINGES, made of wood and gilded stucco, rectangular in shape with floral decoration. Mercury-coated glass. 80 x 70 cm.",
+        [
+          "taxonomy: style.louis_xiv in_style_of",
+          "taxonomy: furniture.mirrors classified_as"
+        ]
+      ],
+      [
+        19259,
+        "18th-century French school, circle of Pierre Gobert",
+        [
+          "keyword: 'Louis XIV'",
+          "keyword: 'furniture'"
+        ]
+      ]
+    ],
+    "top_keyword_cleaned": []
+  },
+  {
+    "query": "Find French eighteenth-century armchairs",
+    "hybrid_direct": 23,
+    "hybrid_related": 2158,
+    "keyword_raw": 0,
+    "keyword_cleaned": 0,
+    "cleaned_query": "French eighteenth-century armchairs",
+    "took_ms": 65,
+    "top_direct": [
+      [
+        6963,
+        "Pair of mid-18th-century armchairs in natural walnut",
+        [
+          "taxonomy: period.18th_century dated_to",
+          "taxonomy: furniture.seating.armchairs classified_as",
+          "semantic similarity 0.77"
+        ]
+      ],
+      [
+        6962,
+        "White-lacquered wooden armchair by Tillard, Louis XV period",
+        [
+          "taxonomy: period.louis_xv dated_to",
+          "taxonomy: furniture.seating.armchairs classified_as",
+          "semantic similarity 0.73"
+        ]
+      ],
+      [
+        9349,
+        "18th-century wingback chair. Includes a mahogany armchair. Height: 106 cm.",
+        [
+          "taxonomy: period.18th_century dated_to",
+          "taxonomy: furniture.seating.armchairs classified_as, furniture.seating.bergeres classified_as",
+          "semantic similarity 0.74"
+        ]
+      ],
+      [
+        17800,
+        "A set of TWO armchairs in molded and carved walnut with a flat backrest, known as the “Queen’s style,” featuring ornate armrests resting on four curved legs. Early 18th century. Beautiful new raspberry-colored silk upholstery. 91 x 65 x 50 cm. Signs of wear and restoration.",
+        [
+          "taxonomy: period.18th_century dated_to",
+          "taxonomy: furniture.seating.armchairs classified_as",
+          "semantic similarity 0.74"
+        ]
+      ],
+      [
+        11835,
+        "Großer Louis XV-Fauteuil \"à la reine\". Frankreich. Mid 18th cent.",
+        [
+          "taxonomy: region.france originates_from",
+          "taxonomy: period.18th_century dated_to",
+          "taxonomy: furniture.seating.armchairs classified_as"
+        ]
+      ],
+      [
+        18023,
+        "A pair of armchairs made of molded, carved, and re-lacquered gray wood, featuring a flat, medallion-shaped “Queen-style” backrest, armrests with ornate cuffs, and fluted legs. 18th century. 99 x 64 x 54 cm and 99 x 62 x 50 cm. Signs of wear, damage, and restoration.",
+        [
+          "taxonomy: period.18th_century dated_to",
+          "taxonomy: furniture.seating.armchairs classified_as",
+          "semantic similarity 0.70"
+        ]
+      ],
+      [
+        7009,
+        "Louis XVI-era living room furniture set in cream-painted wood attributed to Claude Chevigny",
+        [
+          "taxonomy: period.louis_xvi dated_to",
+          "taxonomy: furniture.seating.armchairs classified_as",
+          "semantic similarity 0.69"
+        ]
+      ],
+      [
+        3071,
+        "Pair of cabriolet-style armchairs made of carved and lacquered wood.",
+        [
+          "taxonomy: period.louis_xv dated_to",
+          "taxonomy: furniture.seating.armchairs classified_as",
+          "semantic similarity 0.75"
+        ]
+      ],
+      [
+        3076,
+        "A bergère chair with a cabriolet backrest made of molded, carved, and painted beech wood.",
+        [
+          "taxonomy: period.louis_xv dated_to",
+          "taxonomy: furniture.seating.armchairs classified_as, furniture.seating.bergeres classified_as",
+          "semantic similarity 0.67"
+        ]
+      ],
+      [
+        1513,
+        "A pair of Chinese huali 'official's hat' yoke-back armchairs, sichutou guanmaoyi, Qing dynasty, 18th century 清十八世紀 黃花梨四出頭官帽椅一對 | Ulrich Hausmann Collection This present pair of carved huanghuali 'official's hat' yoke-back armchairs known as sichutou guanmaoyi, each with a curved splat back surmounted by a yoke-shaped arch and further flanked by the rear posts which continue to form the back legs extending through the rectangular frame of the woven seat, the arm rails supported on slender standing stiles and extending in a curved manner beyond the front posts, the rectangular framed enclosing the mat seat above the humpback stretcher set with vertical struts, the four legs joined by stepped strepped stretchers and a shaped foot rest to the front, below plain aprons and spandrels Size:(107.5cm high, 57cm wide, 45cm deep) Qty: (2) Provenance: From the esteemed collection of Ulrich Hausmann, (Germany, 1947-2023); and thence by descent: Ulrich Hausmann was highly regarded as a distinguished collector and scholar of Chinese works of art, and was particularly renowned for his expertise in the field of later Chinese bronzes. Hausmann assembled an important collection in this regard and contributed significantly to the scholarly field and understanding of later Chinese bronzes. 來源： 烏爾里希·豪斯曼（德國，1947–2023）重要珍藏，此後家族傳承 豪斯曼備受推崇，為中國藝術品之傑出收藏家兼學者，尤以明清銅器研究與鑑賞權威聞名。豪斯曼居於德國萊茵蘭，其所組建之中國藝術品珍藏意義重大，對學術界深化晚期中國銅器之理解與認知貢獻卓著。 Notes: Please refer to a pair of chairs closely related sold at Christie's, New York, 16 March 2015, lot 3294; another pair of chairs but without arms sold at Bonhams, London, 15 May 2014, lot 349; another pair was offered at Sotheby's, New York, 18-19 March 2025, lot 267 These splendid pair of huanghuali chairs are characterised by its exceptionally clean lines and restrained elegance, this rare and sophisticated form embodies many of the most highly sort after characteristics of late Ming furniture which was also highly admired into the Qing period. This type of chairs is known among Chinese furniture connoisseurs as a sichutou guanmaoyi (‘four-ends-extended’ ‘official’s hat’ armchair), a name derived from the projection of the crestrail and armrests beyond the rear and front posts, respectively. Although these extended elements likely originated in more vernacular traditions of Chinese furniture, by the Ming and into the Qing dynasty the form had become fully assimilated into the refined taste of the literati. The broad sweep of the extended crestrail, in particular, conveyed distinction and status, and chairs of this type were often reserved for the most senior figures at a gathering. 同類極為相似之一對椅，可參見紐約佳士得，2015年3月16日，編號3294；另一對無扶手靠背椅，售於倫敦邦瀚斯，2014年5月14日，編號349；另有一對曾上拍於紐約蘇富比，2025年3月18至19日，編號267。 此對黃花梨官帽椅造型絕妙，線條簡練流暢，典雅內斂。其珍罕而雅致之式樣，集明末家具極受追捧之諸多特色於一身，至清代仍備受推崇。古典家具鑑賞家將此類座椅稱為四出頭官帽椅，因其搭腦兩端及兩側扶手出頭而得名。此類出頭結構雖或源自中國民間家具傳統，然至明清時期，其造型已完全融入文人雅士之高雅審美。尤其是寬闊舒展之搭腦出頭，盡顯尊貴與地位，故此類座椅常供雅集盛會中地位最高者蒞座。",
+        [
+          "taxonomy: period.18th_century dated_to",
+          "taxonomy: furniture.seating.armchairs classified_as"
+        ]
+      ]
+    ],
+    "top_keyword_cleaned": []
+  },
+  {
+    "query": "Find antique furniture with Boulle marquetry",
+    "hybrid_direct": 8,
+    "hybrid_related": 2337,
+    "keyword_raw": 0,
+    "keyword_cleaned": 0,
+    "cleaned_query": "antique furniture Boulle marquetry",
+    "took_ms": 63,
+    "top_direct": [
+      [
+        19419,
+        "Low display cabinet in blackened wood, blackened wood veneer, and so-called Boulle marquetry in brass and tortoiseshell, opening with a glass door, adorned with gilded bronze elements, and side posts featuring espagnolette locks decorated with smiling women. Black marble top.",
+        [
+          "taxonomy: furniture.case_furniture.bookcases classified_as, furniture.case_furniture.cabinets classified_as",
+          "taxonomy: technique.boulle_marquetry uses_technique",
+          "keyword: 'antique'"
+        ]
+      ],
+      [
+        19483,
+        "A counter-height cabinet, curved on all sides, made of blackened wood with so-called “Boulle” marquetry in brass and a tortoiseshell-style inlay. It rests on a curved base. It opens with a single door. Caryatid espagnolettes on the side posts and gilded bronze ornamentation featuring stylized foliage motifs. Green marble top.",
+        [
+          "taxonomy: furniture.case_furniture.cabinets classified_as, furniture.case_furniture.commodes classified_as",
+          "taxonomy: technique.boulle_marquetry uses_technique",
+          "keyword: 'antique'"
+        ]
+      ],
+      [
+        19485,
+        "Coffee table with a rectangular top, made of blackened wood and featuring so-called Boulle marquetry in a tortoiseshell-style pattern with brass accents. It rests on a curved base. Ornamental gilded bronze details, including mascarons around the rim and caryatid-shaped espagnolettes on the base.",
+        [
+          "taxonomy: furniture.tables classified_as",
+          "taxonomy: technique.boulle_marquetry uses_technique",
+          "keyword: 'antique'"
+        ]
+      ],
+      [
+        21597,
+        "Napoleon III sideboard with Boulle marquetry, featuring two hinged doors, beautiful gilded bronze ornamentation with espagnolette motifs, and a white marble top.",
+        [
+          "taxonomy: furniture classified_as, furniture.case_furniture.sideboards classified_as",
+          "taxonomy: technique.boulle_marquetry uses_technique"
+        ]
+      ],
+      [
+        3095,
+        "A curvilinear mirror frame in tortoiseshell and brass marquetry",
+        [
+          "taxonomy: furniture.mirrors classified_as",
+          "taxonomy: technique.boulle_marquetry uses_technique"
+        ]
+      ],
+      [
+        12807,
+        "Ink set desk accessory with Boulle marquetry, France, 19th century. Rectangular body, wood with brass inlays; top features two hinged compartments and two inset glass inkwells; metal lid has minimal dents. Features very fine, masterful Boulle marquetry on all sides, combining brass and lacquer in intricate scrollwork and foliage motifs. The corners and feet feature griffin motifs. Heavily built. Dimensions: 33 x 25 x 9 cm",
+        [
+          "taxonomy: furniture.desks classified_as",
+          "taxonomy: technique.boulle_marquetry uses_technique"
+        ]
+      ],
+      [
+        21601,
+        "Napoleon III Louis XVI style Boulle marquetry sideboard, decorated with trophy, masks, vase of flowers, bronze ornamentation, white marble top.",
+        [
+          "taxonomy: furniture classified_as, furniture.case_furniture.sideboards classified_as",
+          "taxonomy: technique.boulle_marquetry uses_technique"
+        ]
+      ],
+      [
+        3581,
+        "Blackened wood weekly planner with Boule marquetry. White marble top.",
+        [
+          "taxonomy: furniture.case_furniture.commodes classified_as",
+          "taxonomy: technique.boulle_marquetry uses_technique"
+        ]
+      ]
+    ],
+    "top_keyword_cleaned": []
+  },
+  {
+    "query": "Find vintage designer handbags",
+    "hybrid_direct": 218,
+    "hybrid_related": 1668,
+    "keyword_raw": 0,
+    "keyword_cleaned": 3,
+    "cleaned_query": "vintage designer handbags",
+    "took_ms": 25,
+    "top_direct": [
+      [
+        10342,
+        "Pearl-knit bag with silver handle, circa 1900/1920",
+        [
+          "taxonomy: fashion.handbags classified_as",
+          "keyword: 'designer'",
+          "semantic similarity 0.58"
+        ]
+      ],
+      [
+        12175,
+        "CHANEL Handbag. Timeless Double Flap Bag. Caviar Beige. Medium. Vintage. Approx. 16 cm x 25 cm x 7 cm. Rectangular women's handbag / shoulder bag. Timeless Double Flap in beige caviar leather with a quilted diamond pattern and gold-tone hardware. Size: Medium. Data code \"7329047\". Shows some signs of use. In good condition considering its age. See photos. Category: Vintage / Fashion / Design",
+        [
+          "taxonomy: fashion.handbags classified_as",
+          "keyword: 'vintage'",
+          "keyword: 'designer'"
+        ]
+      ],
+      [
+        12176,
+        "Salvatore FERRAGAMO. \"Gancini\" handbag. Black leather. Vintage. Approx. 18 cm x 36 cm x 9 cm. Rectangular shoulder bag. Black leather with a flap closure and silver-colored hardware / Gancini. Double shoulder straps. Beige suede lining. Model number \"AQ-21 / 4317\". Worn. Signs of age and wear. See photos for condition. Category: Vintage / Fashion / Design",
+        [
+          "taxonomy: fashion.handbags classified_as",
+          "keyword: 'vintage'",
+          "keyword: 'designer'"
+        ]
+      ],
+      [
+        12177,
+        "Salvatore FERRAGAMO. \"Gancini\" handbag. Tote bag. White leather. Vintage. Approx. 20 cm x 29 cm x 9 cm. Rectangular shoulder bag. White leather with silver-colored hardware / Gancini. 1 handle. Shoulder strap included. Light blue lining. Model number \"AU-21 / 4361\". Worn. Signs of age and wear. See photos for condition. Category: Vintage / Fashion / Design",
+        [
+          "taxonomy: fashion.handbags classified_as",
+          "keyword: 'vintage'",
+          "keyword: 'designer'"
+        ]
+      ],
+      [
+        13555,
+        "18K yellow gold pouch or purse—750 parts per thousand, with chain-link design.",
+        [
+          "taxonomy: fashion.handbags classified_as",
+          "keyword: 'designer'"
+        ]
+      ],
+      [
+        1231,
+        "Lego ref 6097 / Vintage \"Night Lord's Castle\" set issued circa 1997 with all contents in sealed bags + manual + poster. Box in good condition. Very rare",
+        [
+          "taxonomy: fashion.handbags classified_as",
+          "keyword: 'vintage'"
+        ]
+      ],
+      [
+        18428,
+        "HERMÈS",
+        [
+          "taxonomy: fashion.handbags classified_as",
+          "keyword: 'designer'"
+        ]
+      ],
+      [
+        13434,
+        "18K yellow gold pouch or purse—750 parts per thousand—with chain mail. Comes with a watch chain.",
+        [
+          "taxonomy: fashion.handbags classified_as",
+          "keyword: 'designer'"
+        ]
+      ],
+      [
+        12427,
+        "Magda & Andrzej NOWAKOWSCY (XX). Chess pieces with a chessboard. Brass/copper. Warsaw, Poland. The smallest chess piece measures approx. 5 cm, and the largest 8 cm. Made of copper or brass sheet metal. Individually designed chess pieces, intricately shaped. Some are knights with swords. The theme likely depicts the Teutonic Order against Poland. Complete. Wooden chess set box with a hinged lid (approx. 10 cm x 36 cm x 36 cm). The lid features brass chess squares; the playing surface is bordered all around with brass decorations, some of which are inlaid with stones. Comes with a yellow linen bag. Pieces signed on the underside: “Magda i Andrze Nowakowscy Warszawa.” Signs of wear due to age. See photos for condition. Category: Chess / Games / Chess Sets",
+        [
+          "taxonomy: fashion.handbags classified_as",
+          "keyword: 'designer'"
+        ]
+      ],
+      [
+        18430,
+        "HERMÈS",
+        [
+          "taxonomy: fashion.handbags classified_as",
+          "keyword: 'designer'"
+        ]
+      ]
+    ],
+    "top_keyword_cleaned": [
+      12175,
+      12176,
+      12177
+    ]
+  },
+  {
+    "query": "Find French Baroque cabinets",
+    "hybrid_direct": 1,
+    "hybrid_related": 173,
+    "keyword_raw": 0,
+    "keyword_cleaned": 1,
+    "cleaned_query": "French Baroque cabinets",
+    "took_ms": 14,
+    "top_direct": [
+      [
+        17204,
+        "19th Cent. French baroque style Napoleon III one door display-cabinet in \"Boulle\" with mountings in guilded bronze",
+        [
+          "taxonomy: style.french_baroque in_style_of",
+          "taxonomy: furniture.case_furniture.cabinets classified_as",
+          "semantic similarity 0.67"
+        ]
+      ]
+    ],
+    "top_keyword_cleaned": [
+      17204
+    ]
+  }
+]

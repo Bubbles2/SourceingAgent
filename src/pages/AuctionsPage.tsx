@@ -2,6 +2,7 @@ import { Suspense, useState } from 'react'
 import { useLoaderData } from 'react-router'
 import type { auctionsLoader } from '../app/loaders'
 import { PageContainer } from '../components/layout/PageContainer'
+import { Notice } from '../components/ui/Notice'
 import { AuctionGridSkeleton } from '../features/auctions/AuctionCardSkeleton'
 import { AuctionResults } from '../features/auctions/AuctionResults'
 import { SaleStatusFilter } from '../features/auctions/SaleStatusFilter'
@@ -10,7 +11,7 @@ import './AuctionsPage.css'
 type AuctionView = 'tiles' | 'details'
 
 export function AuctionsPage(): React.JSX.Element {
-  const { status, page, auctions } = useLoaderData<typeof auctionsLoader>()
+  const { status, page, noneUpcoming, auctions } = useLoaderData<typeof auctionsLoader>()
   const [view, setView] = useState<AuctionView>('tiles')
 
   return (
@@ -26,6 +27,11 @@ export function AuctionsPage(): React.JSX.Element {
           <button type="button" aria-pressed={view === 'details'} onClick={() => setView('details')}>Details</button>
         </div>
       </div>
+      {noneUpcoming ? (
+        <Notice tone="info" title="No upcoming sales right now.">
+          These are the completed sales. New sales appear here as auction houses publish them.
+        </Notice>
+      ) : null}
       <Suspense
         key={`${status}-${page}`}
         fallback={<AuctionGridSkeleton count={6} label={`Loading ${status} auctions`} />}

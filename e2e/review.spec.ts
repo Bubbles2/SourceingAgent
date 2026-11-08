@@ -65,6 +65,9 @@ test('the agent accepts a request, records the bid and the result, and the custo
     }
   })
 
+  // In the "Outstanding bids" view a pending request's button reads "Accept" (it opens the review);
+  // in the other views it reads "Review".
+  const acceptButton = page.getByRole('button', { name: 'Review and accept lot 7 for Hugo Lefèvre' })
   const reviewButton = page.getByRole('button', { name: 'Review lot 7 for Hugo Lefèvre' })
   const dialog = page.getByRole('dialog')
 
@@ -77,7 +80,7 @@ test('the agent accepts a request, records the bid and the result, and the custo
     await page.getByRole('navigation', { name: 'Administration' }).getByRole('link', { name: 'Bid requests' }).click()
     await expect(page.getByRole('heading', { level: 1, name: 'Bid requests' })).toBeVisible()
 
-    await reviewButton.click()
+    await acceptButton.click()
     await expect(dialog.getByRole('heading', { name: saleTitle })).toBeVisible()
     await expect(dialog.getByText(customerEmail)).toBeVisible()
     await expect(dialog.getByText('€1,200')).toBeVisible()
@@ -91,7 +94,7 @@ test('the agent accepts a request, records the bid and the result, and the custo
   })
 
   await test.step('the administrator rejects the request for lot 8', async () => {
-    await page.getByRole('button', { name: 'Review lot 8 for Hugo Lefèvre' }).click()
+    await page.getByRole('button', { name: 'Review and accept lot 8 for Hugo Lefèvre' }).click()
     await dialog.getByRole('button', { name: 'Reject' }).click()
     await expect(dialog).toBeHidden()
     await expect(page.getByText(`Lot 8 in ${saleTitle} is now marked “Rejected”.`)).toBeVisible()

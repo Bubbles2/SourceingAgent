@@ -1,7 +1,10 @@
 // npm run migrate:up — applies every pending migration in backend/migrations, all in one transaction.
 // npm run migrate:down — reverts the most recent migration.
+// Migrations run in the app's own schema (DB_SCHEMA, created if missing), which also holds the
+// pgmigrations table; nothing outside it is changed.
 import { fileURLToPath } from 'node:url'
 import { runner } from 'node-pg-migrate'
+import { config } from '../config/env.ts'
 import { describeError } from '../lib/describeError.ts'
 import { logger } from '../lib/logger.ts'
 import { connectionConfig } from './pool.ts'
@@ -21,6 +24,9 @@ try {
     databaseUrl: connectionConfig,
     dir: migrationsDir,
     migrationsTable: 'pgmigrations',
+    schema: config.database.schema,
+    createSchema: true,
+    migrationsSchema: config.database.schema,
     direction,
     count: direction === 'down' ? 1 : Infinity,
     checkOrder: true,

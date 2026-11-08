@@ -6,6 +6,7 @@ import { auctionPath, paths } from '../app/paths'
 import { PageContainer } from '../components/layout/PageContainer'
 import { ButtonLink } from '../components/ui/Button'
 import { EmptyState } from '../components/ui/EmptyState'
+import { Notice } from '../components/ui/Notice'
 import { SaleStatusFilter } from '../features/auctions/SaleStatusFilter'
 import type { SaleStatus } from '../features/auctions/saleStatus'
 import type { Auction } from '../features/auctions/types'
@@ -23,7 +24,7 @@ function saleSearch(auctionId: string, page: number): string {
 }
 
 export function LotsPage(): React.JSX.Element {
-  const { status, page, auctionId, auction, lots } = useLoaderData<typeof lotsLoader>()
+  const { status, page, noneUpcoming, auctionId, auction, lots } = useLoaderData<typeof lotsLoader>()
   const [view, setView] = useState<LotView>('tiles')
 
   return (
@@ -50,6 +51,11 @@ export function LotsPage(): React.JSX.Element {
         )}
         <LotViewToggle view={view} onChange={setView} />
       </div>
+      {noneUpcoming ? (
+        <Notice tone="info" title="No upcoming sales right now.">
+          These are the lots of completed sales. Lots in new sales appear here as auction houses publish their catalogues.
+        </Notice>
+      ) : null}
       <Suspense
         key={`${auctionId ?? status}-${page}`}
         fallback={<LotGridSkeleton count={6} label={auctionId ? 'Loading lots' : `Loading lots in ${status} sales`} />}

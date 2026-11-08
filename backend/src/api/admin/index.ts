@@ -6,6 +6,7 @@ import * as adminBidRequestsController from './adminBidRequestsController.ts'
 import * as adminSummaryController from './adminSummaryController.ts'
 import * as adminUsersController from './adminUsersController.ts'
 import * as adminCollectionsController from './adminCollectionsController.ts'
+import { createTaxonomySearchRouter } from '../taxonomySearchProxy.ts'
 import { bidRequestParams, collectionJobParams, createCollectionBody, listBidRequestsQuery, listUsersQuery, statusChangeBody } from './adminValidation.ts'
 
 export function createAdminRouter(): Router {
@@ -27,6 +28,9 @@ export function createAdminRouter(): Router {
     validate({ params: bidRequestParams, body: statusChangeBody }),
     adminBidRequestsController.createStatusChange,
   )
+
+  // The taxonomy search's administration (taxonomy_search/INTEGRATION.md)
+  router.use('/search', createTaxonomySearchRouter())
 
   return router
 }

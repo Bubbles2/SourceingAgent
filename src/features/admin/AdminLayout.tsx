@@ -12,6 +12,7 @@ const adminLinks = [
   { label: 'Bid requests', to: paths.reviewRequests, end: false },
   { label: 'Collections', to: paths.collectionManager, end: false },
   { label: 'Collection status', to: paths.collectionStatus, end: false },
+  { label: 'Search', to: paths.searchAdmin, end: false },
 ] as const
 
 /**

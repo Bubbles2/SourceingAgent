@@ -12,6 +12,8 @@ export type Config = {
     host: string
     port: number
     name: string
+    /** The app's own schema; every connection's search_path */
+    schema: string
     user: string
     password: string
     ssl: boolean
@@ -27,9 +29,10 @@ export type Config = {
   }
   /** Proxies in front of the API whose X-Forwarded-For can be trusted (0 = none) */
   trustProxyHops: number
-  search: { webhookUrl: string; apiKey: string }
   /** External collection API; the Bearer token must never reach the browser. */
   collection: { root: string; token: string }
+  /** The taxonomy search service; the token must never reach the browser. */
+  taxonomy: { serviceUrl: string; serviceToken: string }
 }
 
 function isOrigin(value: string): boolean {
@@ -50,7 +53,12 @@ const envSchema = z.object({
   APP_ORIGIN: origin.default('http://localhost:3001'),
   DB_HOST: z.string().min(1),
   DB_PORT: portNumber.default(5432),
-  DB_NAME: z.string().min(1),
+  DB_NAME: z.string().min(1).default('events_monitor_db'),
+  // A plain lower-case identifier, so it can go into search_path without quoting
+  DB_SCHEMA: z
+    .string()
+    .regex(/^[a-z_][a-z0-9_]{0,62}$/, 'must be a plain schema name such as sourcing_agent (lower-case letters, digits, _)')
+    .default('sourcing_agent'),
   DB_USER: z.string().min(1),
   // May be empty when the local server trusts the connection
   DB_PASSWORD: z.string(),
@@ -70,10 +78,10 @@ const envSchema = z.object({
   // Defaults to true in production; browsers only send Secure cookies over HTTPS (and to localhost)
   COOKIE_SECURE: booleanFlag.optional(),
   TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(10).default(0),
-  N8N_SEARCH_WEBHOOK_URL: z.url().default('http://localhost:5678/webhook/auctionmonitor/search'),
-  N8N_SEARCH_API_KEY: z.string().default(''),
   collection_root: z.url().default('http://localhost:3000/api/collections'),
   collection_token: z.string().default(''),
+  TAXONOMY_SERVICE_URL: z.url().default('http://127.0.0.1:8000'),
+  TAXONOMY_SERVICE_TOKEN: z.string().default(''),
 }).refine((values) => !(values.NODE_ENV === 'production' && values.COOKIE_SECURE === false), {
   // A copied .env.example would otherwise send the session cookie over plain HTTP.
   message: 'must not be false in production; session cookies need HTTPS',
@@ -96,6 +104,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
       host: values.DB_HOST,
       port: values.DB_PORT,
       name: values.DB_NAME,
+      schema: values.DB_SCHEMA,
       user: values.DB_USER,
       password: values.DB_PASSWORD,
       ssl: values.DB_SSL,
@@ -109,8 +118,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
       cookieSecure: values.COOKIE_SECURE ?? values.NODE_ENV === 'production',
     }),
     trustProxyHops: values.TRUST_PROXY_HOPS,
-    search: Object.freeze({ webhookUrl: values.N8N_SEARCH_WEBHOOK_URL, apiKey: values.N8N_SEARCH_API_KEY }),
     collection: Object.freeze({ root: values.collection_root, token: values.collection_token }),
+    taxonomy: Object.freeze({ serviceUrl: values.TAXONOMY_SERVICE_URL, serviceToken: values.TAXONOMY_SERVICE_TOKEN }),
   })
 }
 

@@ -148,6 +148,8 @@ test('a wrong password is refused, and signing in returns to the page they wante
 test('a forgotten password is reset from the emailed link', async ({ page }) => {
   await page.goto('/sign-in')
   await page.getByRole('link', { name: 'Forgot your password?' }).click()
+  // The sign-in page has an "Email address" field too and stays up until the new page renders.
+  await expect(page.getByRole('heading', { level: 1, name: 'Reset your password' })).toBeVisible()
   await page.getByLabel('Email address').fill(email)
   await page.getByRole('button', { name: 'Send reset link' }).click()
   await expect(page.getByRole('heading', { name: 'Check your email' })).toBeVisible()

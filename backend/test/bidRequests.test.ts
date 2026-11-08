@@ -7,6 +7,7 @@ import { z } from 'zod'
 import { createApp } from '../src/app.ts'
 import { deleteTestData, insertTestSale, type TestSale } from '../src/cli/testSales.ts'
 import { closePool, pool, withTransaction } from '../src/db/pool.ts'
+import { findRequestTarget } from '../src/repositories/bidRequestsRepository.ts'
 import { BrowserClient, type ApiResponse } from './browserClient.ts'
 import { startTestServer, type TestServer } from './httpServer.ts'
 
@@ -104,7 +105,7 @@ before(async () => {
   sales.other = await insertTestSale(`${prefix}-other`, { daysAhead: 40 }, pool)
   sales.closed = await insertTestSale(`${prefix}-closed`, { daysAhead: -10 }, pool)
   sales.undated = await insertTestSale(`${prefix}-undated`, { daysAhead: 30 }, pool)
-  await pool.query('UPDATE auctions SET starts_at = NULL, auction_date = NULL WHERE id = $1', [sales.undated.auctionId])
+  await pool.query('UPDATE test_auctions SET starts_at = NULL, auction_date = NULL WHERE id = $1', [sales.undated.auctionId])
 
   const customer = await newCustomer('verified', { confirmed: true })
   verified = customer.client
@@ -234,6 +235,65 @@ describe('submitting', () => {
         errorBody.parse(response.body).error.details?.map((detail) => detail.path),
         ['body.acknowledgedCharges'],
       )
+    }
+  })
+})
+
+describe('simultaneous requests for one lot', () => {
+  test('two requests sent at the same moment: one is created, the other refused', async () => {
+    const lotId = lot(sales.open, 40)
+    const responses = await Promise.all([
+      verified.post('/api/bid-requests', bid({ lotId })),
+      verified.post('/api/bid-requests', bid({ lotId, maxBidEur: 3000 })),
+    ])
+    assert.deepEqual(responses.map((response) => response.status).sort(), [201, 409])
+    const refused = responses.find((response) => response.status === 409)
+    assert.ok(refused)
+    assert.equal(errorCode(refused), 'already_requested')
+    const { rows } = await pool.query<{ count: number }>('SELECT count(*)::int AS count FROM bid_requests WHERE lot_id = $1', [lotId])
+    assert.equal(rows[0]?.count, 1)
+  })
+
+  test("a request's checks wait for another transaction checking the same lot, but not other lots", async () => {
+    const first = await pool.connect()
+    const second = await pool.connect()
+    try {
+      const secondPid = (await second.query<{ pid: number }>('SELECT pg_backend_pid() AS pid')).rows[0]?.pid
+      const firstPid = (await first.query<{ pid: number }>('SELECT pg_backend_pid() AS pid')).rows[0]?.pid
+      await first.query('BEGIN')
+      await second.query('BEGIN')
+      const held = await findRequestTarget(sales.open.auctionId, lot(sales.open, 41), first)
+      assert.equal(held?.lot?.id, lot(sales.open, 41))
+
+      // Another lot is not held up
+      const otherLot = await findRequestTarget(sales.open.auctionId, lot(sales.open, 42), second)
+      assert.equal(otherLot?.lot?.id, lot(sales.open, 42))
+
+      // The same lot waits on the first transaction's advisory lock…
+      let finished = false
+      const waiting = findRequestTarget(sales.open.auctionId, lot(sales.open, 41), second).then((target) => {
+        finished = true
+        return target
+      })
+      const deadline = Date.now() + 5_000
+      let blockedBy: number[] = []
+      while (!blockedBy.includes(firstPid ?? -1) && Date.now() < deadline) {
+        const { rows } = await pool.query<{ pids: number[] }>('SELECT pg_blocking_pids($1) AS pids', [secondPid])
+        blockedBy = rows[0]?.pids ?? []
+      }
+      assert.ok(blockedBy.includes(firstPid ?? -1), 'the second check is blocked by the first transaction')
+      assert.equal(finished, false)
+
+      // …and goes ahead once it ends
+      await first.query('COMMIT')
+      const target = await waiting
+      assert.equal(target?.lot?.id, lot(sales.open, 41))
+      await second.query('COMMIT')
+    } finally {
+      await first.query('ROLLBACK').catch(() => undefined)
+      await second.query('ROLLBACK').catch(() => undefined)
+      first.release()
+      second.release()
     }
   })
 })

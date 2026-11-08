@@ -1,0 +1,266 @@
+{
+  "version_label": "0.3.0",
+  "version_id": 6,
+  "unresolved_terms": {
+    "antique": 1,
+    "vintage": 1,
+    "designer": 1,
+    "diamond": 1,
+    "white": 1,
+    "persan": 1,
+    "russe": 1,
+    "monnaie": 1,
+    "art": 1,
+    "deco": 1,
+    "silk": 1,
+    "scarf": 1
+  },
+  "demand_marked": {
+    "art deco": "period.art_deco",
+    "silk scarf": "fashion.accessories.foulard",
+    "antique": "style.antique",
+    "monnaie": "numismatics.coins_banknotes.monnaie"
+  },
+  "suggestions": [
+    {
+      "term": "vintage",
+      "searches": 1,
+      "lots": 170,
+      "top_concepts": "wine_spirits.wine 31%; material.gold 19%; region.france 14%"
+    },
+    {
+      "term": "designer",
+      "searches": 1,
+      "lots": 1526,
+      "top_concepts": "material.gold 41%; jewellery_watches.jewellery.rings 13%; material.porcelain 11%"
+    },
+    {
+      "term": "diamond",
+      "searches": 1,
+      "lots": 1545,
+      "top_concepts": "material.gold 82%; jewellery_watches.jewellery.rings 46%; jewellery_watches.jewellery.necklaces 19%"
+    },
+    {
+      "term": "white",
+      "searches": 1,
+      "lots": 2105,
+      "top_concepts": "material.gold 49%; jewellery_watches.jewellery.rings 23%; region.china 18%"
+    },
+    {
+      "term": "persan",
+      "searches": 1,
+      "lots": 57,
+      "top_concepts": "decorative_arts.carpets 82%; decorative_arts.textiles 75%; period.19th_century 14%"
+    },
+    {
+      "term": "russe",
+      "searches": 1,
+      "lots": 730,
+      "top_concepts": "fine_art.paintings.icons 79%; material.wood 78%; period.19th_century 49%"
+    },
+    {
+      "term": "art",
+      "searches": 1,
+      "lots": 1141,
+      "top_concepts": "region.france 13%; fine_art.paintings.old_masters 12%; material.glass 11%"
+    },
+    {
+      "term": "deco",
+      "searches": 1,
+      "lots": 174,
+      "top_concepts": "material.gold 25%; material.glass 24%; jewellery_watches.jewellery.rings 18%"
+    },
+    {
+      "term": "silk",
+      "searches": 1,
+      "lots": 370,
+      "top_concepts": "region.china 26%; region.asia 23%; world_arts.asian_art 23%"
+    },
+    {
+      "term": "scarf",
+      "searches": 1,
+      "lots": 25,
+      "top_concepts": "fashion.accessories 72%; maker.hermes 44%; fashion 8%"
+    }
+  ],
+  "translations_proposed": [],
+  "relationships_proposed": [
+    {
+      "source": "style.rococo",
+      "type": "associated_material",
+      "target": "material.porcelain",
+      "lots": 26,
+      "lift": 4.0
+    },
+    {
+      "source": "style.louis_xvi",
+      "type": "associated_material",
+      "target": "material.marble",
+      "lots": 22,
+      "lift": 9.3
+    },
+    {
+      "source": "style.louis_xvi",
+      "type": "associated_material",
+      "target": "material.gilt_bronze",
+      "lots": 19,
+      "lift": 10.3
+    },
+    {
+      "source": "style.louis_xv",
+      "type": "associated_material",
+      "target": "material.gilt_bronze",
+      "lots": 18,
+      "lift": 10.1
+    },
+    {
+      "source": "style.louis_xv",
+      "type": "associated_technique",
+      "target": "technique.marquetry",
+      "lots": 17,
+      "lift": 24.4
+    },
+    {
+      "source": "period.napoleon_iii",
+      "type": "associated_material",
+      "target": "material.brass",
+      "lots": 17,
+      "lift": 4.8
+    },
+    {
+      "source": "style.louis_xv",
+      "type": "associated_material",
+      "target": "material.marble",
+      "lots": 17,
+      "lift": 7.5
+    },
+    {
+      "source": "style.louis_xvi",
+      "type": "associated_technique",
+      "target": "technique.marquetry",
+      "lots": 12,
+      "lift": 16.5
+    },
+    {
+      "source": "period.louis_xv",
+      "type": "associated_material",
+      "target": "material.wood",
+      "lots": 11,
+      "lift": 3.5
+    },
+    {
+      "source": "style.neoclassicism",
+      "type": "associated_material",
+      "target": "material.gilt_bronze",
+      "lots": 11,
+      "lift": 9.3
+    },
+    {
+      "source": "period.louis_xvi",
+      "type": "associated_material",
+      "target": "material.marble",
+      "lots": 10,
+      "lift": 11.6
+    },
+    {
+      "source": "period.napoleon_iii",
+      "type": "associated_material",
+      "target": "material.leather",
+      "lots": 8,
+      "lift": 3.0
+    },
+    {
+      "source": "period.louis_xvi",
+      "type": "associated_material",
+      "target": "material.brass",
+      "lots": 8,
+      "lift": 3.6
+    },
+    {
+      "source": "style.regence",
+      "type": "associated_material",
+      "target": "material.wood",
+      "lots": 7,
+      "lift": 3.5
+    },
+    {
+      "source": "style.rococo",
+      "type": "associated_technique",
+      "target": "technique.gilding",
+      "lots": 7,
+      "lift": 3.2
+    },
+    {
+      "source": "style.neoclassicism",
+      "type": "associated_material",
+      "target": "material.marble",
+      "lots": 7,
+      "lift": 4.6
+    },
+    {
+      "source": "style.napoleon_iii",
+      "type": "associated_technique",
+      "target": "technique.marquetry",
+      "lots": 7,
+      "lift": 39.4
+    },
+    {
+      "source": "style.napoleon_iii",
+      "type": "associated_material",
+      "target": "material.gilt_bronze",
+      "lots": 6,
+      "lift": 13.2
+    },
+    {
+      "source": "period.napoleon_iii",
+      "type": "associated_material",
+      "target": "material.gilt_bronze",
+      "lots": 6,
+      "lift": 5.6
+    },
+    {
+      "source": "style.napoleon_iii",
+      "type": "associated_material",
+      "target": "material.tortoiseshell",
+      "lots": 4,
+      "lift": 20.9
+    },
+    {
+      "source": "period.regence",
+      "type": "associated_material",
+      "target": "material.marble",
+      "lots": 3,
+      "lift": 19.8
+    },
+    {
+      "source": "period.napoleon_iii",
+      "type": "associated_material",
+      "target": "material.tortoiseshell",
+      "lots": 3,
+      "lift": 6.7
+    },
+    {
+      "source": "period.louis_xvi",
+      "type": "associated_material",
+      "target": "material.gilt_bronze",
+      "lots": 3,
+      "lift": 4.5
+    },
+    {
+      "source": "style.louis_xiv",
+      "type": "associated_material",
+      "target": "material.glass",
+      "lots": 3,
+      "lift": 3.4
+    }
+  ],
+  "low_confidence": {
+    "Drouot category and text disagree": 1710,
+    "ambiguous term only": 1475,
+    "conflicting dating": 30,
+    "no object classification": 13,
+    "assertions below 0.6 confidence": 0
+  },
+  "new_candidates_imported": 0,
+  "dry_run": false
+}

@@ -4,7 +4,7 @@ import { defineConfig } from 'vitest/config'
 // covered by the Playwright end-to-end tests in e2e/.
 export default defineConfig({
   test: {
-    include: ['src/**/*.test.ts'],
+    include: ['src/**/*.test.ts', 'taxonomy_search/web/**/*.test.ts'],
     environment: 'node',
     restoreMocks: true,
     unstubGlobals: true,

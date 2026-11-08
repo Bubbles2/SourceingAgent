@@ -1,0 +1,16 @@
+/* Site search results (taxonomy_search/web). Lot cards and .lot-grid come from src/features/lots/LotCard.css. */
+
+.site-search { display: flex; flex-direction: column; gap: var(--space-6); }
+.site-search__summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); color: var(--ink-soft); }
+.site-search__summary p { margin: 0; }
+.site-search__modes { display: inline-flex; border: 1px solid var(--cream-line); border-radius: var(--r-pill); overflow: hidden; }
+.site-search__modes a { display: inline-flex; align-items: center; min-height: var(--tap); padding: 0 var(--space-4); color: var(--navy); text-decoration: none; font-size: 14px; }
+.site-search__modes a[aria-current='true'] { background: var(--navy); color: var(--white); }
+.site-search__modes a:hover:not([aria-current='true']) { background: var(--blue-tint); }
+.site-search__hit { display: flex; flex-direction: column; gap: var(--space-2); }
+.site-search__hit .lot-card { flex: 1; }
+.site-search__why { margin: 0; font-size: 13px; color: var(--ink-muted); }
+.site-search__why span { font-weight: 600; color: var(--ink-soft); }
+.site-search__related { display: flex; flex-direction: column; gap: var(--space-4); }
+.site-search__note { margin: 0; color: var(--ink-muted); }
+.site-search__unavailable { margin: 0; padding: var(--space-4); border: 1px solid var(--cream-line); border-radius: var(--r-md); background: var(--white); color: var(--ink-soft); }
